@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\EventManager\\API\\API.csproj",
-      "projectName": "API",
-      "projectPath": "D:\\EventManager\\API\\API.csproj",
+      "projectUniqueName": "D:\\EventManager\\Study.EventManager.Services\\Study.EventManager.Services.csproj",
+      "projectName": "Study.EventManager.Services",
+      "projectPath": "D:\\EventManager\\Study.EventManager.Services\\Study.EventManager.Services.csproj",
       "packagesPath": "C:\\Users\\shyi2\\.nuget\\packages\\",
-      "outputPath": "D:\\EventManager\\API\\obj\\",
+      "outputPath": "D:\\EventManager\\Study.EventManager.Services\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\shyi2\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -56,9 +56,6 @@
         "assetTargetFallback": true,
         "warn": true,
         "frameworkReferences": {
-          "Microsoft.AspNetCore.App": {
-            "privateAssets": "none"
-          },
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
