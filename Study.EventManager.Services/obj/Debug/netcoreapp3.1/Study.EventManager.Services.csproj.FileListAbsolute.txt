@@ -1,0 +1,9 @@
+D:\EventManager\Study.EventManager.Services\bin\Debug\netcoreapp3.1\Study.EventManager.Services.deps.json
+D:\EventManager\Study.EventManager.Services\bin\Debug\netcoreapp3.1\Study.EventManager.Services.dll
+D:\EventManager\Study.EventManager.Services\bin\Debug\netcoreapp3.1\Study.EventManager.Services.pdb
+D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.csprojAssemblyReference.cache
+D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.AssemblyInfoInputs.cache
+D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.AssemblyInfo.cs
+D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.csproj.CoreCompileInputs.cache
+D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.dll
+D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.pdb

@@ -5,11 +5,13 @@ VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API", "API.csproj", "{F4D94462-C33B-4768-94B5-ED3A36414D30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study.EventManager.Model", "..\Study.EventManager.Model\Study.EventManager.Model.csproj", "{6FC2E8D1-3A52-4878-8A5C-2DF9119A2AB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Model", "..\Study.EventManager.Model\Study.EventManager.Model.csproj", "{6FC2E8D1-3A52-4878-8A5C-2DF9119A2AB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study.EventManager.Data", "..\Study.EventManager.Data\Study.EventManager.Data.csproj", "{98307777-DB76-4F62-8380-69D7B2187D78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Data", "..\Study.EventManager.Data\Study.EventManager.Data.csproj", "{98307777-DB76-4F62-8380-69D7B2187D78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study.EventManager.Services", "..\Study.EventManager.Services\Study.EventManager.Services.csproj", "{7A304B39-487C-4015-98FD-515EBAC00D25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Services", "..\Study.EventManager.Services\Study.EventManager.Services.csproj", "{7A304B39-487C-4015-98FD-515EBAC00D25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study.EventManager.Data.Test", "..\Study.EventManager.Data.Test\Study.EventManager.Data.Test.csproj", "{51A86F88-BF63-4799-90C7-7BDD6BD3B917}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{7A304B39-487C-4015-98FD-515EBAC00D25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A304B39-487C-4015-98FD-515EBAC00D25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A304B39-487C-4015-98FD-515EBAC00D25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

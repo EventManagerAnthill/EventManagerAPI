@@ -4,10 +4,10 @@ using System;
 
 namespace Study.EventManager.Data
 {
-    public class EventManagerDBContext : DBContext
+    public class EventManagerDbContext : DbContext
     {
         private readonly string _connectionStr;
-        public EventManagerDBContext(string connectionStr)
+        public EventManagerDbContext(string connectionStr)
         {
             _connectionStr = connectionStr;
         }
@@ -17,9 +17,10 @@ namespace Study.EventManager.Data
             optionsBuilder.UseSqlServer(_connectionStr);
         }
 
-        protected override void OnModeCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
+            modelBuilder.ApplyConfiguration(new EventConfiguration());
         }
     }
 }
