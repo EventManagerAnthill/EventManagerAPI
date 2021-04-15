@@ -18,9 +18,10 @@ namespace Study.EventManager.Data.Test
             context.Database.EnsureCreated();
 
             var newCompany = new Company { Id = 2, Name = "test2" };
-            DateTime Createdt = new DateTime(2021, 04, 12, 0, 10, 10);
-            DateTime Holdingdt = new DateTime(2021, 04, 20, 17, 0, 0);
-            var newEvent = new Event { Id = 1, Name = "Попить пивка", Create_dt = Createdt, Holding_dt = Holdingdt, Type_id = 1, User_id = 1, Description = "сбор" };
+            DateTime EvebtCreatedt = new DateTime(2021, 04, 12, 0, 10, 10);
+            DateTime EventHoldingDt = new DateTime(2021, 04, 20, 17, 0, 0);
+            var newEvent = new Event { Id = 1, Name = "Drink bear", CreateDt = EvebtCreatedt, HoldingDt = EventHoldingDt, TypeId = 1, UserId = 1, 
+                                        Description = "meet" };
 
 
             context.Set<Company>().Add(newCompany);
@@ -28,7 +29,7 @@ namespace Study.EventManager.Data.Test
             context.SaveChanges();
 
             var dataCompany = context.Set<Company>().FirstOrDefault(x => x.Name == "test2" && x.Id == 2);
-            var dataEvent = context.Set<Event>().FirstOrDefault(x => x.Name == "Попить пивка" && x.Holding_dt == Holdingdt);
+            var dataEvent = context.Set<Event>().FirstOrDefault(x => x.Name == "Drink bear" && x.HoldingDt == EventHoldingDt);
             Assert.IsNotNull(dataCompany);
             Assert.IsNotNull(dataEvent);
         }

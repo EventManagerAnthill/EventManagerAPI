@@ -14,9 +14,10 @@ namespace Study.EventManager.Data.Configurations
             builder.ToTable("Event");
             builder.HasKey(o => o.Id);
             builder.Property(t => t.Name);
-            builder.Property(t => t.Holding_dt);
-            builder.Property(t => t.Type_id);
-            builder.Property(t => t.User_id);
+            builder.Property(t => t.CreateDt);
+            builder.Property(t => t.HoldingDt);
+            builder.Property(t => t.TypeId);
+            builder.Property(t => t.UserId);
             builder.Property(t => t.Description);
         }
     }
