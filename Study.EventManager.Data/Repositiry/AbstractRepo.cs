@@ -37,7 +37,6 @@ namespace Study.EventManager.Data.Repositiry
             try
             {
                 _eventManagerContext.Add(entity);
-                _eventManagerContext.SaveChanges();
 
                 return entity;
             }
@@ -57,7 +56,7 @@ namespace Study.EventManager.Data.Repositiry
             try
             {
                 _eventManagerContext.Update(entity);
-                _eventManagerContext.SaveChanges();
+
 
                 return entity;
             }

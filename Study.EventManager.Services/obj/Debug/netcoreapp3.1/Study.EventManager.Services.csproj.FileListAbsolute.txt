@@ -7,3 +7,8 @@ D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventM
 D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.csproj.CoreCompileInputs.cache
 D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.dll
 D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.pdb
+D:\EventManager\Study.EventManager.Services\bin\Debug\netcoreapp3.1\Study.EventManager.Data.dll
+D:\EventManager\Study.EventManager.Services\bin\Debug\netcoreapp3.1\Study.EventManager.Model.dll
+D:\EventManager\Study.EventManager.Services\bin\Debug\netcoreapp3.1\Study.EventManager.Data.pdb
+D:\EventManager\Study.EventManager.Services\bin\Debug\netcoreapp3.1\Study.EventManager.Model.pdb
+D:\EventManager\Study.EventManager.Services\obj\Debug\netcoreapp3.1\Study.EventManager.Services.csproj.CopyComplete

@@ -2,7 +2,7 @@
 
 namespace Study.EventManager.Services
 {
-    public class Class1
+    public class CompanyService
     {
     }
 }

@@ -5,7 +5,12 @@ using System.Text;
 
 namespace Study.EventManager.Data.Contract
 {
-    public interface IRepository<TEntity> where TEntity : class, new()
+    public interface IRepository
+    {
+
+    }
+    public interface IRepository<TEntity> : IRepository
+        where TEntity : class, new()
     {
         IQueryable<TEntity> GetAll();
 

@@ -7,15 +7,10 @@ namespace Study.EventManager.Data
     public class EventManagerDbContext : DbContext
     {
         private readonly string _connectionStr;
-        public EventManagerDbContext(string connectionStr)
+        public EventManagerDbContext(DbContextOptions options)
+            :base(options)
         {
-            _connectionStr = connectionStr;
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(_connectionStr);
-        }
+        } 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

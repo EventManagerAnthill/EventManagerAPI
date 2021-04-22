@@ -4,4 +4,8 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Study.EventManager.Data\Study.EventManager.Data.csproj" />
+  </ItemGroup>
+
 </Project>
