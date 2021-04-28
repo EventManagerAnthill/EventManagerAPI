@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Data", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Services", "..\Study.EventManager.Services\Study.EventManager.Services.csproj", "{7A304B39-487C-4015-98FD-515EBAC00D25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study.EventManager.Data.Test", "..\Study.EventManager.Data.Test\Study.EventManager.Data.Test.csproj", "{51A86F88-BF63-4799-90C7-7BDD6BD3B917}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Data.Test", "..\Study.EventManager.Data.Test\Study.EventManager.Data.Test.csproj", "{51A86F88-BF63-4799-90C7-7BDD6BD3B917}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Study.EventManager.Services.Test", "..\Study.EventManager.Services.Test\Study.EventManager.Services.Test.csproj", "{427015AE-E049-4022-B13E-9AED6A76487C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{427015AE-E049-4022-B13E-9AED6A76487C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{427015AE-E049-4022-B13E-9AED6A76487C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{427015AE-E049-4022-B13E-9AED6A76487C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{427015AE-E049-4022-B13E-9AED6A76487C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
