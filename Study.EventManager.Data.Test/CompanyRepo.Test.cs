@@ -17,7 +17,7 @@ namespace Study.EventManager.Data.Test
         public CompanyRepoTest()
         {
             var services = new ServiceCollection();            
-            ContainerConfiguration.ConfigureConfiguration(services, "Server=SHYI;Database=EventManager;User Id=sa;Password=masterkey");
+            ContainerConfiguration.Configure(services, "Server=SHYI;Database=EventManager;User Id=sa;Password=masterkey");
             var serviceProvider = services.BuildServiceProvider();
             _contexManager = serviceProvider.GetService<IContextManager>();
         }

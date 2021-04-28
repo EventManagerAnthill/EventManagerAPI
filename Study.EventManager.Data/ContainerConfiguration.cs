@@ -10,7 +10,7 @@ namespace Study.EventManager.Data
 {
     public class ContainerConfiguration
     {
-        public static void ConfigureConfiguration(ServiceCollection serviceCollection, string connectionString)
+        public static void Configure(ServiceCollection serviceCollection, string connectionString)
         {
             serviceCollection.AddScoped<ICompanyRepo, CompanyRepo>();
             serviceCollection.AddDbContext<EventManagerDbContext>(option => option.UseSqlServer(connectionString));

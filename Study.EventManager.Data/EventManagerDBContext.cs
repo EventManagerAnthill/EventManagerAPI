@@ -5,8 +5,7 @@ using System;
 namespace Study.EventManager.Data
 {
     public class EventManagerDbContext : DbContext
-    {
-        private readonly string _connectionStr;
+    {     
         public EventManagerDbContext(DbContextOptions options)
             :base(options)
         {

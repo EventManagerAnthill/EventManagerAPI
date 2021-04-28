@@ -15,16 +15,32 @@ namespace Study.EventManager.Data.Repositiry
             _eventManagerContext = repositoryEventManager;
         }
 
-        public IQueryable<TEntity> GetAll()
+        public TEntity GetById(int id)
+        {      
+            return _eventManagerContext.Set<TEntity>().Find(id);      
+        }
+
+        public TEntity DeleteById(TEntity entity)
         {
+            if (entity == null)
+            {
+                throw new ArgumentNullException($"{nameof(entity)} entity must not be null");
+            }
+
             try
             {
-                return _eventManagerContext.Set<TEntity>();
+                _eventManagerContext.Remove(entity);
+                return entity;
             }
             catch (Exception ex)
             {
-                throw new Exception($"Couldn't retrieve entities: {ex.Message}");
-            }
+                throw new Exception($"{nameof(entity)} could not be delete: {ex.Message}", ex);
+            }            
+        }
+
+        public IQueryable<TEntity> GetAll()
+        {
+            return _eventManagerContext.Set<TEntity>();          
         }
 
         public TEntity Add(TEntity entity)
@@ -42,28 +58,8 @@ namespace Study.EventManager.Data.Repositiry
             }
             catch (Exception ex)
             {
-                throw new Exception($"{nameof(entity)} could not be saved: {ex.Message}");
+                throw new Exception($"{nameof(entity)} could not be saved: {ex.Message}", ex);
             }
-        }
-
-        public TEntity Update(TEntity entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException($"{nameof(entity)} entity must not be null");
-            }
-
-            try
-            {
-                _eventManagerContext.Update(entity);
-
-
-                return entity;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"{nameof(entity)} could not be updated: {ex.Message}");
-            }
-        }
+        }   
     }
 }
