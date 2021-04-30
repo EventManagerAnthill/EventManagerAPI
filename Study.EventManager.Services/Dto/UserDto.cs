@@ -3,10 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Study.EventManager.Model
+namespace Study.EventManager.Services.Dto
 {
-    public class User
-    {
+    public class UserDto
+    { 
         public int Id { get; set; }
 
         public string Surname { get; set; }
@@ -21,6 +21,6 @@ namespace Study.EventManager.Model
 
         public string Phone { get; set; }
 
-        public UserType Sex { get; set; }
+        public UserType Sex { get; set; }        
     }
 }

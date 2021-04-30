@@ -10,6 +10,7 @@ namespace Study.EventManager.Services.Contract
         CompanyDto GetCompany(int id);
         CompanyDto CreateCompany(CompanyDto dto);
         CompanyDto UpdateCompany(int id, CompanyDto dto);
-        CompanyDto DeleteCompany(int id);
+        IEnumerable<CompanyDto> GetAll();
+        void DeleteCompany(int id);
     }
 }

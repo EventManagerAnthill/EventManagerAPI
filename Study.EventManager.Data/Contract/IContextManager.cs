@@ -10,6 +10,5 @@ namespace Study.EventManager.Data.Contract
             where T : IRepository;
 
         void Save(string id = "");
-        void SaveDel(string id = "");
     }
 }

@@ -38,11 +38,5 @@ namespace Study.EventManager.Data
         {
             GetContext(id).SaveChanges();
         }
-        public void SaveDel(string id = "")
-        {
-            GetContext().SaveChanges();
-        }
     }
-
-
 }

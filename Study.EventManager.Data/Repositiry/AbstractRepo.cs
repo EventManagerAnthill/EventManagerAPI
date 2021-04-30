@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Study.EventManager.Data.Repositiry
@@ -10,7 +11,7 @@ namespace Study.EventManager.Data.Repositiry
     {
         protected readonly EventManagerDbContext _eventManagerContext;
 
-        public AbstractRepo(EventManagerDbContext repositoryEventManager)
+        public AbstractRepo(EventManagerDbContext repositoryEventManager) 
         {
             _eventManagerContext = repositoryEventManager;
         }
@@ -20,7 +21,7 @@ namespace Study.EventManager.Data.Repositiry
             return _eventManagerContext.Set<TEntity>().Find(id);      
         }
 
-        public TEntity DeleteById(TEntity entity)
+        public TEntity Delete(TEntity entity)
         {
             if (entity == null)
             {
@@ -38,9 +39,14 @@ namespace Study.EventManager.Data.Repositiry
             }            
         }
 
-        public IQueryable<TEntity> GetAll()
+        public IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> criteria = null)
         {
-            return _eventManagerContext.Set<TEntity>();          
+            IQueryable<TEntity> query = _eventManagerContext.Set<TEntity>();
+            if (criteria != null)
+            {
+                query = query.Where(criteria);
+            }
+            return query.ToList();          
         }
 
         public TEntity Add(TEntity entity)

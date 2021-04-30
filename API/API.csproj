@@ -4,5 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Study.EventManager.Services\Study.EventManager.Services.csproj" />
+  </ItemGroup>
+
 
 </Project>

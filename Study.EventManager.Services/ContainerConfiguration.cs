@@ -8,11 +8,11 @@ namespace Study.EventManager.Services
 {
     public class ContainerConfiguration
     {
-        public static void Configure(ServiceCollection serviceCollection, Settings settings)
+        public static void Configure(IServiceCollection serviceCollection, Settings settings)
         {
             Data.ContainerConfiguration.Configure(serviceCollection, settings.ConnectionString);
             serviceCollection.AddScoped<ICompanyService, CompanyService>();
         }
-    }
+    } 
 }
     

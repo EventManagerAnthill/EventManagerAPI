@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Study.EventManager.Data.Contract
@@ -14,9 +15,9 @@ namespace Study.EventManager.Data.Contract
     {
         TEntity GetById(int id);
 
-        TEntity DeleteById(TEntity entity);
+        TEntity Delete(TEntity entity);
 
-        IQueryable<TEntity> GetAll();
+        IEnumerable<TEntity> GetAll(Expression<Func<TEntity, bool>> criteria = null);
 
         TEntity Add(TEntity entity);
     }

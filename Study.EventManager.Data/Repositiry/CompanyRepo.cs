@@ -11,5 +11,10 @@ namespace Study.EventManager.Data.Repositiry
         public CompanyRepo(EventManagerDbContext context)
             :base(context)
         { }
+
+        //public IEnumerable<Company> GetAllCompanies()
+        //{
+        //    return base.GetAll(x => !x.IsDeleted);
+        //}
     }
 }

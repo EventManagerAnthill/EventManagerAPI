@@ -44,16 +44,15 @@ namespace Study.EventManager.Services
             return MapToDto(data);
         }
 
-        public CompanyDto DeleteCompany(int id)
+        public void DeleteCompany(int id)
         {
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var data = repo.GetById(id);
-            var entity = repo.DeleteById(data);
-            _contextManager.SaveDel();
-            return MapToDto(entity);
+            var entity = repo.Delete(data);
+            _contextManager.Save();          
         }
 
-        public IEnumerable<CompanyDto> GetCompanies()
+        public IEnumerable<CompanyDto> GetAll()
         {
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var data = repo.GetAll();
@@ -62,6 +61,10 @@ namespace Study.EventManager.Services
 
         private CompanyDto MapToDto(Company entity)
         {
+            if (entity ==null)
+            {
+                return null;
+            } 
             return new CompanyDto
             {
                 Id = entity.Id,

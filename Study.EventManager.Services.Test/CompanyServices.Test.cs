@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Study.EventManager.Services.Contract;
+using Study.EventManager.Services.Dto;
 
 namespace Study.EventManager.Services.Test
 {
@@ -11,24 +13,37 @@ namespace Study.EventManager.Services.Test
 
         public CompanyServicesTest()
         {
+            IConfiguration config = new ConfigurationBuilder()
+               .AddJsonFile("appsettings.json")
+               .Build();
+
             var services = new ServiceCollection();
-            var settings = new Settings
-            {
-                ConnectionString = "Server=SHYI;Database=EventManager;User Id=sa;Password=masterkey"
-            };
+            var settings = config.Get<Settings>();
             ContainerConfiguration.Configure(services, settings);
             var serviceProvider = services.BuildServiceProvider();
             _companyService = serviceProvider.GetService<ICompanyService>();
         }
         [TestMethod]
-        public void TestMethod1()
+        public void CreateCompanyTest()
         {
-            var companyTwo = _companyService.GetCompany(3);
-            var companyAll = _companyService.DeleteCompany(3);
-            var company = _companyService.GetCompany(3);
-            // var companyDel = _companyService.DeleteCompany(2);
-            var num = 1;
+            //arrange
+            var company = new CompanyDto
+            {
+                Name = "Shyi"
+            };
 
+            //act             
+            var result = _companyService.CreateCompany(company);
+
+            //assert
+            Assert.AreNotEqual(0, result.Id);
+        }
+
+
+        [TestMethod]
+        public void DeleteCompanyTest()
+        {
+            _companyService.DeleteCompany(3);         
         }
     }
 }
