@@ -9,12 +9,7 @@ namespace Study.EventManager.Data.Repositiry
 {
     public abstract class AbstractRepo<TEntity> : IRepository<TEntity> where TEntity : class, new()
     {
-        protected readonly EventManagerDbContext _eventManagerContext;
-
-        public AbstractRepo(EventManagerDbContext repositoryEventManager) 
-        {
-            _eventManagerContext = repositoryEventManager;
-        }
+        protected EventManagerDbContext _eventManagerContext;
 
         public TEntity GetById(int id)
         {      
@@ -66,6 +61,11 @@ namespace Study.EventManager.Data.Repositiry
             {
                 throw new Exception($"{nameof(entity)} could not be saved: {ex.Message}", ex);
             }
-        }   
+        }
+
+        void IRepository.SetContext(EventManagerDbContext context)
+        {
+            _eventManagerContext = context;
+        }
     }
 }

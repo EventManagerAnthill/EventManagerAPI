@@ -8,6 +8,7 @@ namespace Study.EventManager.Data.Contract
 {
     public interface IRepository
     {
+        internal void SetContext(EventManagerDbContext context);
 
     }
     public interface IRepository<TEntity> : IRepository

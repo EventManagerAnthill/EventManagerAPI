@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Study.EventManager.Helpers\Study.EventManager.Helpers.csproj" />
     <ProjectReference Include="..\Study.EventManager.Services\Study.EventManager.Services.csproj" />
   </ItemGroup>
 

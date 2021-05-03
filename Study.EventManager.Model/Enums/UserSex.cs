@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Study.EventManager.Model.Enums
 {
-    public enum UserType
+    public enum UserSex
     {
         Male = 1,
         Female = 2

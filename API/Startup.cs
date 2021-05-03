@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Study.EventManager.Data;
+using Study.EventManager.Helpers;
 using Study.EventManager.Services;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,7 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             ContainerConfiguration.Configure(services, _settings);
         }

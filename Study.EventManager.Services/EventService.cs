@@ -1,12 +1,13 @@
 ﻿using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
+using Study.EventManager.Services.Dto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Study.EventManager.Services.Dto
+namespace Study.EventManager.Services
 {
     public class EventService : IEventService
     {
@@ -44,7 +45,7 @@ namespace Study.EventManager.Services.Dto
             data.Type = dto.Type;
             data.CreateDate = dto.CreateDate;
             data.HoldingDate = dto.HoldingDate;
-            data.User = dto.User;
+            data.UserId = dto.User;
             data.Description = dto.Description;
 
             _contextManager.Save();
@@ -78,7 +79,7 @@ namespace Study.EventManager.Services.Dto
                 Name = entity.Name,
                 Type = entity.Type,
                 HoldingDate = entity.HoldingDate,
-                User = entity.User,
+                User = entity.UserId,
                 Description = entity.Description,
                 CreateDate = entity.CreateDate
             };
@@ -90,7 +91,7 @@ namespace Study.EventManager.Services.Dto
                 Name = dto.Name,
                 Type = dto.Type,
                 HoldingDate = dto.HoldingDate,
-                User = dto.User,
+                UserId = dto.User,
                 Description = dto.Description,
                 CreateDate = dto.CreateDate
             };

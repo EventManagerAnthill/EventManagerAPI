@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
@@ -20,6 +21,18 @@ namespace API.Controllers
             _service = service;
         }
 
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate(AuthenticateRequestDto model)
+        {
+            var response = _service.Authenticate(model);
+
+            if (response == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            return Ok(response);
+        }
+
+        [Authorize]
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetUser(int id)
@@ -28,6 +41,7 @@ namespace API.Controllers
             return Ok(data);
         }
 
+        [Authorize]
         [HttpGet]
         [Route("all")]
         public IActionResult Users()
@@ -44,6 +58,7 @@ namespace API.Controllers
             return Ok(data);
         }
 
+        [Authorize]
         [HttpPut]
         [Route("update")]
         public IActionResult UpdateEvent([FromBody] UserDto model)
@@ -52,6 +67,7 @@ namespace API.Controllers
             return Ok(data);
         }
 
+        [Authorize]
         [HttpDelete]
         [Route("delete/{id}")]
         public IActionResult DeleteEvent(int id)

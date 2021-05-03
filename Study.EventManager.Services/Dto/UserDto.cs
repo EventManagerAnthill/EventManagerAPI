@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Study.EventManager.Services.Dto
 {
@@ -13,14 +14,20 @@ namespace Study.EventManager.Services.Dto
 
         public string Name { get; set; }
 
-        public string Patron { get; set; }
+        public string Middlename { get; set; }
 
-        public DateTime Birth { get; set; }
+        public DateTime BirthDate { get; set; }
 
         public string Email { get; set; }
 
         public string Phone { get; set; }
 
-        public UserType Sex { get; set; }        
+        public UserSex Sex { get; set; }
+
+        [JsonIgnore]
+        public string Username { get; set; }
+
+        [JsonIgnore]
+        public string Password { get; set; }
     }
 }

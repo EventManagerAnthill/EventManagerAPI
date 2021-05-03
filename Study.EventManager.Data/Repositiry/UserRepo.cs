@@ -8,8 +8,5 @@ namespace Study.EventManager.Data.Repositiry
 {
     public class UserRepo : AbstractRepo<User>, IUserRepo
     {
-        public UserRepo(EventManagerDbContext context)
-            : base(context)
-        { }
     }
 }

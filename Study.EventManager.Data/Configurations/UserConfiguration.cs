@@ -13,13 +13,15 @@ namespace Study.EventManager.Data.Configurations
         {
             builder.ToTable("User");
             builder.HasKey(o => o.Id);
-            builder.Property(t => t.Surname);
-            builder.Property(t => t.Name);
-            builder.Property(t => t.Patron);
-            builder.Property(t => t.Birth);
+            builder.Property(t => t.FirstName);
+            builder.Property(t => t.LastName);
+            builder.Property(t => t.Middlename);
+            builder.Property(t => t.BirthDate);
             builder.Property(t => t.Phone);
             builder.Property(t => t.Email);
             builder.Property(t => t.Sex);
+            builder.Property(t => t.Username);
+            builder.Property(t => t.Password);
         }
     }
 }

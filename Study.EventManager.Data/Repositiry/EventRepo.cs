@@ -7,10 +7,7 @@ using System.Text;
 namespace Study.EventManager.Data.Repositiry
 {
     public class EventRepo : AbstractRepo<Event>, IEventRepo
-    {
-        public EventRepo(EventManagerDbContext context)
-            :base(context)
-        { }
+    {   
     }
 }
 
