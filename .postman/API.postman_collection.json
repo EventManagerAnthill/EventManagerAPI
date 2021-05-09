@@ -195,7 +195,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"name\": \"Kirill\"}",
+							"raw": "{\r\n    \"FirstName\" : \"Kirill\",\r\n    \"LastName\" : \"Kuznetsov\",\r\n    \"MiddleName\": \"-\",\r\n    \"BirthDate\" : \"1997-06-06\",\r\n    \"Email\" : \"shyi2517@gmail.com\",\r\n    \"Phone\" : \"89896312329\",\r\n    \"Username\" : \"Shyi\",\r\n    \"Password\" : \"2517\"\r\n\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -203,13 +203,41 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/api/company",
+							"raw": "{{host}}/api/user",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"api",
-								"company"
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /authenticate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"Shyi\",\r\n    \"password\" : \"2517\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/user/authenticate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"authenticate"
 							]
 						}
 					},

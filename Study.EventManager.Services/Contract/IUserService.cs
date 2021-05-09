@@ -8,7 +8,7 @@ namespace Study.EventManager.Services.Contract
 {
     public interface IUserService
     {
-        AuthenticateResponseDto Authenticate(AuthenticateRequestDto model);
+        UserDto Authenticate(string username, string password);
         UserDto GetUser(int id);
         UserDto CreateUser(UserDto dto);
         UserDto UpdateUser(int id, UserDto dto);

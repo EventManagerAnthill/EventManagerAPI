@@ -5,7 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Study.EventManager.Helpers\Study.EventManager.Helpers.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.14" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Study.EventManager.Services\Study.EventManager.Services.csproj" />
   </ItemGroup>
 

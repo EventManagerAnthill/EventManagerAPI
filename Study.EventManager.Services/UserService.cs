@@ -16,31 +16,24 @@ namespace Study.EventManager.Services
 {
     public class UserService : IUserService
     {
-
         private IContextManager _contextManager;
-        private readonly AppSettings _appSettings;
 
         public UserService(IContextManager contextManager)
         {
             _contextManager = contextManager;
         }
 
-        private List<User> _users = new List<User>
+        public UserDto Authenticate(string username, string password)
         {
-            new User { Id = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test" }
-        };
+ 
+            var repo = _contextManager.CreateRepositiry<IUserRepo>();
+            var data = repo.GetAll();
+       
+            var user = data.SingleOrDefault(x => x.Username == username && x.Password == password);
 
-        public AuthenticateResponseDto Authenticate(AuthenticateRequestDto model)
-        {
-            var user = _users.SingleOrDefault(x => x.Username == model.Username && x.Password == model.Password);
-
-            // return null if user not found
             if (user == null) return null;
-
-            // authentication successful so generate jwt token
-            var token = generateJwtToken(user);
-
-            return new AuthenticateResponseDto(user, token);
+            var result = MapToDto(user);
+            return result;
         }
 
         public UserDto GetUser(int id)
@@ -65,8 +58,8 @@ namespace Study.EventManager.Services
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var data = repo.GetById(id);
 
-            data.FirstName = dto.Surname;
-            data.LastName = dto.Name;
+            data.FirstName = dto.FirstName;
+            data.LastName = dto.LastName;
             data.Middlename = dto.Middlename;
             data.BirthDate = dto.BirthDate;
             data.Email = dto.Email;
@@ -101,51 +94,29 @@ namespace Study.EventManager.Services
             return new UserDto
             {
                 Id = entity.Id,
-                Surname = entity.FirstName,
-                Name = entity.LastName,                
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,                
                 Middlename = entity.Middlename,
                 BirthDate = entity.BirthDate,
                 Email = entity.Email,
                 Phone = entity.Phone,
                 Sex = entity.Sex,
-                Username = entity.Username,
-                Password = entity.Password
+                Username = entity.Username
             };
         }
         private User MapToEntity(UserDto dto)
         {
             return new User
             {
-                FirstName = dto.Surname,
-                LastName = dto.Name,
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
                 Middlename = dto.Middlename,
                 BirthDate = dto.BirthDate,
                 Email = dto.Email,
                 Phone = dto.Phone,
                 Sex = dto.Sex,
-                Username = dto.Username,
-                Password = dto.Password
+                Username = dto.Username
             };
-        }
-
-        private string generateJwtToken(User user)
-        {
-            // generate token that is valid for 7 days
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-      
-        public UserService(IOptions<AppSettings> appSettings)
-        {
-            _appSettings = appSettings.Value;
-        }
+        }      
     }
 }

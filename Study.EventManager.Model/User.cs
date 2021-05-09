@@ -24,10 +24,8 @@ namespace Study.EventManager.Model
 
         public UserSex Sex { get; set; }
 
-        [JsonIgnore]
         public string Username { get; set; }
 
-        [JsonIgnore]
         public string Password { get; set; }       
     }
 }

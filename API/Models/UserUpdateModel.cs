@@ -1,15 +1,13 @@
 ﻿using Study.EventManager.Model.Enums;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace Study.EventManager.Services.Dto
+namespace API.Models
 {
-    public class UserDto
-    { 
-        public int Id { get; set; }
-
+    public class UserUpdateModel
+    {
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -23,7 +21,5 @@ namespace Study.EventManager.Services.Dto
         public string Phone { get; set; }
 
         public UserSex Sex { get; set; }
-
-        public string Username { get; set; }
     }
 }
