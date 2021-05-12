@@ -1,12 +1,10 @@
-﻿using Study.EventManager.Model.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace API.Models
+namespace Study.EventManager.Services.Dto
 {
-    public class UserCreateModel
+    public class UserCreateDto
     {
         public string FirstName { get; set; }
 

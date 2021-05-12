@@ -8,6 +8,17 @@ namespace Study.EventManager.Model
 {
     public class User
     {
+        public User()
+        { }
+
+        public User(string userName, string passWord, string firstName, string lastName, string email) 
+        {
+            Username = userName;
+            Password = passWord;
+            FirstName = firstName;
+            LastName = lastName;
+            Email = email;
+        }
         public int Id { get; set; }
 
         public string FirstName { get; set; }

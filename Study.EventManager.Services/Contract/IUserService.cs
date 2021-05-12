@@ -10,8 +10,8 @@ namespace Study.EventManager.Services.Contract
     {
         UserDto Authenticate(string username, string password);
         UserDto GetUser(int id);
-        UserDto CreateUser(UserDto dto);
-        UserDto UpdateUser(int id, UserDto dto);
+        UserDto CreateUser(UserCreateDto dto);
+        UserDto UpdateUser(int id, UserDto model);
         IEnumerable<UserDto> GetAll();
         void DeleteUser(int id);
     }

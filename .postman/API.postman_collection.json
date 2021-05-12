@@ -195,7 +195,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"FirstName\" : \"Kirill\",\r\n    \"LastName\" : \"Kuznetsov\",\r\n    \"MiddleName\": \"-\",\r\n    \"BirthDate\" : \"1997-06-06\",\r\n    \"Email\" : \"shyi2517@gmail.com\",\r\n    \"Phone\" : \"89896312329\",\r\n    \"Username\" : \"Shyi\",\r\n    \"Password\" : \"2517\"\r\n\r\n}",
+							"raw": "{\r\n    \"FirstName\" : \"Slava\",\r\n    \"LastName\" : \"Yarkin\",\r\n    \"Email\" : \"Yarkin@gmail.com\",\r\n    \"Username\" : \"Slava\",\r\n    \"Password\" : \"2841\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -223,6 +223,34 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"username\" : \"Shyi\",\r\n    \"password\" : \"2517\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/user/authenticate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /authenticate second user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\" : \"Slava\",\r\n    \"password\" : \"2841\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

@@ -27,10 +27,7 @@ namespace Study.EventManager.Services
         {
  
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var data = repo.GetAll();
-       
-            var user = data.SingleOrDefault(x => x.Username == username && x.Password == password);
-
+            var user = repo.GetByUserName(username, password);
             if (user == null) return null;
             var result = MapToDto(user);
             return result;
@@ -44,10 +41,11 @@ namespace Study.EventManager.Services
             return result;
         }
 
-        public UserDto CreateUser(UserDto dto)
+        public UserDto CreateUser(UserCreateDto dto)
         {
-            var entity = MapToEntity(dto);
-            var repo = _contextManager.CreateRepositiry<IUserRepo>();
+            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email);
+            //var entity = MapToEntity(dto);
+            var repo = _contextManager.CreateRepositiry<IUserRepo>();           
             repo.Add(entity);
             _contextManager.Save();
             return MapToDto(entity);
@@ -95,27 +93,20 @@ namespace Study.EventManager.Services
             {
                 Id = entity.Id,
                 FirstName = entity.FirstName,
-                LastName = entity.LastName,                
-                Middlename = entity.Middlename,
-                BirthDate = entity.BirthDate,
-                Email = entity.Email,
-                Phone = entity.Phone,
-                Sex = entity.Sex,
+                LastName = entity.LastName,                                
+                Email = entity.Email,         
                 Username = entity.Username
             };
         }
-        private User MapToEntity(UserDto dto)
+        private User MapToEntity(UserCreateDto dto)
         {
             return new User
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
-                Middlename = dto.Middlename,
-                BirthDate = dto.BirthDate,
                 Email = dto.Email,
-                Phone = dto.Phone,
-                Sex = dto.Sex,
-                Username = dto.Username
+                Username = dto.Username,
+                Password = dto.Password
             };
         }      
     }

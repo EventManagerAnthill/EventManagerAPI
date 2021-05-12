@@ -81,22 +81,18 @@ namespace API.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("")]
-        public IActionResult CreateUser([FromBody] UserDto model)
+        public IActionResult CreateUser([FromBody] UserCreateModel model)
         {
-            var userDto = new UserDto
+            var userCreateDto = new UserCreateDto
             {
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                Middlename = model.Middlename,
-                BirthDate = model.BirthDate,
-                Phone = model.Phone,
                 Email = model.Email,
-                Sex = model.Sex,
-                //Username = model.Username,
-               // Password = model.Password
+                Username = model.Username,
+                Password = model.Password,
             };
 
-            var data = _service.CreateUser(model);
+            var data = _service.CreateUser(userCreateDto);
             return Ok(data);
         }
 
