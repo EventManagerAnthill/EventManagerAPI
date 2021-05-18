@@ -11,7 +11,7 @@ namespace Study.EventManager.Data.Repositiry
     {
         public User GetByUserName(string userName, string password)
         {
-            var user = _eventManagerContext.Set<User>().FirstOrDefault(x=>x.Username == userName && x.Password == password);
+            var user = _eventManagerContext.Set<User>().FirstOrDefault(x => x.Username == userName && x.Password == password);
             return user;
         }
     }

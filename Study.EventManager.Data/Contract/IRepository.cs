@@ -12,7 +12,7 @@ namespace Study.EventManager.Data.Contract
 
     }
     public interface IRepository<TEntity> : IRepository
-        where TEntity : class, new()
+        where TEntity : class
     {
         TEntity GetById(int id);
 

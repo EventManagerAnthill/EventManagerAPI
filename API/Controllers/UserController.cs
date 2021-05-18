@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
+using Study.EventManager.Services.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -29,7 +30,7 @@ namespace API.Controllers
             _service = service;
             _authOptions = config.GetSection("AuthOptions").Get<AuthOptions>();
         }
-        
+
         private IEnumerable<Claim> GetClaims(UserDto user)
         {
             return new[]
@@ -42,24 +43,32 @@ namespace API.Controllers
         [HttpPost("authenticate")]
         public IActionResult Authenticate(AuthenticateRequestModel model)
         {
-            var user = _service.Authenticate(model.Username, model.Password);
-            var now = DateTime.UtcNow;
-            var jwt = new JwtSecurityToken(
-                 issuer: _authOptions.Issuer,
-                 audience: _authOptions.Audience,
-                 notBefore: now,
-                 claims: GetClaims(user),
-                 expires: now.Add(TimeSpan.FromMinutes(_authOptions.LifeTime)),
-                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(_authOptions.SecretKey), SecurityAlgorithms.HmacSha256));
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-            var response = new
+            try
             {
-                access_token = encodedJwt,
-                username = user.Username
-            };
-   
-            return Ok(response);
+                var user = _service.Authenticate(model.Username, model.Password);
+
+                var now = DateTime.UtcNow;
+                var jwt = new JwtSecurityToken(
+                     issuer: _authOptions.Issuer,
+                     audience: _authOptions.Audience,
+                     notBefore: now,
+                     claims: GetClaims(user),
+                     expires: now.Add(TimeSpan.FromMinutes(_authOptions.LifeTime)),
+                     signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(_authOptions.SecretKey), SecurityAlgorithms.HmacSha256));
+                var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+                var response = new
+                {
+                    access_token = encodedJwt,
+                    username = user.Username
+                };
+
+                return Ok(response);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
@@ -83,6 +92,11 @@ namespace API.Controllers
         [Route("")]
         public IActionResult CreateUser([FromBody] UserCreateModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var userCreateDto = new UserCreateDto
             {
                 FirstName = model.FirstName,

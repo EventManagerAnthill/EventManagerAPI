@@ -1,24 +1,31 @@
 ﻿using Study.EventManager.Model.Enums;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
+[assembly: InternalsVisibleToAttribute("Study.EventManager.Services")]
 
 namespace Study.EventManager.Model
 {
+    
     public class User
     {
-        public User()
+        internal User()
         { }
 
         public User(string userName, string passWord, string firstName, string lastName, string email) 
         {
+            if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException("userName");
+
             Username = userName;
             Password = passWord;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
+            IsVerified = false;
         }
+
         public int Id { get; set; }
 
         public string FirstName { get; set; }
@@ -38,5 +45,7 @@ namespace Study.EventManager.Model
         public string Username { get; set; }
 
         public string Password { get; set; }       
+
+        public bool IsVerified { get; set; }
     }
 }

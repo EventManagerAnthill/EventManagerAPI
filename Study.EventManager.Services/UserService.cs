@@ -4,6 +4,7 @@ using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
+using Study.EventManager.Services.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -25,10 +26,25 @@ namespace Study.EventManager.Services
 
         public UserDto Authenticate(string username, string password)
         {
- 
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repo.GetByUserName(username, password);
-            if (user == null) return null;
+            
+            if (user == null)
+            {
+                throw new ValidationException("Incorrect Username/Password combination");                
+            }
+
+            if (user.IsVerified)
+            {
+                throw new ValidationException("Email incorrect");
+
+            }
+
+            if (user.Email == null)
+            {
+                throw new ValidationException("Email incorrect");
+            }
+
             var result = MapToDto(user);
             return result;
         }
@@ -53,6 +69,8 @@ namespace Study.EventManager.Services
 
         public UserDto UpdateUser(int id, UserDto dto)
         {
+            ValidateUser(dto);
+
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var data = repo.GetById(id);
 
@@ -83,6 +101,16 @@ namespace Study.EventManager.Services
             return data.Select(x => MapToDto(x)).ToList();
         }
 
+        //public void VerifyEmail(string email, string verificationCode)
+        //{
+        //    const string secretKey = "adsghfd;flasghsd;lgndfsgndfklngfsde";
+        //    var email = "aaa@gmail.com";
+        //    var validTo = "2021-05-20";
+        //    var toVerifyCode = hash(email + "_" + validTo+ "_" + secretKey);
+
+        //    "https://site.com/validateUser?email=aaa@gmail.com&validTo=2021-05-21&code={toVerifyCode}";
+        //}
+
         private UserDto MapToDto(User entity)
         {
             if (entity == null)
@@ -108,6 +136,15 @@ namespace Study.EventManager.Services
                 Username = dto.Username,
                 Password = dto.Password
             };
-        }      
+        }
+
+        private void ValidateUser(UserDto dto)
+        {
+            if (dto.Email == null)
+            {
+                throw new ValidationException("Email incorrect");
+            }
+        }
+
     }
 }

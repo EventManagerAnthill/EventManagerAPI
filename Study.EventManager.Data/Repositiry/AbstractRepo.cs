@@ -7,7 +7,8 @@ using System.Text;
 
 namespace Study.EventManager.Data.Repositiry
 {
-    public abstract class AbstractRepo<TEntity> : IRepository<TEntity> where TEntity : class, new()
+    public abstract class AbstractRepo<TEntity> : IRepository<TEntity> 
+        where TEntity : class
     {
         protected EventManagerDbContext _eventManagerContext;
 
