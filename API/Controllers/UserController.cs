@@ -35,7 +35,7 @@ namespace API.Controllers
         {
             return new[]
             {
-                new Claim(ClaimTypes.NameIdentifier , user.Username)
+                new Claim(ClaimTypes.NameIdentifier , user.LastName)
             };
         }
 
@@ -45,7 +45,7 @@ namespace API.Controllers
         {
             try
             {
-                var user = _service.Authenticate(model.Username, model.Password);
+                var user = _service.Authenticate(model.Email, model.Password);
 
                 var now = DateTime.UtcNow;
                 var jwt = new JwtSecurityToken(
@@ -60,7 +60,7 @@ namespace API.Controllers
                 var response = new
                 {
                     access_token = encodedJwt,
-                    username = user.Username
+                    username = user.Email
                 };
 
                 return Ok(response);
@@ -96,6 +96,11 @@ namespace API.Controllers
             {
                 return BadRequest(ModelState);
             }
+       
+            if (string.IsNullOrEmpty(model.FirstName) || string.IsNullOrEmpty(model.LastName) || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password)) 
+            {
+                throw new ValidationException("fill in all required fields");
+            }
 
             var userCreateDto = new UserCreateDto
             {
@@ -122,7 +127,7 @@ namespace API.Controllers
                 Middlename = model.Middlename,
                 BirthDate = model.BirthDate,
                 Phone = model.Phone,
-                Email = model.Email,
+                Email = model.Username,
                 Sex = model.Sex
             };
 

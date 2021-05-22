@@ -18,9 +18,8 @@ namespace API.Models
         public string Middlename { get; set; }
 
         public DateTime BirthDate { get; set; }
-
-        [Required]
-        public string Email { get; set; }
+       
+        public string Username { get; set; }
 
         public string Phone { get; set; }
 

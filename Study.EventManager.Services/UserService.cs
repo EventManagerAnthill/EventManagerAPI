@@ -34,17 +34,17 @@ namespace Study.EventManager.Services
                 throw new ValidationException("Incorrect Username/Password combination");                
             }
 
-            if (user.IsVerified)
+            if (!user.IsVerified)
             {
-                throw new ValidationException("Email incorrect");
-
+                throw new ValidationException("Email not verified");
             }
 
-            if (user.Email == null)
+            if (string.IsNullOrEmpty(user.Password))
             {
-                throw new ValidationException("Email incorrect");
+                throw new ValidationException("Password is incorect");
             }
 
+            ValidateUser(user.FirstName, user.LastName, user.Email);
             var result = MapToDto(user);
             return result;
         }
@@ -59,8 +59,9 @@ namespace Study.EventManager.Services
 
         public UserDto CreateUser(UserCreateDto dto)
         {
+            ValidateUser(dto.FirstName, dto.LastName, dto.Email);
+
             User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email);
-            //var entity = MapToEntity(dto);
             var repo = _contextManager.CreateRepositiry<IUserRepo>();           
             repo.Add(entity);
             _contextManager.Save();
@@ -69,7 +70,7 @@ namespace Study.EventManager.Services
 
         public UserDto UpdateUser(int id, UserDto dto)
         {
-            ValidateUser(dto);
+            ValidateUser(dto.FirstName, dto.LastName, dto.Email);
 
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var data = repo.GetById(id);
@@ -111,6 +112,19 @@ namespace Study.EventManager.Services
         //    "https://site.com/validateUser?email=aaa@gmail.com&validTo=2021-05-21&code={toVerifyCode}";
         //}
 
+        public void ValidateUser(string FirstName, string LastName, string Email)
+        {
+            if (Email == null)
+            {
+                throw new ValidationException("Email is incorect");
+            }
+
+            if (string.IsNullOrEmpty(FirstName) || string.IsNullOrEmpty(LastName))
+            {
+                throw new ValidationException("FirstName or FirstName is incorect");
+            }
+        }
+
         private UserDto MapToDto(User entity)
         {
             if (entity == null)
@@ -137,14 +151,5 @@ namespace Study.EventManager.Services
                 Password = dto.Password
             };
         }
-
-        private void ValidateUser(UserDto dto)
-        {
-            if (dto.Email == null)
-            {
-                throw new ValidationException("Email incorrect");
-            }
-        }
-
     }
 }

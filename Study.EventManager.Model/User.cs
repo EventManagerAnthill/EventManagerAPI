@@ -1,6 +1,7 @@
 ﻿using Study.EventManager.Model.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -16,7 +17,8 @@ namespace Study.EventManager.Model
 
         public User(string userName, string passWord, string firstName, string lastName, string email) 
         {
-            if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException("userName");
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) || string.IsNullOrEmpty(passWord))
+                throw new ArgumentNullException("userName");
 
             Username = userName;
             Password = passWord;
@@ -28,14 +30,17 @@ namespace Study.EventManager.Model
 
         public int Id { get; set; }
 
+        [Required]
         public string FirstName { get; set; }
 
+        [Required]
         public string LastName { get; set; }
 
         public string Middlename { get; set; }
 
         public DateTime BirthDate { get; set; }
 
+        [Required]
         public string Email { get; set; }
 
         public string Phone { get; set; }
@@ -44,6 +49,7 @@ namespace Study.EventManager.Model
 
         public string Username { get; set; }
 
+        [Required]
         public string Password { get; set; }       
 
         public bool IsVerified { get; set; }
