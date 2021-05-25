@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MailService.WebApi.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using System;
@@ -15,6 +16,7 @@ namespace Study.EventManager.Services
             serviceCollection.AddScoped<ICompanyService, CompanyService>();
             serviceCollection.AddScoped<IEventService, EventService>();
             serviceCollection.AddScoped<IUserService, UserService>();
+            serviceCollection.AddTransient<IEmailService, EmailService>();
         }
     } 
 }

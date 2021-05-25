@@ -9,9 +9,9 @@ namespace Study.EventManager.Data.Repositiry
 {
     public class UserRepo : AbstractRepo<User>, IUserRepo
     {
-        public User GetByUserName(string userName, string password)
+        public User GetByUserName(string email, string password)
         {
-            var user = _eventManagerContext.Set<User>().FirstOrDefault(x => x.Username == userName && x.Password == password);
+            var user = _eventManagerContext.Set<User>().FirstOrDefault(x => x.Email == email && x.Password == password);
             return user;
         }
     }

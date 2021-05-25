@@ -24,10 +24,10 @@ namespace Study.EventManager.Services
             _contextManager = contextManager;
         }
 
-        public UserDto Authenticate(string username, string password)
+        public UserDto Authenticate(string email, string password)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repo.GetByUserName(username, password);
+            var user = repo.GetByUserName(email, password);
             
             if (user == null)
             {
@@ -39,10 +39,6 @@ namespace Study.EventManager.Services
                 throw new ValidationException("Email not verified");
             }
 
-            if (string.IsNullOrEmpty(user.Password))
-            {
-                throw new ValidationException("Password is incorect");
-            }
 
             ValidateUser(user.FirstName, user.LastName, user.Email);
             var result = MapToDto(user);
@@ -121,7 +117,7 @@ namespace Study.EventManager.Services
 
             if (string.IsNullOrEmpty(FirstName) || string.IsNullOrEmpty(LastName))
             {
-                throw new ValidationException("FirstName or FirstName is incorect");
+                throw new ValidationException("FirstName or LastName incorect");
             }
         }
 
