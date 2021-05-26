@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MailService.WebApi.Settings
+namespace Study.EventManager.Services
 {
     public class EmailSettings
     {

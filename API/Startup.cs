@@ -37,6 +37,8 @@ namespace API
             services.AddControllers();            
             var authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
 
+            
+
             services.AddAuthentication()
                   .AddJwtBearer(options =>
                   {

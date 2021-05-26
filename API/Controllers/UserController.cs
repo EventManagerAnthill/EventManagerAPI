@@ -23,6 +23,7 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _service;
+        
         private AuthOptions _authOptions;
 
         public UserController(IUserService service, IConfiguration config)
@@ -92,16 +93,6 @@ namespace API.Controllers
         [Route("")]
         public IActionResult CreateUser([FromBody] UserCreateModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-       
-            if (string.IsNullOrEmpty(model.FirstName) || string.IsNullOrEmpty(model.LastName) || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password)) 
-            {
-                throw new ValidationException("fill in all required fields");
-            }
-
             var userCreateDto = new UserCreateDto
             {
                 FirstName = model.FirstName,

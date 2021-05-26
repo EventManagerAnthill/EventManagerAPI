@@ -5,9 +5,11 @@ using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
+using Study.EventManager.Services.Wrappers.Contracts;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -15,12 +17,14 @@ using System.Text;
 
 namespace Study.EventManager.Services
 {
-    public class UserService : IUserService
+    internal class UserService : IUserService
     {
+        private IEmailWrapper _emailWrapper;
         private IContextManager _contextManager;
 
-        public UserService(IContextManager contextManager)
+        public UserService(IContextManager contextManager, IEmailWrapper emailWrapper)
         {
+            _emailWrapper = emailWrapper;
             _contextManager = contextManager;
         }
 
@@ -28,10 +32,10 @@ namespace Study.EventManager.Services
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repo.GetByUserName(email, password);
-            
+
             if (user == null)
             {
-                throw new ValidationException("Incorrect Username/Password combination");                
+                throw new ValidationException("Incorrect Username/Password combination");
             }
 
             if (!user.IsVerified)
@@ -58,9 +62,12 @@ namespace Study.EventManager.Services
             ValidateUser(dto.FirstName, dto.LastName, dto.Email);
 
             User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email);
-            var repo = _contextManager.CreateRepositiry<IUserRepo>();           
+            var repo = _contextManager.CreateRepositiry<IUserRepo>();
             repo.Add(entity);
             _contextManager.Save();
+            
+            SendWelcomeEmail(dto);
+
             return MapToDto(entity);
         }
 
@@ -78,6 +85,7 @@ namespace Study.EventManager.Services
             data.Email = dto.Email;
             data.Phone = dto.Phone;
             data.Sex = dto.Sex;
+
 
             _contextManager.Save();
             return MapToDto(data);
@@ -121,6 +129,28 @@ namespace Study.EventManager.Services
             }
         }
 
+        private void SendWelcomeEmail(UserCreateDto dto)
+        {
+            string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
+            StreamReader str = new StreamReader(FilePath);
+            string MailText = str.ReadToEnd();
+            str.Close();
+
+            var mailText = MailText.Replace("[username]", dto.FirstName + dto.LastName).Replace("[email]", dto.Email);
+
+            // send email 
+            var emailModel = new EmailDto
+            {
+                Subject = $"Welcome {dto.Email}",
+                Body = mailText,
+                ToAddress = dto.Email,
+                ToName = dto.Username
+            };
+
+            _emailWrapper.SendEmail(emailModel);
+            
+        }
+
         private UserDto MapToDto(User entity)
         {
             if (entity == null)
@@ -131,8 +161,8 @@ namespace Study.EventManager.Services
             {
                 Id = entity.Id,
                 FirstName = entity.FirstName,
-                LastName = entity.LastName,                                
-                Email = entity.Email,         
+                LastName = entity.LastName,
+                Email = entity.Email,
                 Username = entity.Username
             };
         }
