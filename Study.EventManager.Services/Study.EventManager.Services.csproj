@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <Content Include="Resources\WelcomeTemplate.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

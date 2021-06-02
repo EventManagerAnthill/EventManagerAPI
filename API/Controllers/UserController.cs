@@ -61,7 +61,7 @@ namespace API.Controllers
                 var response = new
                 {
                     access_token = encodedJwt,
-                    username = user.Email
+                    emmail = user.Email
                 };
 
                 return Ok(response);
@@ -93,17 +93,24 @@ namespace API.Controllers
         [Route("")]
         public IActionResult CreateUser([FromBody] UserCreateModel model)
         {
-            var userCreateDto = new UserCreateDto
+            try
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-                Username = model.Username,
-                Password = model.Password,
-            };
+                var userCreateDto = new UserCreateDto
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Username = model.Username,
+                    Password = model.Password,
+                };
 
-            var data = _service.CreateUser(userCreateDto);
-            return Ok(data);
+                var data = _service.CreateUser(userCreateDto);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]

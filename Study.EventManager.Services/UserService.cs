@@ -12,8 +12,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-
+using System.Web;
 
 namespace Study.EventManager.Services
 {
@@ -21,6 +22,7 @@ namespace Study.EventManager.Services
     {
         private IEmailWrapper _emailWrapper;
         private IContextManager _contextManager;
+        const string secretKey = "emailVerificationHash";
 
         public UserService(IContextManager contextManager, IEmailWrapper emailWrapper)
         {
@@ -31,7 +33,7 @@ namespace Study.EventManager.Services
         public UserDto Authenticate(string email, string password)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repo.GetByUserName(email, password);
+            var user = repo.GetByUserEmail(email, password);
 
             if (user == null)
             {
@@ -40,7 +42,7 @@ namespace Study.EventManager.Services
 
             if (!user.IsVerified)
             {
-                throw new ValidationException("Email not verified");
+                //   throw new ValidationException("Email not verified");
             }
 
 
@@ -61,11 +63,19 @@ namespace Study.EventManager.Services
         {
             ValidateUser(dto.FirstName, dto.LastName, dto.Email);
 
-            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email);
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
+
+            var permit = repo.FindEmail(dto.Email);
+
+            if (permit)
+            {
+                throw new ValidationException("User with email address <" + dto.Email + "> is already exists.");
+            }
+
+            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email);
             repo.Add(entity);
             _contextManager.Save();
-            
+
             SendWelcomeEmail(dto);
 
             return MapToDto(entity);
@@ -106,15 +116,70 @@ namespace Study.EventManager.Services
             return data.Select(x => MapToDto(x)).ToList();
         }
 
-        //public void VerifyEmail(string email, string verificationCode)
-        //{
-        //    const string secretKey = "adsghfd;flasghsd;lgndfsgndfklngfsde";
-        //    var email = "aaa@gmail.com";
-        //    var validTo = "2021-05-20";
-        //    var toVerifyCode = hash(email + "_" + validTo+ "_" + secretKey);
+        public string GetUrlToVerifyEmail(string email)
+        {
+            
+            /*            var validTo = "2021-05-20";
+                        var toVerifyCode = hash(email + "_" + validTo + "_" + secretKey);
 
-        //    "https://site.com/validateUser?email=aaa@gmail.com&validTo=2021-05-21&code={toVerifyCode}";
-        //}
+                        //https://apievent.azurewebsites.net/validateUser?email=aaa@gmail.com&validTo=2021-05-21&code={toVerifyCode}";
+            */
+
+            string hashUrl = GetHashString(secretKey+email);
+            var date = DateTime.Today;
+            date.AddDays(7);
+
+            string url = "https://apievent.azurewebsites.net/api/user/validateUser?email=" + email + "&validTo=" + date + "&code={"+ hashUrl + "}";
+
+            return url;
+        }
+
+        public bool VerifyUrlEmail(string url)
+        {
+            var date = DateTime.Today;
+            int idx = url.IndexOf('?');
+            string query = idx >= 0 ? url.Substring(idx) : "";
+
+            var validTo = HttpUtility.ParseQueryString(query).Get("validTo");
+            DateTime(validTo);
+
+            if ( validTo < date)
+            {
+
+            }
+
+            var email = HttpUtility.ParseQueryString(query).Get("email");
+            var code = HttpUtility.ParseQueryString(query).Get("code");
+            string hashUrl = "{" + GetHashString(secretKey + email) + "}";
+
+            if (code == hashUrl)
+            {
+                return true;
+            }
+            return false;
+        }
+
+
+        string GetHashString(string s)
+        {
+            //переводим строку в байт-массим  
+            byte[] bytes = Encoding.Unicode.GetBytes(s);
+
+            //создаем объект для получения средст шифрования  
+            MD5CryptoServiceProvider CSP =
+                new MD5CryptoServiceProvider();
+
+            //вычисляем хеш-представление в байтах  
+            byte[] byteHash = CSP.ComputeHash(bytes);
+
+            string hash = string.Empty;
+
+            //формируем одну цельную строку из массива  
+            foreach (byte b in byteHash)
+                hash += string.Format("{0:x2}", b);
+
+            return hash;
+        }
 
         public void ValidateUser(string FirstName, string LastName, string Email)
         {
@@ -131,6 +196,7 @@ namespace Study.EventManager.Services
 
         private void SendWelcomeEmail(UserCreateDto dto)
         {
+           // string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
             string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
