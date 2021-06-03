@@ -29,13 +29,15 @@ namespace API
          
         public IConfiguration Configuration { get; }
 
-        private Settings _settings;
+        private Settings _settings; 
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();            
             var authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
+
+            
 
             services.AddAuthentication()
                   .AddJwtBearer(options =>

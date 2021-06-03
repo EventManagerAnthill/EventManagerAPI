@@ -23,6 +23,7 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _service;
+        
         private AuthOptions _authOptions;
 
         public UserController(IUserService service, IConfiguration config)
@@ -60,7 +61,7 @@ namespace API.Controllers
                 var response = new
                 {
                     access_token = encodedJwt,
-                    username = user.Email
+                    emmail = user.Email
                 };
 
                 return Ok(response);
@@ -92,27 +93,24 @@ namespace API.Controllers
         [Route("")]
         public IActionResult CreateUser([FromBody] UserCreateModel model)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
-       
-            if (string.IsNullOrEmpty(model.FirstName) || string.IsNullOrEmpty(model.LastName) || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.Password)) 
-            {
-                throw new ValidationException("fill in all required fields");
-            }
+                var userCreateDto = new UserCreateDto
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Username = model.Username,
+                    Password = model.Password,
+                };
 
-            var userCreateDto = new UserCreateDto
+                var data = _service.CreateUser(userCreateDto);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-                Username = model.Username,
-                Password = model.Password,
-            };
-
-            var data = _service.CreateUser(userCreateDto);
-            return Ok(data);
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
