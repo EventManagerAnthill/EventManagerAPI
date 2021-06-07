@@ -15,6 +15,6 @@ namespace Study.EventManager.Services.Contract
         IEnumerable<UserDto> GetAll();
         void DeleteUser(int id);
         string GetUrlToVerifyEmail(string email);
-        bool VerifyUrlEmail(string url);
+        string VerifyUrlEmail(string email, string code);
     }
 }

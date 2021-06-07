@@ -27,7 +27,7 @@ namespace Study.EventManager.Services.Test
             _userService = serviceProvider.GetService<IUserService>();
         }
 
-/*       [TestMethod]
+        [TestMethod]
         public void CreateUserTest()
         {
             //arrange
@@ -36,7 +36,7 @@ namespace Study.EventManager.Services.Test
                 Email = "shyi2517@gmail.com",
                 FirstName = "test",
                 LastName = "test",
-                Password = "123456",
+                Password = "test",
             };
 
             //act             
@@ -44,16 +44,21 @@ namespace Study.EventManager.Services.Test
 
             //assert
             Assert.AreNotEqual(0, result.Id);
-        }*/
-
-        [TestMethod]
-        public void VerifyEmailTest()
-        {            
-           var urlEmail =  _userService.GetUrlToVerifyEmail("shyi2517@gmail.com");
-
-           var isvalid = _userService.VerifyUrlEmail(urlEmail);
-
         }
 
+        /*        [TestMethod]
+                public void VerifyEmailTest()
+                {            
+                   var urlEmail =  _userService.GetUrlToVerifyEmail("shyi2517@gmail.com");
+
+                  var isvalid = _userService.VerifyUrlEmail(urlEmail, "asdsad");
+
+                }*/
+
+        /*        [TestMethod]
+                public void VerifyEmailTest()
+                {
+                    var urlEmail = _userService.VerifyUrlEmail("shyi2517@gmail.com", "sadasd");           
+                }    */
     }
 }

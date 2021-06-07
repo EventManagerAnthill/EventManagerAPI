@@ -7,9 +7,9 @@ namespace Study.EventManager.Data.Contract
 {
     public interface IUserRepo : IRepository<User>
     {
-        User GetByUserEmail(string email, string password);
+        User GetByUserEmailPassword(string email, string password);
 
-        bool FindEmail(string email);
+        User GetByUserEmail(string email);
     }
 }
 

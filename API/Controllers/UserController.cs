@@ -23,7 +23,7 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _service;
-        
+
         private AuthOptions _authOptions;
 
         public UserController(IUserService service, IConfiguration config)
@@ -61,7 +61,7 @@ namespace API.Controllers
                 var response = new
                 {
                     access_token = encodedJwt,
-                    emmail = user.Email
+                    email = user.Email
                 };
 
                 return Ok(response);
@@ -88,6 +88,32 @@ namespace API.Controllers
             return Ok(data);
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        [Route("validateUser")]
+        public IActionResult ValidateUser(string email, string validTo, string code)
+        {            
+            try
+            {
+                var date = DateTime.Today;
+
+                var validDT = DateTime.ParseExact(validTo, "dd.MM.yyyy", null);
+
+                if (validDT < date)
+                {
+                    return BadRequest("url expired");
+                }
+
+                var IsVerified = _service.VerifyUrlEmail(email, code); 
+
+                return Ok(IsVerified);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+   
         [AllowAnonymous]
         [HttpPost]
         [Route("")]

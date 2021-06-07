@@ -25,7 +25,7 @@ namespace Study.EventManager.Model
             FirstName = firstName;
             LastName = lastName;
             Email = email;
-            IsVerified = true;
+            IsVerified = false;
         }
 
         public int Id { get; set; }
