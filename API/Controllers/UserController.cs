@@ -72,6 +72,71 @@ namespace API.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [HttpPost("restorePassword")]
+        public IActionResult ValidateUser(string email, string validTo, string code)
+        {
+            try
+            {
+                var date = DateTime.Today;
+
+                var validDT = DateTime.ParseExact(validTo, "dd.MM.yyyy", null);
+
+                if (validDT < date)
+                {
+                    return BadRequest("url expired");
+                }
+
+                var IsVerified = _service.VerifyUrlEmail(email, code);
+
+                return Ok(IsVerified);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("sendRestoreEmail")]
+        public IActionResult SendRestoreEmail(string email)
+        {
+            try
+            {
+                _service.sendRestoreEmail(email); 
+                return Ok("link to restore your password sent to email");
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("restorePassword")]
+        public IActionResult restorePass(string email, string validTo, string code, string password)
+        {                       
+            try
+            {
+                var date = DateTime.Today;
+
+                var validDT = DateTime.ParseExact(validTo, "dd.MM.yyyy", null);
+
+                if (validDT < date)
+                {
+                    return BadRequest("url expired");
+                }
+
+               var response = _service.restorePass(email, password, code);
+
+                return Ok(response);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+    
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetUser(int id)
@@ -87,33 +152,7 @@ namespace API.Controllers
             var data = _service.GetAll();
             return Ok(data);
         }
-
-        [AllowAnonymous]
-        [HttpGet]
-        [Route("validateUser")]
-        public IActionResult ValidateUser(string email, string validTo, string code)
-        {            
-            try
-            {
-                var date = DateTime.Today;
-
-                var validDT = DateTime.ParseExact(validTo, "dd.MM.yyyy", null);
-
-                if (validDT < date)
-                {
-                    return BadRequest("url expired");
-                }
-
-                var IsVerified = _service.VerifyUrlEmail(email, code); 
-
-                return Ok(IsVerified);
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-   
+                 
         [AllowAnonymous]
         [HttpPost]
         [Route("")]
@@ -166,5 +205,6 @@ namespace API.Controllers
             _service.DeleteUser(id);
             return Ok("successful user delete");
         }
+
     }
 }

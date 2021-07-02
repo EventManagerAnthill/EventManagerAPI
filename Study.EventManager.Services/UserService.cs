@@ -61,7 +61,7 @@ namespace Study.EventManager.Services
         public UserDto CreateUser(UserCreateDto dto)
         {
            ValidateUser(dto.FirstName, dto.LastName, dto.Email);
-            SendWelcomeEmail(dto);
+           SendWelcomeEmail(dto);
 
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
 
@@ -98,6 +98,59 @@ namespace Study.EventManager.Services
             return MapToDto(data);
         }
 
+        public string restorePass(string email, string password, string code)
+        {
+            string hashUrl = "{" + GetHashString(secretKey + email) + "}";
+
+            if (code == hashUrl)
+            {
+                var repo = _contextManager.CreateRepositiry<IUserRepo>();
+                var user = repo.GetByUserEmail(email);
+
+                if (user.Password == password)
+                {
+                    return "The new password cannot be the same as the previous one";
+                }
+                user.Password = password;
+                _contextManager.Save();
+
+                return "password is restored";
+            }
+            return "it is not possible to restore password";
+        }
+
+        public void sendRestoreEmail(string email)
+        {
+            var repo = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repo.GetByUserEmail(email);
+
+            if (user == null)
+            {
+                throw new ValidationException("Incorrect email combination");
+            }
+
+            string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
+            StreamReader str = new StreamReader(FilePath);
+            string MailText = str.ReadToEnd();
+            str.Close();
+
+            var urlAdress = "";
+            var url = GetUrl(user.Email, urlAdress);
+            var mainText = "Password recovery";
+
+            var mailText = MailText.Replace("[username]", user.FirstName + user.LastName).Replace("[email]", user.Email).Replace("[verifiedLink]", url).Replace("[mainText]", mainText);
+
+            var emailModel = new EmailDto
+            {
+                Subject = $"Welcome {user.Email}",
+                Body = mailText,
+                ToAddress = user.Email,
+                ToName = user.Username
+            };
+
+            _emailWrapper.SendEmail(emailModel);
+        }
+
         public void DeleteUser(int id)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
@@ -113,16 +166,22 @@ namespace Study.EventManager.Services
             return data.Select(x => MapToDto(x)).ToList();
         }
 
-        public string GetUrlToVerifyEmail(string email)
+        public string GetUrl(string email, string urlAdress)
         {
             string hashUrl = GetHashString(secretKey + email);
             var date = DateTime.UtcNow.Date;
 
             date = date.AddDays(7);
             var dateStr = date.ToString("dd.MM.yyyy");
-            var str = DateTime.Now.ToString("dd.MM.yyyy");           
-            string url = "https://apievent.azurewebsites.net/api/user/validateUser?email=" + email + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
-        
+            var str = DateTime.Now.ToString("dd.MM.yyyy");
+            //string url = "https://apievent.azurewebsites.net/api/user/validateUser?email=" + email + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
+            //string url = "https://localhost:44335/api/user/validateUser?email=" + email + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
+
+
+
+            string url = "email=" + email + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
+            url = System.Web.HttpUtility.UrlEncode(url);
+            url = urlAdress + url;
             return url;
         }
 
@@ -173,17 +232,18 @@ namespace Study.EventManager.Services
 
         public void SendWelcomeEmail(UserCreateDto dto)
         {
-            // string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
+           // string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
             string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
             StreamReader str = new StreamReader(FilePath);
             string MailText = str.ReadToEnd();
             str.Close();
 
-            var url = GetUrlToVerifyEmail(dto.Email);
-            
-            var mailText = MailText.Replace("[username]", dto.FirstName + dto.LastName).Replace("[email]", dto.Email).Replace("[verifiedLink]", url);
-            
-            // send email 
+            var urlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/login?";
+            var url = GetUrl(dto.Email, urlAdress);
+            var mainText = "You are currently registered using";
+
+            var mailText = MailText.Replace("[username]", dto.FirstName + dto.LastName).Replace("[email]", dto.Email).Replace("[verifiedLink]", url).Replace("[mainText]", mainText);
+
             var emailModel = new EmailDto
             {
                 Subject = $"Welcome {dto.Email}",

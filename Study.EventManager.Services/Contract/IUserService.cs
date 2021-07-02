@@ -14,7 +14,9 @@ namespace Study.EventManager.Services.Contract
         UserDto UpdateUser(int id, UserDto model);
         IEnumerable<UserDto> GetAll();
         void DeleteUser(int id);
-        string GetUrlToVerifyEmail(string email);
+        string GetUrl(string email, string urlAdress);
         string VerifyUrlEmail(string email, string code);
+        public void sendRestoreEmail(string email);
+        public string restorePass(string email, string password, string code);
     }
 }
