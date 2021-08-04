@@ -14,6 +14,12 @@ namespace Study.EventManager.Data.Configurations
             builder.ToTable("Company");
             builder.HasKey(o => o.Id);
             builder.Property(t => t.Name);
+            builder.Property(t => t.UserId);
+            builder.Property(t => t.Type);
+            builder.Property(t => t.Description);
+            builder.Property(t => t.Del);
+
+            builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
         }
     }
 }

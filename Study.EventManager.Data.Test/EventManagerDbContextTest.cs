@@ -12,10 +12,12 @@ namespace Study.EventManager.Data.Test
         [TestMethod]
         public void TestMethod1()
         {
-         //   var context = new EventManagerDbContext("Server=SHYI;Database=EventManager;User Id=sa;Password=masterkey");
+   
+         
+           // var context = new EventManagerDbContext(a);
 
             
-           // context.Database.EnsureCreated();
+          //  context.Database.EnsureCreated();
 
          //   var newCompany = new Company { Id = 2, Name = "test2" };
           //  DateTime EvebtCreatedt = new DateTime(2021, 04, 12, 0, 10, 10);

@@ -7,5 +7,8 @@ namespace Study.EventManager.Data.Contract
 {
     public interface ICompanyRepo : IRepository<Company>
     {
+        Company GetAllCompaniesByUser(int UserId, int del = 0);
+
+        Company GetCompanyByName(string Name);        
     }
 }

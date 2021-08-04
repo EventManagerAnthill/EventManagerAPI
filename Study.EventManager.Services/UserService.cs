@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Study.EventManager.Data.Contract;
+﻿using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
@@ -8,25 +6,22 @@ using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Wrappers.Contracts;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web;
 
 namespace Study.EventManager.Services
 {
     internal class UserService : IUserService
     {
-        private IEmailWrapper _emailWrapper;
+        private IGenerateEmailWrapper _generateEmailWrapper;
         private IContextManager _contextManager;
         const string secretKey = "emailVerificationHash";
 
-        public UserService(IContextManager contextManager, IEmailWrapper emailWrapper)
-        {
-            _emailWrapper = emailWrapper;
+        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper)
+        {         
+            _generateEmailWrapper = generateEmailWrapper;            
             _contextManager = contextManager;
         }
 
@@ -100,7 +95,7 @@ namespace Study.EventManager.Services
 
         public string restorePass(string email, string password, string code)
         {
-            string hashUrl = "{" + GetHashString(secretKey + email) + "}";
+            string hashUrl = "{" + _generateEmailWrapper.GetHashString(secretKey + email) + "}";
 
             if (code == hashUrl)
             {
@@ -121,34 +116,29 @@ namespace Study.EventManager.Services
 
         public void sendRestoreEmail(string email)
         {
-            var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repo.GetByUserEmail(email);
-
-            if (user == null)
+            try
             {
-                throw new ValidationException("Incorrect email combination");
+                var repo = _contextManager.CreateRepositiry<IUserRepo>();
+                var user = repo.GetByUserEmail(email);
+
+                if (user == null)
+                {
+                    throw new ValidationException("Incorrect email combination");
+                }
+
+                var generateEmail = new GenerateEmailDto
+                {
+                    UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/resetpassword?",
+                    EmailMainText = "Password recovery",
+                    ObjectId = 0
+                };
+
+                _generateEmailWrapper.GenerateEmail(generateEmail, user);
             }
-
-            string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
-            StreamReader str = new StreamReader(FilePath);
-            string MailText = str.ReadToEnd();
-            str.Close();
-
-            var urlAdress = "";
-            var url = GetUrl(user.Email, urlAdress);
-            var mainText = "Password recovery";
-
-            var mailText = MailText.Replace("[username]", user.FirstName + user.LastName).Replace("[email]", user.Email).Replace("[verifiedLink]", url).Replace("[mainText]", mainText);
-
-            var emailModel = new EmailDto
+            catch
             {
-                Subject = $"Welcome {user.Email}",
-                Body = mailText,
-                ToAddress = user.Email,
-                ToName = user.Username
-            };
-
-            _emailWrapper.SendEmail(emailModel);
+                throw new ValidationException("Sorry, unexpected error.");
+            }
         }
 
         public void DeleteUser(int id)
@@ -164,30 +154,11 @@ namespace Study.EventManager.Services
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var data = repo.GetAll();
             return data.Select(x => MapToDto(x)).ToList();
-        }
-
-        public string GetUrl(string email, string urlAdress)
-        {
-            string hashUrl = GetHashString(secretKey + email);
-            var date = DateTime.UtcNow.Date;
-
-            date = date.AddDays(7);
-            var dateStr = date.ToString("dd.MM.yyyy");
-            var str = DateTime.Now.ToString("dd.MM.yyyy");
-            //string url = "https://apievent.azurewebsites.net/api/user/validateUser?email=" + email + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
-            //string url = "https://localhost:44335/api/user/validateUser?email=" + email + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
-
-
-
-            string url = "email=" + email + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
-            url = System.Web.HttpUtility.UrlEncode(url);
-            url = urlAdress + url;
-            return url;
-        }
+        }        
 
         public string VerifyUrlEmail(string email, string code)
         {
-            string hashUrl = "{" + GetHashString(secretKey + email) + "}";
+            string hashUrl = "{" + _generateEmailWrapper.GetHashString(secretKey + email) + "}";
 
             if (code == hashUrl)
             {
@@ -199,22 +170,6 @@ namespace Study.EventManager.Services
                 return "email is verified";
             }
             return "it is not possible to confirm email";
-        }
-
-        string GetHashString(string s)
-        {
-            byte[] bytes = Encoding.Unicode.GetBytes(s);
-
-            MD5CryptoServiceProvider CSP = new MD5CryptoServiceProvider();
- 
-            byte[] byteHash = CSP.ComputeHash(bytes);
-
-            string hash = string.Empty;
-
-            foreach (byte b in byteHash)
-                hash += string.Format("{0:x2}", b);
-
-            return hash;
         }
 
         public void ValidateUser(string FirstName, string LastName, string Email)
@@ -232,27 +187,29 @@ namespace Study.EventManager.Services
 
         public void SendWelcomeEmail(UserCreateDto dto)
         {
-           // string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
-            string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
-            StreamReader str = new StreamReader(FilePath);
-            string MailText = str.ReadToEnd();
-            str.Close();
-
-            var urlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/login?";
-            var url = GetUrl(dto.Email, urlAdress);
-            var mainText = "You are currently registered using";
-
-            var mailText = MailText.Replace("[username]", dto.FirstName + dto.LastName).Replace("[email]", dto.Email).Replace("[verifiedLink]", url).Replace("[mainText]", mainText);
-
-            var emailModel = new EmailDto
+            try
             {
-                Subject = $"Welcome {dto.Email}",
-                Body = mailText,
-                ToAddress = dto.Email,
-                ToName = dto.Username
-            };
+                var user = new User
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    Email = dto.Email,
+                    Username = dto.Username
+                };
 
-            _emailWrapper.SendEmail(emailModel);
+                var generateEmail = new GenerateEmailDto
+                {
+                    UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/login?",
+                    EmailMainText = "You are currently registered using",
+                    ObjectId = 0
+                };
+
+                _generateEmailWrapper.GenerateEmail(generateEmail, user);
+            }
+            catch
+            {
+                throw new ValidationException("Sorry, unexpected error.");
+            }
         }
 
         private UserDto MapToDto(User entity)
@@ -270,6 +227,7 @@ namespace Study.EventManager.Services
                 Username = entity.Username
             };
         }
+
         private User MapToEntity(UserCreateDto dto)
         {
             return new User

@@ -1,4 +1,5 @@
 using API.Middlewares.Autentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -36,11 +37,11 @@ namespace API
         {
             services.AddControllers();            
             var authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
-
-            
-
-            services.AddAuthentication()
-                  .AddJwtBearer(options =>
+           
+            services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
                   {
                       options.RequireHttpsMetadata = false;
                       options.TokenValidationParameters = new TokenValidationParameters
@@ -66,7 +67,7 @@ namespace API
                 app.UseDeveloperExceptionPage();
             }
 
-           // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 

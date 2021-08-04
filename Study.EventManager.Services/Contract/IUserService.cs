@@ -1,8 +1,6 @@
-﻿using Study.EventManager.Model;
-using Study.EventManager.Services.Dto;
+﻿using Study.EventManager.Services.Dto;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Study.EventManager.Services.Contract
 {
@@ -13,8 +11,7 @@ namespace Study.EventManager.Services.Contract
         UserDto CreateUser(UserCreateDto dto);
         UserDto UpdateUser(int id, UserDto model);
         IEnumerable<UserDto> GetAll();
-        void DeleteUser(int id);
-        string GetUrl(string email, string urlAdress);
+        void DeleteUser(int id);      
         string VerifyUrlEmail(string email, string code);
         public void sendRestoreEmail(string email);
         public string restorePass(string email, string password, string code);

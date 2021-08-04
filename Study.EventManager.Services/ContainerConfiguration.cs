@@ -19,6 +19,7 @@ namespace Study.EventManager.Services
             serviceCollection.AddScoped<IEventService, EventService>();
             serviceCollection.AddScoped<IUserService, UserService>();
             serviceCollection.AddTransient<IEmailWrapper, EmailWrapper>();
+            serviceCollection.AddTransient<IGenerateEmailWrapper, GenerateEmailWrapper>();
         }
     } 
 }

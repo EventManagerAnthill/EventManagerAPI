@@ -73,7 +73,7 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("restorePassword")]
+        [HttpPost("validateUser")]
         public IActionResult ValidateUser(string email, string validTo, string code)
         {
             try
@@ -98,12 +98,12 @@ namespace API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("sendRestoreEmail")]
-        public IActionResult SendRestoreEmail(string email)
+        [HttpPost("sendRestoreEmail")]        
+        public IActionResult SendRestoreEmail(UserRestoreEmailModel model)
         {
             try
             {
-                _service.sendRestoreEmail(email); 
+                _service.sendRestoreEmail(model.Email); 
                 return Ok("link to restore your password sent to email");
             }
             catch (ValidationException ex)
@@ -114,21 +114,19 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost("restorePassword")]
-        public IActionResult restorePass(string email, string validTo, string code, string password)
+        public IActionResult restorePass(UserRestorePasswordModel model)
         {                       
             try
             {
                 var date = DateTime.Today;
-
-                var validDT = DateTime.ParseExact(validTo, "dd.MM.yyyy", null);
+                var validDT = DateTime.ParseExact(model.validTo, "dd.MM.yyyy", null);
 
                 if (validDT < date)
                 {
                     return BadRequest("url expired");
                 }
 
-               var response = _service.restorePass(email, password, code);
-
+                var response = _service.restorePass(model.Email, model.Password, model.code);
                 return Ok(response);
             }
             catch (ValidationException ex)
@@ -141,16 +139,30 @@ namespace API.Controllers
         [Route("{id}")]
         public IActionResult GetUser(int id)
         {
-            var data = _service.GetUser(id);
-            return Ok(data);
+            try
+            {
+                var data = _service.GetUser(id);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("all")]
         public IActionResult Users()
         {
-            var data = _service.GetAll();
-            return Ok(data);
+            try
+            {
+                var data = _service.GetAll();
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
                  
         [AllowAnonymous]
@@ -182,29 +194,42 @@ namespace API.Controllers
         [Route("update/{id}")]
         public IActionResult UpdateUser(int id, [FromBody] UserUpdateModel model)
         {
-            var userDto = new UserDto
+            try
             {
-                Id = id,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Middlename = model.Middlename,
-                BirthDate = model.BirthDate,
-                Phone = model.Phone,
-                Email = model.Username,
-                Sex = model.Sex
-            };
+                var userDto = new UserDto
+                {
+                    Id = id,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Middlename = model.Middlename,
+                    BirthDate = model.BirthDate,
+                    Phone = model.Phone,
+                    Email = model.Username,
+                    Sex = model.Sex
+                };
 
-            var data = _service.UpdateUser(id, userDto);
-            return Ok(data);
+                var data = _service.UpdateUser(id, userDto);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete]
         [Route("delete/{id}")]
         public IActionResult DeleteUser(int id)
         {
-            _service.DeleteUser(id);
-            return Ok("successful user delete");
+            try
+            {
+                _service.DeleteUser(id);
+                return Ok("successful user delete");
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
     }
 }

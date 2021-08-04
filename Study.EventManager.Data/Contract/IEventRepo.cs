@@ -7,5 +7,6 @@ namespace Study.EventManager.Data.Contract
 {
     public interface IEventRepo : IRepository<Event>
     {
+        Event GetAllEventsByUser(int UserId);
     }
 }

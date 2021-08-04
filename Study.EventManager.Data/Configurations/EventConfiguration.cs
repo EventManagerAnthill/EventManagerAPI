@@ -18,9 +18,12 @@ namespace Study.EventManager.Data.Configurations
             builder.Property(t => t.HoldingDate);
             builder.Property(t => t.Type);
             builder.Property(t => t.UserId);
+            builder.Property(t => t.CompanyId);
             builder.Property(t => t.Description);
 
-           // builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.User); 
+            builder.HasOne(x => x.Company).WithMany().HasForeignKey(x => x.CompanyId);
+
+            // builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.User); 
         }
     }
 }

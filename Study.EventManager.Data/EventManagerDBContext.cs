@@ -16,6 +16,8 @@ namespace Study.EventManager.Data
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanyUserConfiguration());
+            modelBuilder.ApplyConfiguration(new EventUserConfiguration());
         }
     }
 }

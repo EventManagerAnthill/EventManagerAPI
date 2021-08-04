@@ -11,6 +11,7 @@ namespace Study.EventManager.Services.Contract
         EventDto CreateEvent(EventDto dto);
         EventDto UpdateEvent(int id, EventDto dto);
         IEnumerable<EventDto> GetAll();
+        EventDto GetEventsByUserId(int id);
         void DeleteEvent(int id);
     }
 }
