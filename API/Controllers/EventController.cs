@@ -4,10 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace API.Controllers
 {
@@ -27,7 +23,7 @@ namespace API.Controllers
         {
             try
             {
-               // _service.sendInviteEmail(model.EventId, model.Email);
+                _service.sendInviteEmail(model.EventId, model.Email);
                 return Ok("link to join event is sent to specified  email");
             }
             catch (APICompanyExceptions ex)
@@ -41,7 +37,7 @@ namespace API.Controllers
         {
             try
             {
-               // var response = _service.AcceptInvitation(EventId, Email);
+                var response = _service.AcceptInvitation(EventId, Email);
                 return Ok(1);
             }
             catch (APICompanyExceptions ex)
@@ -78,11 +74,10 @@ namespace API.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
 
         [HttpGet]
-        [Route("all")]
+        [Route("GetEventsByUserId")]
         public IActionResult GetEventsByUserId(int id)
         {
             try

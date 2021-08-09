@@ -9,6 +9,8 @@ namespace Study.EventManager.Data.Contract
     {
         Company GetAllCompaniesByUser(int UserId, int del = 0);
 
-        Company GetCompanyByName(string Name);        
+        Company GetCompanyByName(string Name);
+
+        public List<User> GetCompanyUsers(int CompanyId);
     }
 }

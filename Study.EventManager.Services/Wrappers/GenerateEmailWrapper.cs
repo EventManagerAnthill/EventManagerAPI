@@ -103,7 +103,5 @@ namespace Study.EventManager.Services.Wrappers
 
             return hash;
         }
-
-
     }
 }

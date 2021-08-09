@@ -1,7 +1,5 @@
 ﻿using Study.EventManager.Services.Dto;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Study.EventManager.Services.Contract
 {
@@ -13,5 +11,7 @@ namespace Study.EventManager.Services.Contract
         IEnumerable<EventDto> GetAll();
         EventDto GetEventsByUserId(int id);
         void DeleteEvent(int id);
+        public void sendInviteEmail(int EventId, string Email);
+        public string AcceptInvitation(int EventId, string Email);
     }
 }

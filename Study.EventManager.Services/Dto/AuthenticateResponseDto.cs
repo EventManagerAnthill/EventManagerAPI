@@ -1,7 +1,4 @@
 ﻿using Study.EventManager.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Study.EventManager.Services.Dto
 {
@@ -12,7 +9,6 @@ namespace Study.EventManager.Services.Dto
         public string LastName { get; set; }
         public string Username { get; set; }
         public string Token { get; set; }
-
 
         public AuthenticateResponseDto(User user, string token)
         {

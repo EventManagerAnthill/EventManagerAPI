@@ -10,23 +10,53 @@ using Study.EventManager.Data;
 namespace Study.EventManager.Data.Migrations
 {
     [DbContext(typeof(EventManagerDbContext))]
-    [Migration("20210804065224_fifthMigration")]
-    partial class fifthMigration
+    [Migration("20210809070055_third")]
+    partial class third
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.14")
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.8");
+
+            modelBuilder.Entity("CompanyUser", b =>
+                {
+                    b.Property<int>("CompaniesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CompaniesId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("CompanyUser");
+                });
+
+            modelBuilder.Entity("EventUser", b =>
+                {
+                    b.Property<int>("EventsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EventsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("EventUser");
+                });
 
             modelBuilder.Entity("Study.EventManager.Model.Company", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<int>("Del")
                         .HasColumnType("int");
@@ -51,34 +81,15 @@ namespace Study.EventManager.Data.Migrations
                     b.ToTable("Company");
                 });
 
-            modelBuilder.Entity("Study.EventManager.Model.CompanyUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CompanyUser");
-                });
-
             modelBuilder.Entity("Study.EventManager.Model.Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
@@ -100,6 +111,8 @@ namespace Study.EventManager.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Event");
@@ -110,7 +123,7 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -151,6 +164,36 @@ namespace Study.EventManager.Data.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("CompanyUser", b =>
+                {
+                    b.HasOne("Study.EventManager.Model.Company", null)
+                        .WithMany()
+                        .HasForeignKey("CompaniesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Study.EventManager.Model.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EventUser", b =>
+                {
+                    b.HasOne("Study.EventManager.Model.Event", null)
+                        .WithMany()
+                        .HasForeignKey("EventsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Study.EventManager.Model.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Study.EventManager.Model.Company", b =>
                 {
                     b.HasOne("Study.EventManager.Model.User", "User")
@@ -158,9 +201,11 @@ namespace Study.EventManager.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Study.EventManager.Model.CompanyUser", b =>
+            modelBuilder.Entity("Study.EventManager.Model.Event", b =>
                 {
                     b.HasOne("Study.EventManager.Model.Company", "Company")
                         .WithMany()
@@ -173,15 +218,10 @@ namespace Study.EventManager.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("Study.EventManager.Model.Event", b =>
-                {
-                    b.HasOne("Study.EventManager.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Company");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

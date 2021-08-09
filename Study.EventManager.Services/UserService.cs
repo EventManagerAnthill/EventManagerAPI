@@ -4,12 +4,8 @@ using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Wrappers.Contracts;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace Study.EventManager.Services
 {
@@ -55,18 +51,17 @@ namespace Study.EventManager.Services
 
         public UserDto CreateUser(UserCreateDto dto)
         {
-           ValidateUser(dto.FirstName, dto.LastName, dto.Email);
-           SendWelcomeEmail(dto);
-
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
-
             var user = repo.GetByUserEmail(dto.Email);
-           
+
             if (!(user == null))
             {
                 throw new ValidationException("User with email address <" + dto.Email + "> is already exists.");
             }
 
+            ValidateUser(dto.FirstName, dto.LastName, dto.Email);
+            SendWelcomeEmail(dto);           
+          
             User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email);
             repo.Add(entity);
             _contextManager.Save();

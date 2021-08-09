@@ -1,7 +1,5 @@
 ﻿using Study.EventManager.Model.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Study.EventManager.Services.Dto
 {
@@ -17,7 +15,7 @@ namespace Study.EventManager.Services.Dto
 
         public EventTypes Type { get; set; }
 
-        public int User { get; set; }
+        public string UserEmail { get; set; }
 
         public string Description { get; set; }
     }

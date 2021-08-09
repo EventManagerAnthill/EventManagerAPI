@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Study.EventManager.Services.Dto
+﻿namespace Study.EventManager.Services.Dto
 {
     public class GenerateEmailDto
     {

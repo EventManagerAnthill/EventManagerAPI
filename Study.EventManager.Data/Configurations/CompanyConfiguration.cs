@@ -19,7 +19,7 @@ namespace Study.EventManager.Data.Configurations
             builder.Property(t => t.Description);
             builder.Property(t => t.Del);
 
-            builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
+            builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);            
         }
     }
 }

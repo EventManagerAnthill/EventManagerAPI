@@ -22,39 +22,65 @@ namespace Study.EventManager.Services
 
         public void sendInviteEmail(int EventId, string Email)
         {
-            try
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetByUserEmail(Email);
+
+            if (user == null)
             {
-                var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repoUser.GetByUserEmail(Email);
-
-                if (user == null)
-                {
-                    throw new ValidationException("Incorrect email combination");
-                }
-
-                var repEventUser = _contextManager.CreateRepositiry<IEventUserRepo>();
-                var eventUser = repEventUser.GetEventUser(EventId, user.Id);
-
-                if (!(eventUser == null))
-                {
-                    var eventUserModel = GetEvent(EventId);
-                    throw new ValidationException("User with this email is already exist in company " + eventUserModel.Name);
-                }
-
-                var generateEmail = new GenerateEmailDto
-                {
-                    UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + EventId + "?",
-                    EmailMainText = "Invitation to the company, for confirmation follow the link",
-                    ObjectId = EventId
-                };
-
-                _generateEmailWrapper.GenerateEmail(generateEmail, user);
-
+                throw new ValidationException("Incorrect email combination");
             }
-            catch
+
+            var company = GetEvent(EventId);
+            if (!(company == null))
             {
-                throw new CompanyExceptions("Sorry, unexpected error.");
+                throw new ValidationException("Company not found.");
             }
+
+            var userEvents = repoUser.GetUserEvents(user.Id);
+            if (userEvents.Any(x => x.Id == EventId))
+            {
+                throw new ValidationException("User with this email is already exist in event " + company.Name);
+            }
+
+            var generateEmail = new GenerateEmailDto
+            {
+                UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + EventId + "?",
+                EmailMainText = "Invitation to the company, for confirmation follow the link",
+                ObjectId = EventId
+            };
+
+            _generateEmailWrapper.GenerateEmail(generateEmail, user);
+        }
+
+        public string AcceptInvitation(int EventId, string Email)
+        {
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetByUserEmail(Email);
+
+            if (user == null)
+            {
+                throw new ValidationException("User not found.");
+            }
+
+            var userEvents = repoUser.GetUserEvents(user.Id);
+
+            var repoEvent = _contextManager.CreateRepositiry<IEventRepo>();
+            var userEvent = repoEvent.GetById(EventId);
+
+            if (userEvent == null)
+            {
+                throw new ValidationException("Event not found.");
+            }
+
+            if (userEvents.Any(x => x.Id == EventId))
+            {
+                throw new ValidationException("User is already added to the event.");
+            }
+
+            user.Events.Add(userEvent);
+            _contextManager.Save();
+
+            return "You successfully join the Event";
         }
 
         public EventDto GetEvent(int id)
@@ -69,7 +95,15 @@ namespace Study.EventManager.Services
         {
             try
             {
-                var entity = MapToEntity(dto);
+                var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+                var user = repoUser.GetByUserEmail(dto.UserEmail);
+
+                if (user == null)
+                {
+                    throw new ValidationException("User not found");
+                }
+
+                var entity = MapToEntity(user.Id, dto);
                 var repo = _contextManager.CreateRepositiry<IEventRepo>();
                 repo.Add(entity);
                 _contextManager.Save();
@@ -77,7 +111,7 @@ namespace Study.EventManager.Services
             }
             catch
             {
-                throw new EventExceptions("Sorry, unexpected error.");
+                throw new ValidationException("Sorry, unexpected error.");
             }
         }
 
@@ -90,7 +124,6 @@ namespace Study.EventManager.Services
             data.Type = dto.Type;
             data.CreateDate = dto.CreateDate;
             data.HoldingDate = dto.HoldingDate;
-            data.UserId = dto.User;
             data.Description = dto.Description;
 
             _contextManager.Save();
@@ -132,20 +165,19 @@ namespace Study.EventManager.Services
                 Name = entity.Name,
                 Type = entity.Type,
                 HoldingDate = entity.HoldingDate,
-                User = entity.UserId,
                 Description = entity.Description,
                 CreateDate = entity.CreateDate
             };
         }
 
-        private Event MapToEntity(EventDto dto)
+        private Event MapToEntity(int id, EventDto dto)
         {
             return new Event
             {
                 Name = dto.Name,
                 Type = dto.Type,
                 HoldingDate = dto.HoldingDate,
-                UserId = dto.User,
+                UserId = id,
                 Description = dto.Description,
                 CreateDate = dto.CreateDate
             };

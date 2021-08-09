@@ -1,5 +1,6 @@
 ﻿using Study.EventManager.Model.Enums;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Study.EventManager.Model
@@ -19,7 +20,7 @@ namespace Study.EventManager.Model
             Description = companyDescription;
             Del = 0;
         }
- 
+
         public int Id { get; set; }
 
         [Required]
@@ -36,5 +37,7 @@ namespace Study.EventManager.Model
         public string Description { get; set; }
 
         public int Del { get; set; }
+
+        public virtual List<User> Users { get; set; } = new List<User>();
     }
 }

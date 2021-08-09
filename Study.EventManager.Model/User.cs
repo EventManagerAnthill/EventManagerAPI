@@ -25,7 +25,7 @@ namespace Study.EventManager.Model
             FirstName = firstName;
             LastName = lastName;
             Email = email;
-            IsVerified = false;
+            IsVerified = false;           
         }
 
         public int Id { get; set; }
@@ -53,5 +53,9 @@ namespace Study.EventManager.Model
         public string Password { get; set; }       
 
         public bool IsVerified { get; set; }
+
+        public virtual List<Company> Companies { get; set; } = new List<Company>();
+
+        public virtual List<Event> Events { get; set; } = new List<Event>();
     }
 }

@@ -5,10 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Study.EventManager.Services.Exceptions;
 
 namespace API.Controllers
 {
@@ -33,7 +30,7 @@ namespace API.Controllers
                 var data = _service.GetCompany(id);
                 return Ok(data);
             }
-            catch (APICompanyExceptions ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -47,21 +44,21 @@ namespace API.Controllers
                 _service.sendInviteEmail(model.CompanyId, model.Email);
                 return Ok("link to join company is sent to specified  email");
             }
-            catch (APICompanyExceptions ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
         }
 
         [HttpPost("acceptInvitation")]
-        public IActionResult AcceptInvitation(int CompanyId, string Email)
+        public IActionResult AcceptInvitation(CompanyUserModel model)
         {
             try
             {
-                var response = _service.AcceptInvitation(CompanyId, Email);
+                var response = _service.AcceptInvitation(model.CompanyId, model.Email);
                 return Ok(response);
             }
-            catch (APICompanyExceptions ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -73,10 +70,25 @@ namespace API.Controllers
         {
             try
             {
-                var data = _service.GetAll();
+                var data = _service.GetAllByOwner();
                 return Ok(data);
             }
-            catch (APICompanyExceptions ex)
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetAllCompaniesByOwner")]
+        public IActionResult CompaniesByOwner(string email)
+        {
+            try
+            {
+                var data = _service.GetAllByOwner(email);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -88,10 +100,10 @@ namespace API.Controllers
         {
             try
             {
-                var data = _service.GetAll(email);
+                var data = _service.GetAllByUser(email);
                 return Ok(data);
             }
-            catch (APICompanyExceptions ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -114,7 +126,7 @@ namespace API.Controllers
                 var data = _service.CreateCompany(companyCreateDto);
                 return Ok(data);
             }
-            catch (APICompanyExceptions ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -137,7 +149,7 @@ namespace API.Controllers
                 var data = _service.UpdateCompany(userDto.Id, userDto);
                 return Ok(data);
             }
-            catch (APICompanyExceptions ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -157,7 +169,7 @@ namespace API.Controllers
                 var data = _service.MakeCompanyDel(userDto.Id, userDto);
                 return Ok(data);
             }
-            catch (APICompanyExceptions ex)
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }

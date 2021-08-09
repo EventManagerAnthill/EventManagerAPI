@@ -17,6 +17,5 @@ namespace API.Models
 
         [Required]
         public string Description { get; set; }
-
     }
 }

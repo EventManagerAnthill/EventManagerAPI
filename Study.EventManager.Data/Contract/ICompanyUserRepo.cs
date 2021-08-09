@@ -8,5 +8,7 @@ namespace Study.EventManager.Data.Contract
     public interface ICompanyUserRepo : IRepository<CompanyUser>
     {
         CompanyUser GetCompanyUser(int CompanyId, int UserId);
+
+        public List<Company> GetListCompanies(int UserId);
     }
 }

@@ -22,7 +22,7 @@ namespace Study.EventManager.Data
             where T: IRepository
         {
             var context = GetContext();
-           
+
             if (!_isDbExists)
             {
                 context.Database.EnsureCreated();

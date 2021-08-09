@@ -1,4 +1,5 @@
-﻿using Study.EventManager.Data.Contract;
+﻿using Microsoft.EntityFrameworkCore;
+using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,15 @@ namespace Study.EventManager.Data.Repositiry
         {
             var company = _eventManagerContext.Set<Company>().FirstOrDefault(x => x.Name == Name);
             return company;
-        }        
+        }
+
+        public List<User> GetCompanyUsers(int CompanyId)
+        {
+           var companyUser = _eventManagerContext.Companies
+                        .Include(c => c.Users)
+                        .Where(u => u.Id == CompanyId)
+                        .FirstOrDefault();
+            return companyUser.Users.ToList();
+        }      
     }
 }
