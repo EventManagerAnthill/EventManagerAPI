@@ -96,7 +96,7 @@ namespace Study.EventManager.Services
             try
             {
                 var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repoUser.GetByUserEmail(dto.UserEmail);
+                var user = repoUser.GetByUserEmail(dto.Email);
 
                 if (user == null)
                 {
@@ -179,7 +179,8 @@ namespace Study.EventManager.Services
                 HoldingDate = dto.HoldingDate,
                 UserId = id,
                 Description = dto.Description,
-                CreateDate = dto.CreateDate
+                CreateDate = dto.CreateDate,
+                CompanyId = dto.CompanyId
             };
         }
     }

@@ -18,8 +18,10 @@ namespace Study.EventManager.Services
             serviceCollection.AddScoped<ICompanyService, CompanyService>();
             serviceCollection.AddScoped<IEventService, EventService>();
             serviceCollection.AddScoped<IUserService, UserService>();
+            serviceCollection.AddScoped<IAuthenticateService, AuthenticateService>();
             serviceCollection.AddTransient<IEmailWrapper, EmailWrapper>();
             serviceCollection.AddTransient<IGenerateEmailWrapper, GenerateEmailWrapper>();
+            serviceCollection.AddTransient<IAuthenticateWrapper, AuthenticateWrapper>();
         }
     } 
 }

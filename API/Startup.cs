@@ -1,22 +1,20 @@
 using API.Middlewares.Autentication;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Study.EventManager.Data;
+
+
+
 
 using Study.EventManager.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ContainerConfiguration = Study.EventManager.Services.ContainerConfiguration;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace API
 {
@@ -31,37 +29,63 @@ namespace API
         public IConfiguration Configuration { get; }
 
         private Settings _settings; 
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+     
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();            
             var authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
-           
-            services.AddAuthentication(options => {
+
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-                  {
-                      options.RequireHttpsMetadata = false;
-                      options.TokenValidationParameters = new TokenValidationParameters
-                      {                           
-                            ValidateIssuer = true,                           
-                            ValidIssuer = authOptions.Issuer,                       
-                            ValidateAudience = true,
-                            ValidAudience = authOptions.Audience,
-                            ValidateLifetime = true,
-                            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(authOptions.SecretKey),
-                            ValidateIssuerSigningKey = true,
-                      };
-                  });
+                //options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = authOptions.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = authOptions.Audience,
+                        ValidateLifetime = true,
+                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(authOptions.SecretKey),
+                        ValidateIssuerSigningKey = true,
+                    };
+                })
+            .AddGoogle(options =>
+             {
+                 IConfigurationSection googleAuthNSection =
+                     Configuration.GetSection("Authentication:Google");
+
+                 options.ClientId = googleAuthNSection["ClientId"];
+                 options.ClientSecret = googleAuthNSection["ClientSecret"];                 
+                 //options.CallbackPath = "/api/user/google-response"; // Or register the default "/sigin-oidc"
+                 //options.Re. = "https://steventmanagerdev01.z13.web.core.windows.net"; // Or register the default "/sigin-oidc"
+
+                 options.Scope.Add("email");
+             })
+            .AddCookie()
+            .AddFacebook(facebookOptions =>
+            {
+                IConfigurationSection facebookAuthNSection =
+                     Configuration.GetSection("Authentication:FaceBook");
+                facebookOptions.AppId = facebookAuthNSection["AppId"];
+                facebookOptions.AppSecret = facebookAuthNSection["AppSecret"];
+                facebookOptions.CallbackPath = "/api/user/facebook-response";
+              //  facebookOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            });
+
+            ;
 
             ContainerConfiguration.Configure(services, _settings);
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+       
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+         
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -77,7 +101,9 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
-        }
+            }
+           
+            );       
+        }   
     }
 }

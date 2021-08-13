@@ -6,41 +6,21 @@ using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Wrappers.Contracts;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Study.EventManager.Services
 {
     internal class UserService : IUserService
     {
         private IGenerateEmailWrapper _generateEmailWrapper;
-        private IContextManager _contextManager;
-        const string secretKey = "emailVerificationHash";
+        private IContextManager _contextManager;     
 
         public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper)
         {         
             _generateEmailWrapper = generateEmailWrapper;            
             _contextManager = contextManager;
         }
-
-        public UserDto Authenticate(string email, string password)
-        {
-            var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repo.GetByUserEmailPassword(email, password);
-
-            if (user == null)
-            {
-                throw new ValidationException("Incorrect Username/Password combination");
-            }
-
-            if (!user.IsVerified)
-            {
-                throw new ValidationException("Email not verified");
-            }
-
-            ValidateUser(user.FirstName, user.LastName, user.Email);
-            var result = MapToDto(user);
-            return result;
-        }
-
+   
         public UserDto GetUser(int id)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
@@ -60,6 +40,7 @@ namespace Study.EventManager.Services
             }
 
             ValidateUser(dto.FirstName, dto.LastName, dto.Email);
+            ValidatePassword(dto.Password);
             SendWelcomeEmail(dto);           
           
             User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email);
@@ -87,55 +68,7 @@ namespace Study.EventManager.Services
             _contextManager.Save();
             return MapToDto(data);
         }
-
-        public string restorePass(string email, string password, string code)
-        {
-            string hashUrl = "{" + _generateEmailWrapper.GetHashString(secretKey + email) + "}";
-
-            if (code == hashUrl)
-            {
-                var repo = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repo.GetByUserEmail(email);
-
-                if (user.Password == password)
-                {
-                    return "The new password cannot be the same as the previous one";
-                }
-                user.Password = password;
-                _contextManager.Save();
-
-                return "password is restored";
-            }
-            return "it is not possible to restore password";
-        }
-
-        public void sendRestoreEmail(string email)
-        {
-            try
-            {
-                var repo = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repo.GetByUserEmail(email);
-
-                if (user == null)
-                {
-                    throw new ValidationException("Incorrect email combination");
-                }
-
-                var generateEmail = new GenerateEmailDto
-                {
-                    UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/resetpassword?",
-                    EmailMainText = "Password recovery",
-                    ObjectId = 0
-                };
-
-                _generateEmailWrapper.GenerateEmail(generateEmail, user);
-            }
-            catch
-            {
-                throw new ValidationException("Sorry, unexpected error.");
-            }
-        }
-
+       
         public void DeleteUser(int id)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
@@ -150,26 +83,16 @@ namespace Study.EventManager.Services
             var data = repo.GetAll();
             return data.Select(x => MapToDto(x)).ToList();
         }        
-
-        public string VerifyUrlEmail(string email, string code)
-        {
-            string hashUrl = "{" + _generateEmailWrapper.GetHashString(secretKey + email) + "}";
-
-            if (code == hashUrl)
-            {
-                var repo = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repo.GetByUserEmail(email);
-                user.IsVerified = true;
-                _contextManager.Save();
-
-                return "email is verified";
-            }
-            return "it is not possible to confirm email";
-        }
-
+        
         public void ValidateUser(string FirstName, string LastName, string Email)
         {
             if (Email == null)
+            {
+                throw new ValidationException("Email is incorect");
+            }
+
+            var validEmail = @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z";
+            if (!Regex.IsMatch(Email, validEmail, RegexOptions.IgnoreCase))
             {
                 throw new ValidationException("Email is incorect");
             }
@@ -180,33 +103,30 @@ namespace Study.EventManager.Services
             }
         }
 
-        public void SendWelcomeEmail(UserCreateDto dto)
+        public void ValidatePassword(string Password)
         {
-            try
+            var hasUpperChar = new Regex(@"[A-Z]+");
+            var hasLowerChar = new Regex(@"[a-z]+");
+            var hasNumber = new Regex(@"[0-9]+");
+
+            if (!hasLowerChar.IsMatch(Password))
             {
-                var user = new User
-                {
-                    FirstName = dto.FirstName,
-                    LastName = dto.LastName,
-                    Email = dto.Email,
-                    Username = dto.Username
-                };
-
-                var generateEmail = new GenerateEmailDto
-                {
-                    UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/login?",
-                    EmailMainText = "You are currently registered using",
-                    ObjectId = 0
-                };
-
-                _generateEmailWrapper.GenerateEmail(generateEmail, user);
+                throw new ValidationException("Password should contain at least one lower case letter.");
             }
-            catch
+            else if (!hasUpperChar.IsMatch(Password))
             {
-                throw new ValidationException("Sorry, unexpected error.");
+                throw new ValidationException("Password should contain at least one upper case letter.");
+            }
+            else if (Password.Length < 8)
+            {
+                throw new ValidationException("Password should contain at least 8 symbols.");
+            }
+            else if (!hasNumber.IsMatch(Password))
+            {
+                throw new ValidationException("Password should contain at least one numeric value.");
             }
         }
-
+       
         private UserDto MapToDto(User entity)
         {
             if (entity == null)
@@ -233,6 +153,33 @@ namespace Study.EventManager.Services
                 Username = dto.Username,
                 Password = dto.Password
             };
+        }
+
+        public void SendWelcomeEmail(UserCreateDto dto)
+        {
+            try
+            {
+                var user = new User
+                {
+                    FirstName = dto.FirstName,
+                    LastName = dto.LastName,
+                    Email = dto.Email,
+                    Username = dto.Username
+                };
+
+                var generateEmail = new GenerateEmailDto
+                {
+                    UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/signin?",
+                    EmailMainText = "You are currently registered using",
+                    ObjectId = 0
+                };
+
+                _generateEmailWrapper.GenerateEmail(generateEmail, user);
+            }
+            catch
+            {
+                throw new ValidationException("Sorry, unexpected error.");
+            }
         }
     }
 }

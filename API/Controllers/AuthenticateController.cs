@@ -1,0 +1,200 @@
+﻿using API.Middlewares.Autentication;
+using API.Models;
+using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Study.EventManager.Services.Contract;
+using Study.EventManager.Services.Dto;
+using Study.EventManager.Services.Exceptions;
+using Study.EventManager.Services.Wrappers.Contracts;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Threading.Tasks;
+
+
+namespace API.Controllers
+{
+    [Authorize]
+    [Route("api/authenticate")]
+    [ApiController]
+    public class AuthenticateController : ControllerBase
+    {
+        private IUserService _serviceUser;
+        private IAuthenticateService _serviceAuth;
+        private AuthOptions _authOptions;
+        private IAuthenticateWrapper _authenticateWrapper;
+
+        public AuthenticateController(IUserService serviceUser, IAuthenticateService serviceAuth, IConfiguration config, IAuthenticateWrapper authenticateWrapper)
+        {
+            _authenticateWrapper = authenticateWrapper;
+            _serviceAuth = serviceAuth;
+            _serviceUser = serviceUser;
+            _authOptions = config.GetSection("AuthOptions").Get<AuthOptions>();
+        }
+
+        private IEnumerable<Claim> GetClaims(string LastName, string email)
+        {
+            return new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier , LastName)
+            };
+        }
+
+        [AllowAnonymous]
+        [HttpPost("auth")]
+        public IActionResult Authenticate(AuthenticateRequestModel model)
+        {
+            try
+            {
+                var user = _serviceAuth.Authenticate(model.Email, model.Password);
+                var response = GiveJWTToken(user.Email, user.LastName);
+
+                return Ok(response);
+            }
+            catch (Exception ee)
+            {
+                return BadRequest(ee.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("validateUser")]
+        public IActionResult ValidateUser(string email, string validTo, string code)
+        {
+            try
+            {
+                var date = DateTime.Today;
+
+                var validDT = DateTime.ParseExact(validTo, "dd.MM.yyyy", null);
+
+                if (validDT < date)
+                {
+                    return BadRequest("url expired");
+                }
+
+                var IsVerified = _serviceAuth.VerifyUrlEmail(email, code);
+
+                return Ok(IsVerified);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("sendRestoreEmail")]
+        public IActionResult SendRestoreEmail(UserRestoreEmailModel model)
+        {
+            try
+            {
+                _serviceAuth.sendRestoreEmail(model.Email);
+                return Ok("link to restore your password sent to email");
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("restorePassword")]
+        public IActionResult restorePass(UserRestorePasswordModel model)
+        {
+            try
+            {
+                var date = DateTime.Today;
+                var validDT = DateTime.ParseExact(model.validTo, "dd.MM.yyyy", null);
+
+                if (validDT < date)
+                {
+                    return BadRequest("url expired");
+                }
+
+                var response = _serviceAuth.restorePass(model.Email, model.Password, model.code);
+                return Ok(response);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("google-login")]
+        public IActionResult GoogleLogin(GoogleIdTokenModel data)
+        {
+            try
+            {
+                GoogleJsonWebSignature.ValidationSettings settings = new GoogleJsonWebSignature.ValidationSettings();
+                settings.Audience = new List<string>() { "752253873246-cg9qrlhp0tmtn7cd8vpg4qrfk03br55c.apps.googleusercontent.com" };
+                GoogleJsonWebSignature.Payload userGoogle = GoogleJsonWebSignature.ValidateAsync(data.IdToken, settings).Result;
+
+                _serviceAuth.SocialNetworksAuthenticate(userGoogle.Email, userGoogle.Name, userGoogle.GivenName, userGoogle.FamilyName);
+
+                var response = GiveJWTToken(userGoogle.FamilyName, userGoogle.Email);
+                return Ok(response);
+            }
+            catch (Exception ee)
+            {
+                return BadRequest(ee.Message);
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("facebook-login")]
+        public async Task<IActionResult> FacebookLogin(GoogleIdTokenModel data)
+        {
+            var facebookAPIResponce = await _authenticateWrapper.GetFacebookToken(data.IdToken);
+            if (facebookAPIResponce != null)
+            {
+                var facebookUserInfo = await _authenticateWrapper.GetFacebookUserData(facebookAPIResponce.id, data.IdToken);
+
+                _serviceAuth.SocialNetworksAuthenticate(facebookUserInfo.email, facebookUserInfo.name, facebookUserInfo.first_name,
+                                                    facebookUserInfo.last_name);
+
+                var response = GiveJWTToken(facebookUserInfo.email, facebookUserInfo.last_name);
+
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        public JwtTokenModel GiveJWTToken(string email, string lastname)
+        {
+            var now = DateTime.UtcNow;
+            var jwt = new JwtSecurityToken(
+                 issuer: _authOptions.Issuer,
+                 audience: _authOptions.Audience,
+                 notBefore: now,
+                 claims: GetClaims(lastname, email),
+                 expires: now.Add(TimeSpan.FromMinutes(_authOptions.LifeTime)),
+                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(_authOptions.SecretKey), SecurityAlgorithms.HmacSha256));
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            var response = new JwtTokenModel
+            {
+                access_token = encodedJwt,
+                email = email
+            };
+
+            return response;
+
+        }
+    } 
+};

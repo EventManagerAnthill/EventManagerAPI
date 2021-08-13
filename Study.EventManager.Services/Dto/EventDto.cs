@@ -1,5 +1,6 @@
 ﻿using Study.EventManager.Model.Enums;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Study.EventManager.Services.Dto
 {
@@ -7,6 +8,7 @@ namespace Study.EventManager.Services.Dto
     {
         public int Id { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
         public DateTime CreateDate { get; set; }
@@ -15,8 +17,13 @@ namespace Study.EventManager.Services.Dto
 
         public EventTypes Type { get; set; }
 
-        public string UserEmail { get; set; }
+        [Required]
+        public string Email { get; set; }
 
+        [Required]
         public string Description { get; set; }
+
+        [Required]
+        public int CompanyId { get; set; }
     }
 }
