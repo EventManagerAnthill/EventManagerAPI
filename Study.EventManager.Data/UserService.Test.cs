@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿/*using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Study.EventManager.Services.Contract;
@@ -6,6 +6,8 @@ using Study.EventManager.Services.Dto;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Study.EventManager.Services.Contract;
+using Study.EventManager.Data;
 
 namespace Study.EventManager.Services.Test
 {
@@ -46,7 +48,7 @@ namespace Study.EventManager.Services.Test
             Assert.AreNotEqual(0, result.Id);
         }
 
-        /*        [TestMethod]
+        *//*        [TestMethod]
                 public void VerifyEmailTest()
                 {            
                    var urlEmail =  _userService.GetUrlToVerifyEmail("shyi2517@gmail.com");
@@ -59,6 +61,7 @@ namespace Study.EventManager.Services.Test
                 public void VerifyEmailTest()
                 {
                     var urlEmail = _userService.VerifyUrlEmail("shyi2517@gmail.com", "sadasd");           
-                }    */
+                }    *//*
     }
 }
+*/

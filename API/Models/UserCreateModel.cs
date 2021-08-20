@@ -22,5 +22,7 @@ namespace API.Models
 
         [Required]
         public string Password { get; set; }
+
+        public bool EmailVerification { get; set; }
     }
 }

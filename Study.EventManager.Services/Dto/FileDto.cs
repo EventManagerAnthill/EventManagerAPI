@@ -9,8 +9,6 @@ namespace Study.EventManager.Services.Dto
     {
         public IFormFile ImageFile { get; set; }
 
-        public string Email { get; set; }
-
         public string ServerFileName { get; set; }
 
         public string OriginalFileName { get; set; }

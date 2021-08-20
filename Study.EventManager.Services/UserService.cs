@@ -43,12 +43,17 @@ namespace Study.EventManager.Services
             {
                 throw new ValidationException("User with email address <" + dto.Email + "> is already exists.");
             }
-
+            
             ValidateUser(dto.FirstName, dto.LastName, dto.Email);
             ValidatePassword(dto.Password);
-            SendWelcomeEmail(dto);           
-          
-            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email);
+            var isVerified = false;
+            if (!(dto.EmailVerification))
+            {
+                SendWelcomeEmail(dto);
+                isVerified = true;
+            }
+
+            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email, isVerified);
             repo.Add(entity);
             _contextManager.Save();
            
@@ -188,10 +193,10 @@ namespace Study.EventManager.Services
             }
         }
 
-        public async Task UploadUserFoto(FileDto model)
+        public async Task UploadUserFoto(string email, FileDto model)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repoUser.GetUserByEmail(model.Email);
+            var user = repoUser.GetUserByEmail(email);
           
             if (user == null)
             {
@@ -200,7 +205,7 @@ namespace Study.EventManager.Services
 
             if (!(user.ServerFileName == null))
             {
-                await _uploadService.Delete(user.ServerFileName);
+                await _uploadService.Delete(user.ServerFileName, model.Container);
             }
 
             var guidStr = Guid.NewGuid().ToString();

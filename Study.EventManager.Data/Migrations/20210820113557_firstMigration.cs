@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Study.EventManager.Data.Migrations
 {
-    public partial class third : Migration
+    public partial class firstMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -21,8 +21,12 @@ namespace Study.EventManager.Data.Migrations
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Sex = table.Column<int>(type: "int", nullable: false),
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsVerified = table.Column<bool>(type: "bit", nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsVerified = table.Column<bool>(type: "bit", nullable: false),
+                    isSocialNetworks = table.Column<bool>(type: "bit", nullable: false),
+                    OriginalFileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServerFileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -39,7 +43,10 @@ namespace Study.EventManager.Data.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Del = table.Column<int>(type: "int", nullable: false)
+                    Del = table.Column<int>(type: "int", nullable: false),
+                    OriginalFileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServerFileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -66,14 +73,37 @@ namespace Study.EventManager.Data.Migrations
                         name: "FK_CompanyUser_Company_CompaniesId",
                         column: x => x.CompaniesId,
                         principalTable: "Company",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_CompanyUser_User_UsersId",
                         column: x => x.UsersId,
                         principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompanyUserLink",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    UserRole = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyUserLink", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompanyUserLink_Company_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "Company",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CompanyUserLink_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -97,11 +127,33 @@ namespace Study.EventManager.Data.Migrations
                         name: "FK_Event_Company_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Company",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Event_User_UserId",
                         column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EventUser",
+                columns: table => new
+                {
+                    EventsId = table.Column<int>(type: "int", nullable: false),
+                    UsersId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventUser", x => new { x.EventsId, x.UsersId });
+                    table.ForeignKey(
+                        name: "FK_EventUser_Event_EventsId",
+                        column: x => x.EventsId,
+                        principalTable: "Event",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EventUser_User_UsersId",
+                        column: x => x.UsersId,
                         principalTable: "User",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -118,6 +170,16 @@ namespace Study.EventManager.Data.Migrations
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CompanyUserLink_CompanyId",
+                table: "CompanyUserLink",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CompanyUserLink_UserId",
+                table: "CompanyUserLink",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Event_CompanyId",
                 table: "Event",
                 column: "CompanyId");
@@ -126,12 +188,23 @@ namespace Study.EventManager.Data.Migrations
                 name: "IX_Event_UserId",
                 table: "Event",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventUser_UsersId",
+                table: "EventUser",
+                column: "UsersId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
                 name: "CompanyUser");
+
+            migrationBuilder.DropTable(
+                name: "CompanyUserLink");
+
+            migrationBuilder.DropTable(
+                name: "EventUser");
 
             migrationBuilder.DropTable(
                 name: "Event");

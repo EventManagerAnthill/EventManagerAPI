@@ -68,6 +68,7 @@ namespace API.Controllers
                     Email = model.Email,
                     Username = model.Username,
                     Password = model.Password,
+                    EmailVerification = model.EmailVerification
                 };
 
                 var data = _serviceUser.CreateUser(userCreateDto);
@@ -121,24 +122,21 @@ namespace API.Controllers
             }
         }
 
-        [AllowAnonymous]
         [Route("upload")]
         [HttpPost]
-        public async Task<IActionResult> Upload(IFormFile file)//([FromForm] FileAPIModel model)
+        public async Task<IActionResult> Upload(string email,  IFormFile file)//([FromForm] FileAPIModel model)
         {
             try
             {
                 if (file.Length > 0)
-                {
-                    var email = "slavikyarkin@gmail.com";
+                {                   
                     var fileDto = new FileDto
                     {
-                        ImageFile = file,
-                        Email = email,
+                        ImageFile = file,                
                         Container = "userfotos"
                     };
 
-                    await _serviceUser.UploadUserFoto(fileDto);  
+                    await _serviceUser.UploadUserFoto(email, fileDto);  
                 }
                 else
                 {
@@ -153,17 +151,6 @@ namespace API.Controllers
             }
         }
 
-
-
-
-
-
-
-
-
-        //work with branch
-
-        [AllowAnonymous]
         [HttpPut]
         [Route("deleteFoto")]
         public async Task<IActionResult> DeleteUserFoto(UserEmailModel model)

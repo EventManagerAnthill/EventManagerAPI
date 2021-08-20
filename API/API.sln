@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Services
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Data.Test", "..\Study.EventManager.Data.Test\Study.EventManager.Data.Test.csproj", "{51A86F88-BF63-4799-90C7-7BDD6BD3B917}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.API.Test", "..\Study.EventManager.API.Test\Study.EventManager.API.Test.csproj", "{5B53EF20-5A90-4FA4-9723-4B09AB57DA59}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Study.EventManager.Services.Test", "..\Study.EventManager.Services.Test\Study.EventManager.Services.Test.csproj", "{E8A443E1-A00F-440D-B9F5-29CE05F25143}"
 EndProject
 Global
@@ -43,10 +41,6 @@ Global
 		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51A86F88-BF63-4799-90C7-7BDD6BD3B917}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B53EF20-5A90-4FA4-9723-4B09AB57DA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B53EF20-5A90-4FA4-9723-4B09AB57DA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B53EF20-5A90-4FA4-9723-4B09AB57DA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B53EF20-5A90-4FA4-9723-4B09AB57DA59}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E8A443E1-A00F-440D-B9F5-29CE05F25143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8A443E1-A00F-440D-B9F5-29CE05F25143}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8A443E1-A00F-440D-B9F5-29CE05F25143}.Release|Any CPU.ActiveCfg = Release|Any CPU

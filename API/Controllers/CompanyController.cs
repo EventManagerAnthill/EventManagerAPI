@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
+using System.Threading.Tasks;
 
 namespace API.Controllers
 {
@@ -231,5 +232,50 @@ namespace API.Controllers
             _service.DeleteCompany(id);
             return Ok("successful company delete");
         }
+
+        [Route("upload")]
+        [HttpPost]
+        public async Task<IActionResult> Upload(int id, IFormFile file)//([FromForm] FileAPIModel model)
+        {
+            try
+            {
+                if (file.Length > 0)
+                {                    
+                    var fileDto = new FileDto
+                    {
+                        ImageFile = file,                   
+                        Container = "companyfotos"
+                    };
+
+                    await _service.UploadCompanyFoto(id, fileDto);
+                }
+                else
+                {
+                    throw new ValidationException("foto not found");
+                }
+
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("deleteFoto")]
+        public async Task<IActionResult> DeleteCompanyFoto(UserEmailModel model)
+        {
+            try
+            {
+                //await _serviceUser.DeleteUserFoto(model.Email);
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
+

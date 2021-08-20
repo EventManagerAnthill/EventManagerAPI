@@ -28,9 +28,12 @@ namespace Study.EventManager.Services
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var userByEmail = repo.GetUserByEmail(email);
 
-            if (userByEmail.isSocialNetworks)
-            {
-                throw new ValidationException("You have already registered via Social Networks");
+            if (!(userByEmail == null))
+            {           
+                if (userByEmail.isSocialNetworks)
+                {
+                    throw new ValidationException("You have already registered via Social Networks");
+                }
             }
 
             var user = repo.GetUserByEmailPassword(email, password);

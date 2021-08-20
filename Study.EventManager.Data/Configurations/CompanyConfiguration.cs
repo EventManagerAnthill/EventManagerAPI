@@ -18,6 +18,9 @@ namespace Study.EventManager.Data.Configurations
             builder.Property(t => t.Type);
             builder.Property(t => t.Description);
             builder.Property(t => t.Del);
+            builder.Property(t => t.OriginalFileName);
+            builder.Property(t => t.ServerFileName);
+            builder.Property(t => t.FotoUrl);
 
             builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);            
         }

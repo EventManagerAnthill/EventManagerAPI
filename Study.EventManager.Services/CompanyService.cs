@@ -4,8 +4,10 @@ using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Wrappers.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Study.EventManager.Services
 {
@@ -14,11 +16,13 @@ namespace Study.EventManager.Services
         private IGenerateEmailWrapper _generateEmailWrapper;
         private IContextManager _contextManager;
         private IEnumerable<Company> data;
+        private IUploadService _uploadService;
 
-        public CompanyService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper)
+        public CompanyService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService)
         {
             _generateEmailWrapper = generateEmailWrapper;
             _contextManager = contextManager;
+            _uploadService = uploadService;
         }
 
         public CompanyDto GetCompany(int id)
@@ -275,6 +279,50 @@ namespace Study.EventManager.Services
 
             _contextManager.Save();
             return "You successfully join the Company";
+        }
+
+        public async Task UploadCompanyFoto(int CompanyId, FileDto model)
+        {
+            var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
+            var company = repo.GetById(CompanyId);
+
+            if (company == null)
+            {
+                throw new ValidationException("Company not found");
+            }
+
+            if (!(company.ServerFileName == null))
+            {
+                await _uploadService.Delete(company.ServerFileName, model.Container);
+            }
+
+            var guidStr = Guid.NewGuid().ToString();
+            var serverFileName = "userId-" + company.Id.ToString() + "-" + guidStr;
+
+            model.ServerFileName = serverFileName;
+            var filePath = await _uploadService.Upload(model);
+            company.OriginalFileName = model.ImageFile.FileName;
+            company.FotoUrl = filePath.Url;
+            company.ServerFileName = filePath.ServerFileName + model.ImageFile.FileName;
+
+            _contextManager.Save();
+        }
+
+        public async Task DeleteCompanyFoto(int CompanyId)
+        {
+            var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
+            var company = repo.GetById(CompanyId);
+
+            if (company == null)
+            {
+                throw new ValidationException("Company not found");
+            }
+
+            await _uploadService.Delete(company.ServerFileName, "userfotos");
+            company.ServerFileName = null;
+            company.FotoUrl = null;
+            company.OriginalFileName = null;
+            _contextManager.Save();
         }
     }
 } 

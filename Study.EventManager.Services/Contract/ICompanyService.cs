@@ -1,6 +1,7 @@
 ﻿using Study.EventManager.Model;
 using Study.EventManager.Services.Dto;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Study.EventManager.Services.Contract
 {
@@ -16,5 +17,6 @@ namespace Study.EventManager.Services.Contract
         public void sendInviteEmail(int companyId, string Email);        
         public string AcceptInvitation(int companyId, string Email);
         public int CountCompanyUser(int companyId);
+        Task UploadCompanyFoto(int id, FileDto model);
     }
 }

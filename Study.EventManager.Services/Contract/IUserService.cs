@@ -11,7 +11,7 @@ namespace Study.EventManager.Services.Contract
         UserDto UpdateUser(int id, UserDto model);
         IEnumerable<UserDto> GetAll();
         void DeleteUser(int id);
-        Task UploadUserFoto(FileDto model);
+        Task UploadUserFoto(string email, FileDto model);
         Task DeleteUserFoto(string email);
     }
 }

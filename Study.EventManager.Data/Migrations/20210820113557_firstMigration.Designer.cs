@@ -10,8 +10,8 @@ using Study.EventManager.Data;
 namespace Study.EventManager.Data.Migrations
 {
     [DbContext(typeof(EventManagerDbContext))]
-    [Migration("20210817140721_first")]
-    partial class first
+    [Migration("20210820113557_firstMigration")]
+    partial class firstMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -64,8 +64,17 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ServerFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
@@ -79,6 +88,31 @@ namespace Study.EventManager.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Company");
+                });
+
+            modelBuilder.Entity("Study.EventManager.Model.CompanyUserLink", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserRole")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CompanyUserLink");
                 });
 
             modelBuilder.Entity("Study.EventManager.Model.Event", b =>
@@ -136,6 +170,9 @@ namespace Study.EventManager.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
 
@@ -146,11 +183,16 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<string>("Middlename")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OriginalFileName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ServerFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Sex")
@@ -204,6 +246,25 @@ namespace Study.EventManager.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Study.EventManager.Model.CompanyUserLink", b =>
+                {
+                    b.HasOne("Study.EventManager.Model.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Study.EventManager.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
 
                     b.Navigation("User");
                 });
