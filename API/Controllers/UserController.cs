@@ -153,6 +153,16 @@ namespace API.Controllers
             }
         }
 
+
+
+
+
+
+
+
+
+        //work with branch
+
         [AllowAnonymous]
         [HttpPut]
         [Route("deleteFoto")]
