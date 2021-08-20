@@ -1,24 +1,29 @@
-﻿using Study.EventManager.Data.Contract;
+﻿using Azure.Storage.Blobs;
+using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Wrappers.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Study.EventManager.Services
 {
     internal class UserService : IUserService
     {
         private IGenerateEmailWrapper _generateEmailWrapper;
-        private IContextManager _contextManager;     
-
-        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper)
+        private IContextManager _contextManager;
+        private IUploadService _uploadService;
+         
+        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService)
         {         
             _generateEmailWrapper = generateEmailWrapper;            
             _contextManager = contextManager;
+            _uploadService = uploadService;
         }
    
         public UserDto GetUser(int id)
@@ -32,7 +37,7 @@ namespace Study.EventManager.Services
         public UserDto CreateUser(UserCreateDto dto)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repo.GetByUserEmail(dto.Email);
+            var user = repo.GetUserByEmail(dto.Email);
 
             if (!(user == null))
             {
@@ -171,7 +176,8 @@ namespace Study.EventManager.Services
                 {
                     UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/signin?",
                     EmailMainText = "You are currently registered using",
-                    ObjectId = 0
+                    ObjectId = 0,
+                    Subject = "Welcome"
                 };
 
                 _generateEmailWrapper.GenerateEmail(generateEmail, user);
@@ -180,6 +186,50 @@ namespace Study.EventManager.Services
             {
                 throw new ValidationException("Sorry, unexpected error.");
             }
+        }
+
+        public async Task UploadUserFoto(FileDto model)
+        {
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetUserByEmail(model.Email);
+          
+            if (user == null)
+            {
+                throw new ValidationException("User not found"); 
+            }
+
+            if (!(user.ServerFileName == null))
+            {
+                await _uploadService.Delete(user.ServerFileName);
+            }
+
+            var guidStr = Guid.NewGuid().ToString();
+            var serverFileName = "userId-" + user.Id.ToString() + "-" + guidStr;
+
+            model.ServerFileName = serverFileName;
+            var filePath = await _uploadService.Upload(model);
+            user.OriginalFileName = model.ImageFile.FileName;
+            user.FotoUrl = filePath.Url;
+            user.ServerFileName = filePath.ServerFileName + model.ImageFile.FileName;
+
+            _contextManager.Save();         
+        }
+
+        public async Task DeleteUserFoto(string email)
+        {
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetUserByEmail(email);
+
+            if (user == null)
+            {
+                throw new ValidationException("User not found");
+            }
+
+            await _uploadService.Delete(user.ServerFileName, "userfotos");
+            user.ServerFileName = null;
+            user.FotoUrl = null;
+            user.OriginalFileName = null;
+            _contextManager.Save();
         }
     }
 }

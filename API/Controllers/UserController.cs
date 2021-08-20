@@ -1,26 +1,12 @@
-﻿using API.Middlewares.Autentication;
-using API.Models;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
+﻿using API.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Study.EventManager.Services.Contract;
-using Study.EventManager.Services.Dto;
+
 using Study.EventManager.Services.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.Facebook;
-using Google.Apis.Auth;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Study.EventManager.Services.Dto;
 
 namespace API.Controllers
 {
@@ -30,15 +16,12 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _serviceUser;
+        private readonly IUploadService _uploadService;
 
-      //  private IAuthenticateService _serviceAuth;
-
-      //  private AuthOptions _authOptions;
-
-        public UserController(IUserService service, IConfiguration config)
+        public UserController(IUserService service, IUploadService uploadService)
         {
             _serviceUser = service;
-           // _authOptions = config.GetSection("AuthOptions").Get<AuthOptions>();       
+            _uploadService = uploadService;
         }                      
 
         [HttpGet]
@@ -138,5 +121,52 @@ namespace API.Controllers
             }
         }
 
+        [AllowAnonymous]
+        [Route("upload")]
+        [HttpPost]
+        public async Task<IActionResult> Upload(IFormFile file)//([FromForm] FileAPIModel model)
+        {
+            try
+            {
+                if (file.Length > 0)
+                {
+                    var email = "slavikyarkin@gmail.com";
+                    var fileDto = new FileDto
+                    {
+                        ImageFile = file,
+                        Email = email,
+                        Container = "userfotos"
+                    };
+
+                    await _serviceUser.UploadUserFoto(fileDto);  
+                }
+                else
+                {
+                    throw new ValidationException("foto not found");
+                }
+
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPut]
+        [Route("deleteFoto")]
+        public async Task<IActionResult> DeleteUserFoto(UserEmailModel model)
+        {
+            try
+            {
+                await _serviceUser.DeleteUserFoto(model.Email);
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }    
 }

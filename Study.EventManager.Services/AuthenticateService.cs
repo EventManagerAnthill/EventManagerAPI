@@ -26,14 +26,14 @@ namespace Study.EventManager.Services
         public UserDto Authenticate(string email, string password)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var userByEmail = repo.GetByUserEmail(email);
+            var userByEmail = repo.GetUserByEmail(email);
 
             if (userByEmail.isSocialNetworks)
             {
                 throw new ValidationException("You have already registered via Social Networks");
             }
 
-            var user = repo.GetByUserEmailPassword(email, password);
+            var user = repo.GetUserByEmailPassword(email, password);
 
             if (user == null)
             {
@@ -71,7 +71,7 @@ namespace Study.EventManager.Services
             if (code == hashUrl)
             {
                 var repo = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repo.GetByUserEmail(email);
+                var user = repo.GetUserByEmail(email);                
 
                 if (user.Password == password)
                 {
@@ -111,30 +111,29 @@ namespace Study.EventManager.Services
         }
 
         public void sendRestoreEmail(string email)
-        {
-            try
+        {            
+            var repo = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repo.GetUserByEmail(email);
+
+            if (user == null)
             {
-                var repo = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repo.GetByUserEmail(email);
-
-                if (user == null)
-                {
-                    throw new ValidationException("Incorrect email combination");
-                }
-
-                var generateEmail = new GenerateEmailDto
-                {
-                    UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/resetpassword?",
-                    EmailMainText = "Password recovery",
-                    ObjectId = 0
-                };
-
-                _generateEmailWrapper.GenerateEmail(generateEmail, user);
+                throw new ValidationException("Incorrect email combination");
             }
-            catch
+
+            if (user.isSocialNetworks)
             {
-                throw new ValidationException("Sorry, unexpected error.");
+                throw new ValidationException("You have already registered via Social Networks");
             }
+
+            var generateEmail = new GenerateEmailDto
+            {
+                UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/resetpassword?",
+                EmailMainText = "Password recovery",
+                ObjectId = 0,
+                Subject = "Password recovery"
+            };
+
+            _generateEmailWrapper.GenerateEmail(generateEmail, user);            
         }
 
         public string VerifyUrlEmail(string email, string code)
@@ -144,7 +143,7 @@ namespace Study.EventManager.Services
             if (code == hashUrl)
             {
                 var repo = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repo.GetByUserEmail(email);
+                var user = repo.GetUserByEmail(email);
                 user.IsVerified = true;
                 _contextManager.Save();
 
@@ -153,10 +152,10 @@ namespace Study.EventManager.Services
             return "it is not possible to confirm email";
         }
 
-        public bool SocialNetworksAuthenticate(string email, string name, string givenName, string familyName)
+        public bool SocialNetworksAuthenticate(string email, string givenName, string familyName, string url)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repo.GetByUserEmail(email);
+            var user = repo.GetUserByEmail(email);
 
             if (!(user == null))
             {
@@ -164,9 +163,11 @@ namespace Study.EventManager.Services
             }
             else if (user == null)
             {
-                new User(email, name, givenName, familyName);
+                User entity = new User(email, givenName, familyName, url);
+                repo.Add(entity);
+                _contextManager.Save();
             }
-
+           
             return true;
         }
     }

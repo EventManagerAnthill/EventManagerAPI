@@ -29,12 +29,13 @@ namespace Study.EventManager.Model
             isSocialNetworks = false;
         }
 
-        public User(string email, string userName, string firstName, string lastName)
+        public User(string email, string firstName, string lastName, string url )
         {
-            Username = userName;
+            FotoUrl = url;
             FirstName = firstName;
             LastName = lastName;
             Email = email;
+            Username = firstName + " " + lastName;
 
             isSocialNetworks = true;
             IsVerified = true;
@@ -61,7 +62,6 @@ namespace Study.EventManager.Model
 
         public string Username { get; set; }
 
-        [Required]
         public string Password { get; set; }       
 
         public bool IsVerified { get; set; }
@@ -72,5 +72,10 @@ namespace Study.EventManager.Model
 
         public virtual List<Event> Events { get; set; } = new List<Event>();
 
+        public string OriginalFileName { get; set; }
+
+        public string ServerFileName { get; set; }
+
+        public string FotoUrl { get; set; }
     }
 }

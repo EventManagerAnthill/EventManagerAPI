@@ -22,7 +22,7 @@ namespace Study.EventManager.Data.Test
             _contexManager = serviceProvider.GetService<IContextManager>();
         }
 
-        [TestMethod]
+/*        [TestMethod]
         public void GetAll()
         {
              
@@ -30,7 +30,7 @@ namespace Study.EventManager.Data.Test
             var c = repo.GetAll();
             c.First().Name = "aaa";
 
-        }
+        }*/
 
         public void GetOne()
         {

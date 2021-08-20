@@ -21,7 +21,10 @@ namespace Study.EventManager.Data.Configurations
             builder.Property(t => t.Email).IsRequired();
             builder.Property(t => t.Sex);
             builder.Property(t => t.Username);
-            builder.Property(t => t.Password).IsRequired();
+            builder.Property(t => t.Password);
+            builder.Property(t => t.OriginalFileName);
+            builder.Property(t => t.ServerFileName);
+            builder.Property(t => t.FotoUrl);
         }
     }
 }

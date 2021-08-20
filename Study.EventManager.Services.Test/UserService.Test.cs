@@ -28,37 +28,68 @@ namespace Study.EventManager.Services.Test
         }
 
         [TestMethod]
-        public void CreateUserTest()
+        public void CreateDeleteUserTest()
         {
+            Random rng = new Random();
+
             //arrange
             var dto = new UserCreateDto
             {
-                Email = "shyi2517@gmail.com",
+                Email = rng.Next(10) + "shyi2517" + rng.Next(10) + rng.Next(10) + rng.Next(10) + "@gmail.com",
                 FirstName = "test",
                 LastName = "test",
-                Password = "test",
+                Password = "testR125454",
             };
 
             //act             
             var result = _userService.CreateUser(dto);
+            var userID = result.Id;
+            //assert
+            Assert.AreNotEqual(0, result.Id);
+
+            _userService.DeleteUser(userID);
+        }
+
+        [TestMethod]
+        public void GetAllUsersTest()
+        {
+            //act             
+            var result = _userService.GetAll();
+
+            //assert
+            Assert.AreNotEqual(0, result);
+        }
+
+        [TestMethod]
+        public void GetUserByIdTest()
+        {
+            //act             
+            var result = _userService.GetUser(1);
 
             //assert
             Assert.AreNotEqual(0, result.Id);
         }
 
-        /*        [TestMethod]
-                public void VerifyEmailTest()
-                {            
-                   var urlEmail =  _userService.GetUrlToVerifyEmail("shyi2517@gmail.com");
+        [TestMethod]
+        public void UpdateUserTest()
+        {
 
-                  var isvalid = _userService.VerifyUrlEmail(urlEmail, "asdsad");
+            var dto = new UserDto
+            {
+                Email = "sadasd@gmail.com",
+                FirstName = "test",
+                LastName = "test",
+                Middlename = "Middlename",                         
+                Phone = "8989632332"              
 
-                }*/
+            };
+            //act             
+            var result = _userService.UpdateUser(1, dto);
 
-        /*        [TestMethod]
-                public void VerifyEmailTest()
-                {
-                    var urlEmail = _userService.VerifyUrlEmail("shyi2517@gmail.com", "sadasd");           
-                }    */
+            //assert
+            Assert.AreNotEqual(0, result.Id);
+
+
+        }
     }
 }

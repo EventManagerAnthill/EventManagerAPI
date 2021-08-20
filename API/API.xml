@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>API</name>
+    </assembly>
+    <members>
+        <member name="M:API.Controllers.CompanyController.GetCompany(System.Int32)">
+            <summary>
+            Comment.
+            </summary>.
+        </member>
+        <member name="M:API.Controllers.CompanyController.SendInviteEmail(API.Models.CompanyUserModel)">
+            /// <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.AcceptInvitation(API.Models.CompanyUserModel)">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.Companies">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.CompaniesByOwner(System.String)">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.CompaniesByUser(System.String)">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.GetCompanyCountUsers(System.Int32)">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.CreateCompany(API.Models.CompanyCreateModel)">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.UpdateCompany(System.Int32,API.Models.CompanyUpdateModel)">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.MakeCompanyDel(System.Int32)">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+        <member name="M:API.Controllers.CompanyController.DeleteCompany(System.Int32)">
+            <summary>
+            Comment.
+            </summary>
+        </member>
+    </members>
+</doc>

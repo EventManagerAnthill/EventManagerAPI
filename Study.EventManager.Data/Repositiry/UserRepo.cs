@@ -11,35 +11,34 @@ namespace Study.EventManager.Data.Repositiry
 
     public class UserRepo : AbstractRepo<User>, IUserRepo
     {
-        public User GetByUserEmailPassword(string email, string password)
+        public User GetUserByEmailPassword(string email, string password)
         {
             var user = _eventManagerContext.Set<User>().FirstOrDefault(x => x.Email == email && x.Password == password);
             return user;
         }
-        public User GetByUserEmail(string email)
+
+        public User GetUserByEmail(string email)
         {
             var user = _eventManagerContext.Set<User>().FirstOrDefault(x => x.Email == email);
             return user;
         }
 
-        public List<Company> GetUserCompanies(int UserId)
+        public List<Company> GetCompaniesByUser(int UserId, int del = 0)
         {
-            var userCompany = _eventManagerContext.Users
-                        .Include(x => x.Companies)
-                        .Where(u => u.Id == UserId)
-                        .FirstOrDefault();
+            var userCompanies = _eventManagerContext.Companies
+                .Where(c => c.Users.Any(u => u.Id == UserId) && c.Del == del)
+                .ToList();           
 
-            return userCompany.Companies.ToList();
+            return userCompanies;
         }
 
-        public List<Event> GetUserEvents(int UserId)
+        public List<Event> GetEventsByUser(int UserId)
         {
-            var userEvents = _eventManagerContext.Users
-                        .Include(x => x.Events)
-                        .Where(u => u.Id == UserId)
-                        .FirstOrDefault();
+            var userEvents = _eventManagerContext.Events
+              .Where(c => c.Users.Any(u => u.Id == UserId))
+              .ToList();
 
-            return userEvents.Events.ToList();
+            return userEvents;
         }
     }
 }

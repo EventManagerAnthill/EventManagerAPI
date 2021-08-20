@@ -7,5 +7,7 @@
         public string EmailMainText { get; set; }
 
         public int ObjectId { get; set; }
+
+        public string Subject { get; set; }
     }
 }

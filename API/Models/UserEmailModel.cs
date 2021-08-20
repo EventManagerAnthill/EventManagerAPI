@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace API.Models
 {
-    public class UserRestoreEmailModel
+    public class UserEmailModel
     {
         [Required]
         public string Email { get; set; }

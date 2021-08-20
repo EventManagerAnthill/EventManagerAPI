@@ -1,5 +1,4 @@
 using API.Middlewares.Autentication;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,14 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-
-
-
-
 using Study.EventManager.Services;
 using ContainerConfiguration = Study.EventManager.Services.ContainerConfiguration;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.OpenApi.Models;
+using System;
+using System.Reflection;
+using System.IO;
+using Azure.Storage.Blobs;
 
 namespace API
 {
@@ -32,7 +30,36 @@ namespace API
      
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();            
+            services.AddControllers();
+
+            services.AddSwaggerGenNewtonsoftSupport();          
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "EventManager API",
+                    Description = "API documentation of 'EventManager API'",
+                    TermsOfService = new Uri("https://steventmanagerdev01.z13.web.core.windows.net/"),
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Kirill Kuznetsov" + " " + @"GitHub Repository",
+                        Email = string.Empty,
+                        Url = new Uri("https://github.com/KuznetsovKirill/EventManager")
+                    }
+                });
+
+                /*var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath, true);*/
+            });
+
+            services.AddScoped(_ => {
+                IConfigurationSection azureConnectionString =
+                     Configuration.GetSection("Azure");
+                return new BlobServiceClient(azureConnectionString["AzureStorage"]);
+            });
+
             var authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
 
             services.AddAuthentication(options =>
@@ -77,22 +104,18 @@ namespace API
                 facebookOptions.CallbackPath = "/api/user/facebook-response";
               //  facebookOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
-
-            ;
-
+        
             ContainerConfiguration.Configure(services, _settings);
         }
        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-         
+        {         
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseAuthentication();
@@ -101,9 +124,13 @@ namespace API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            }
-           
-            );       
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+            });
         }   
     }
 }

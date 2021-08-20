@@ -7,13 +7,13 @@ namespace Study.EventManager.Data.Contract
 {
     public interface IUserRepo : IRepository<User>
     {
-        User GetByUserEmailPassword(string email, string password);
+        User GetUserByEmailPassword(string email, string password);
 
-        User GetByUserEmail(string email);
+        User GetUserByEmail(string email);
 
-        public List<Company> GetUserCompanies(int UserId);
+        public List<Company> GetCompaniesByUser(int UserId, int del = 0);
 
-        public List<Event> GetUserEvents(int UserId);
+        public List<Event> GetEventsByUser(int UserId);
     }
 }
 

@@ -2,12 +2,9 @@
 using API.Models;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
@@ -15,9 +12,6 @@ using Study.EventManager.Services.Wrappers.Contracts;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -27,9 +21,10 @@ namespace API.Controllers
     [Authorize]
     [Route("api/authenticate")]
     [ApiController]
+
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AuthenticateController : ControllerBase
     {
-        private IUserService _serviceUser;
         private IAuthenticateService _serviceAuth;
         private AuthOptions _authOptions;
         private IAuthenticateWrapper _authenticateWrapper;
@@ -38,16 +33,7 @@ namespace API.Controllers
         {
             _authenticateWrapper = authenticateWrapper;
             _serviceAuth = serviceAuth;
-            _serviceUser = serviceUser;
             _authOptions = config.GetSection("AuthOptions").Get<AuthOptions>();
-        }
-
-        private IEnumerable<Claim> GetClaims(string LastName, string email)
-        {
-            return new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier , LastName)
-            };
         }
 
         [AllowAnonymous]
@@ -94,7 +80,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost("sendRestoreEmail")]
-        public IActionResult SendRestoreEmail(UserRestoreEmailModel model)
+        public IActionResult SendRestoreEmail(UserEmailModel model)
         {
             try
             {
@@ -133,7 +119,7 @@ namespace API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("google-login")]
-        public IActionResult GoogleLogin(GoogleIdTokenModel data)
+        public IActionResult GoogleLogin(SocialNetworkIdTokenModel data)
         {
             try
             {
@@ -143,7 +129,7 @@ namespace API.Controllers
 
                 _serviceAuth.SocialNetworksAuthenticate(userGoogle.Email, userGoogle.Name, userGoogle.GivenName, userGoogle.FamilyName);
 
-                var response = GiveJWTToken(userGoogle.FamilyName, userGoogle.Email);
+                var response = GiveJWTToken(userGoogle.Email, userGoogle.FamilyName);
                 return Ok(response);
             }
             catch (Exception ee)
@@ -155,15 +141,15 @@ namespace API.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("facebook-login")]
-        public async Task<IActionResult> FacebookLogin(GoogleIdTokenModel data)
+        public async Task<IActionResult> FacebookLogin(SocialNetworkIdTokenModel data)
         {
             var facebookAPIResponce = await _authenticateWrapper.GetFacebookToken(data.IdToken);
             if (facebookAPIResponce != null)
             {
                 var facebookUserInfo = await _authenticateWrapper.GetFacebookUserData(facebookAPIResponce.id, data.IdToken);
 
-                _serviceAuth.SocialNetworksAuthenticate(facebookUserInfo.email, facebookUserInfo.name, facebookUserInfo.first_name,
-                                                    facebookUserInfo.last_name);
+                _serviceAuth.SocialNetworksAuthenticate(facebookUserInfo.email, facebookUserInfo.first_name,
+                                                    facebookUserInfo.last_name, data.Url);
 
                 var response = GiveJWTToken(facebookUserInfo.email, facebookUserInfo.last_name);
 
@@ -194,7 +180,14 @@ namespace API.Controllers
             };
 
             return response;
+        }
 
+        private IEnumerable<Claim> GetClaims(string LastName, string email)
+        {
+            return new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier , LastName)
+            };
         }
     } 
 };

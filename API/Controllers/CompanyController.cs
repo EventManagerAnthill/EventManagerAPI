@@ -10,6 +10,7 @@ using Study.EventManager.Services.Exceptions;
 namespace API.Controllers
 {
     [Authorize]
+    [ApiExplorerSettings(GroupName = "v1")]
     [Route("api/company")]
     [ApiController]
     public class CompanyController : ControllerBase
@@ -21,6 +22,9 @@ namespace API.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>.
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetCompany(int id)
@@ -36,6 +40,9 @@ namespace API.Controllers
             }
         }
 
+        /// /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpPost("sendInviteEmail")]
         public IActionResult SendInviteEmail(CompanyUserModel model)
         {
@@ -50,6 +57,9 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpPost("acceptInvitation")]
         public IActionResult AcceptInvitation(CompanyUserModel model)
         {
@@ -64,6 +74,9 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpGet]
         [Route("all")]
         public IActionResult Companies()
@@ -79,6 +92,9 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpGet]
         [Route("GetAllCompaniesByOwner")]
         public IActionResult CompaniesByOwner(string email)
@@ -94,6 +110,9 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpGet]
         [Route("GetAllCompaniesByUser")]
         public IActionResult CompaniesByUser(string email)
@@ -109,6 +128,27 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>
+        [HttpGet]
+        [Route("GetCompanyCountUsers")]
+        public IActionResult GetCompanyCountUsers(int companyId)
+        {
+            try
+            {
+                var data = _service.CountCompanyUser(companyId);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpPost]
         [Route("")]
         public IActionResult CreateCompany([FromBody]CompanyCreateModel model)
@@ -132,6 +172,9 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpPut]
         [Route("update")]
         public IActionResult UpdateCompany(int id, [FromBody] CompanyUpdateModel model)
@@ -155,6 +198,9 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpPut]
         [Route("MakeCompanyDel/{id}")]
         public IActionResult MakeCompanyDel(int id)
@@ -175,6 +221,9 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Comment.
+        /// </summary>
         [HttpDelete]
         [Route("delete/{id}")]
         public IActionResult DeleteCompany(int id)

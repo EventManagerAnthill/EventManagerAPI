@@ -1,4 +1,5 @@
-﻿using Study.EventManager.Services.Dto;
+﻿using Study.EventManager.Model;
+using Study.EventManager.Services.Dto;
 using System.Collections.Generic;
 
 namespace Study.EventManager.Services.Contract
@@ -9,10 +10,11 @@ namespace Study.EventManager.Services.Contract
         CompanyDto CreateCompany(CompanyCreateDto dto);
         CompanyDto UpdateCompany(int id, CompanyDto dto);
         IEnumerable<CompanyDto> GetAllByOwner(string email = null);
-        IEnumerable<CompanyDto> GetAllByUser(string email = null);
+        List<Company> GetAllByUser(string email);
         void DeleteCompany(int id);
         CompanyDto MakeCompanyDel(int id, CompanyDto dto);
         public void sendInviteEmail(int companyId, string Email);        
         public string AcceptInvitation(int companyId, string Email);
+        public int CountCompanyUser(int companyId);
     }
 }

@@ -22,13 +22,22 @@ namespace Study.EventManager.Data.Repositiry
             return company;
         }
 
-        public List<User> GetCompanyUsers(int CompanyId)
+        public List<User> GetCompanyUsers(int CompanyId, int del = 0)
         {
-           var companyUser = _eventManagerContext.Companies
-                        .Include(c => c.Users)
-                        .Where(u => u.Id == CompanyId)
-                        .FirstOrDefault();
-            return companyUser.Users.ToList();
-        }      
+            var userCompanies = _eventManagerContext.Users
+                      .Where(c => c.Companies.Any(u => u.Id == CompanyId && u.Del == del))
+                      .ToList();
+
+            return userCompanies;
+        }
+
+        public int GetCompanyCountUsers(int CompanyId)
+        {
+            var userCompanies = _eventManagerContext.Users
+                      .Where(c => c.Companies.Any(u => u.Id == CompanyId))
+                      .ToList();
+
+            return userCompanies.Count;
+        }
     }
 }

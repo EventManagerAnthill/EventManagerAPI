@@ -18,14 +18,15 @@ namespace Study.EventManager.Data
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
             modelBuilder.ApplyConfiguration(new EventConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanyUserLinkConfig());
 
             modelBuilder.Entity<User>()
                 .HasMany(c => c.Companies)
                 .WithMany(u => u.Users);
-
+                
             modelBuilder.Entity<User>()
                 .HasMany(c => c.Events)
-                .WithMany(u => u.Users);
+                .WithMany(u => u.Users);                 
         }
     }
 }

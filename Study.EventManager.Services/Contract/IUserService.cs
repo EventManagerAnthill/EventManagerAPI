@@ -1,6 +1,6 @@
 ﻿using Study.EventManager.Services.Dto;
-using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Study.EventManager.Services.Contract
 {
@@ -10,6 +10,8 @@ namespace Study.EventManager.Services.Contract
         UserDto CreateUser(UserCreateDto dto);
         UserDto UpdateUser(int id, UserDto model);
         IEnumerable<UserDto> GetAll();
-        void DeleteUser(int id);              
+        void DeleteUser(int id);
+        Task UploadUserFoto(FileDto model);
+        Task DeleteUserFoto(string email);
     }
 }

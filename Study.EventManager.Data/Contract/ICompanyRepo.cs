@@ -11,6 +11,8 @@ namespace Study.EventManager.Data.Contract
 
         Company GetCompanyByName(string Name);
 
-        public List<User> GetCompanyUsers(int CompanyId);
+        public List<User> GetCompanyUsers(int CompanyId, int del = 0);
+
+        public int GetCompanyCountUsers(int CompanyId);
     }
 }

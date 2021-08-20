@@ -26,5 +26,11 @@ namespace Study.EventManager.Services.Dto
         public UserSex Sex { get; set; }
 
         public string Username { get; set; }
+
+        public string OriginalFileName { get; set; }
+
+        public string ServerFileName { get; set; }
+
+        public string FotoUrl { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace Study.EventManager.Services
         public void sendInviteEmail(int EventId, string Email)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repoUser.GetByUserEmail(Email);
+            var user = repoUser.GetUserByEmail(Email);
 
             if (user == null)
             {
@@ -36,7 +36,7 @@ namespace Study.EventManager.Services
                 throw new ValidationException("Company not found.");
             }
 
-            var userEvents = repoUser.GetUserEvents(user.Id);
+            var userEvents = repoUser.GetEventsByUser(user.Id);
             if (userEvents.Any(x => x.Id == EventId))
             {
                 throw new ValidationException("User with this email is already exist in event " + company.Name);
@@ -45,8 +45,9 @@ namespace Study.EventManager.Services
             var generateEmail = new GenerateEmailDto
             {
                 UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + EventId + "?",
-                EmailMainText = "Invitation to the company, for confirmation follow the link",
-                ObjectId = EventId
+                EmailMainText = "Invitation to the event, for confirmation follow the link",
+                ObjectId = EventId,
+                Subject = "Welcome to the Event"
             };
 
             _generateEmailWrapper.GenerateEmail(generateEmail, user);
@@ -55,14 +56,14 @@ namespace Study.EventManager.Services
         public string AcceptInvitation(int EventId, string Email)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repoUser.GetByUserEmail(Email);
+            var user = repoUser.GetUserByEmail(Email);
 
             if (user == null)
             {
                 throw new ValidationException("User not found.");
             }
 
-            var userEvents = repoUser.GetUserEvents(user.Id);
+            var userEvents = repoUser.GetEventsByUser(user.Id);
 
             var repoEvent = _contextManager.CreateRepositiry<IEventRepo>();
             var userEvent = repoEvent.GetById(EventId);
@@ -96,7 +97,7 @@ namespace Study.EventManager.Services
             try
             {
                 var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repoUser.GetByUserEmail(dto.Email);
+                var user = repoUser.GetUserByEmail(dto.Email);
 
                 if (user == null)
                 {

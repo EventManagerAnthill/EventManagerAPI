@@ -24,8 +24,8 @@ namespace Study.EventManager.Services.Wrappers
         {
             try
             {
-                //string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
-                string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
+                string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
+                //string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
 
                 StreamReader str = new StreamReader(FilePath);
                 string MailText = str.ReadToEnd();
@@ -44,11 +44,11 @@ namespace Study.EventManager.Services.Wrappers
 
                 var mainText = dto.EmailMainText;
 
-                var mailText = MailText.Replace("[username]", user.FirstName + user.LastName).Replace("[email]", user.Email).Replace("[verifiedLink]", url).Replace("[mainText]", mainText);
+                var mailText = MailText.Replace("[username]", user.FirstName + " " + user.LastName).Replace("[email]", user.Email).Replace("[verifiedLink]", url).Replace("[mainText]", mainText);
 
                 var emailModel = new EmailDto
                 {
-                    Subject = $"Welcome {user.Email}",
+                    Subject = $"{dto.Subject} {user.Email}",
                     Body = mailText,
                     ToAddress = user.Email,
                     ToName = user.Username
