@@ -147,12 +147,32 @@ namespace API.Controllers
         {
             try
             {
-                var userDto = new EventDto
+                var eventDto = new EventDto
                 {
                     Id = id,
                     Del = 1
                 };
-                var data = _service.MakeEventDel(userDto.Id, userDto);
+                var data = _service.MakeEventDel(eventDto.Id, eventDto);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("CancelEvent/{id}")]
+        public IActionResult CancelEvent(int id)
+        {
+            try
+            {
+                var eventDto = new EventDto
+                {
+                    Id = id,
+                    Status = 1
+                };
+                var data = _service.CancelEvent(eventDto.Id, eventDto);
                 return Ok(data);
             }
             catch (ValidationException ex)

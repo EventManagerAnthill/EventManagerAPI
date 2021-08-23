@@ -208,12 +208,12 @@ namespace API.Controllers
         {
             try
             {
-                var userDto = new CompanyDto
+                var companyDto = new CompanyDto
                 {
                     Id = id,
                     Del = 1
                 };
-                var data = _service.MakeCompanyDel(userDto.Id, userDto);
+                var data = _service.MakeCompanyDel(companyDto.Id, companyDto);
                 return Ok(data);
             }
             catch (ValidationException ex)

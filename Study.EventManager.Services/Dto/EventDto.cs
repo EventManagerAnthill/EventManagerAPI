@@ -20,6 +20,8 @@ namespace Study.EventManager.Services.Dto
         [Required]
         public string Email { get; set; }
 
+        public int Status { get; set; }
+
         [Required]
         public string Description { get; set; }
 

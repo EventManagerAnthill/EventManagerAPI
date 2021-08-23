@@ -27,6 +27,8 @@ namespace Study.EventManager.Model
         public int CompanyId { get; set; }
         public virtual Company Company { get; set; }
 
+        public int Status { get; set; } = 0;
+
         public string Description { get; set; }        
 
         public virtual List<User> Users { get; set; } = new List<User>();
@@ -37,6 +39,6 @@ namespace Study.EventManager.Model
 
         public string ServerFileName { get; set; }
 
-        public string FotoUrl { get; set; }
+        public string FotoUrl { get; set; }       
     }
 }

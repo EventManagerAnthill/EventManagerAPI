@@ -212,7 +212,19 @@ namespace Study.EventManager.Services
 
             return MapToDto(data);
         }
+        
+        public EventDto CancelEvent(int EventId, EventDto dto)
+        {
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var data = repo.GetById(EventId);
+            data.Status = dto.Status;
+            _contextManager.Save();
 
+            sendEmailToUsers(EventId, "cancellation of an event", "The Event " + "'" + data.Name + "' was canceled");
+
+            return MapToDto(data);
+        }
+        
         public void sendEmailToUsers(int EventId, string subject, string mainMassage)
         {
             var eventRepo = _contextManager.CreateRepositiry<IEventRepo>();

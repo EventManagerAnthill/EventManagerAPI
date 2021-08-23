@@ -19,6 +19,7 @@ namespace Study.EventManager.Data.Configurations
             builder.Property(t => t.Type);
             builder.Property(t => t.UserId);
             builder.Property(t => t.CompanyId);
+            builder.Property(t => t.Status);
             builder.Property(t => t.Description);
             builder.Property(t => t.Del);
             builder.Property(t => t.OriginalFileName);
