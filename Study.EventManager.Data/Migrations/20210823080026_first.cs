@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Study.EventManager.Data.Migrations
 {
-    public partial class firstMigration : Migration
+    public partial class first : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -55,8 +55,7 @@ namespace Study.EventManager.Data.Migrations
                         name: "FK_Company_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -118,7 +117,11 @@ namespace Study.EventManager.Data.Migrations
                     Type = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CompanyId = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Del = table.Column<int>(type: "int", nullable: false),
+                    OriginalFileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ServerFileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -149,14 +152,37 @@ namespace Study.EventManager.Data.Migrations
                         name: "FK_EventUser_Event_EventsId",
                         column: x => x.EventsId,
                         principalTable: "Event",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_EventUser_User_UsersId",
                         column: x => x.UsersId,
                         principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EventUserLink",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    EventId = table.Column<int>(type: "int", nullable: false),
+                    UserRole = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventUserLink", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EventUserLink_Event_EventId",
+                        column: x => x.EventId,
+                        principalTable: "Event",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_EventUserLink_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -193,6 +219,16 @@ namespace Study.EventManager.Data.Migrations
                 name: "IX_EventUser_UsersId",
                 table: "EventUser",
                 column: "UsersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventUserLink_EventId",
+                table: "EventUserLink",
+                column: "EventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EventUserLink_UserId",
+                table: "EventUserLink",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -205,6 +241,9 @@ namespace Study.EventManager.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "EventUser");
+
+            migrationBuilder.DropTable(
+                name: "EventUserLink");
 
             migrationBuilder.DropTable(
                 name: "Event");

@@ -27,8 +27,16 @@ namespace Study.EventManager.Model
         public int CompanyId { get; set; }
         public virtual Company Company { get; set; }
 
-        public string Description { get; set; }
+        public string Description { get; set; }        
 
         public virtual List<User> Users { get; set; } = new List<User>();
+
+        public int Del { get; set; }
+
+        public string OriginalFileName { get; set; }
+
+        public string ServerFileName { get; set; }
+
+        public string FotoUrl { get; set; }
     }
 }

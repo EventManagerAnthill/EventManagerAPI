@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Controllers
 {
@@ -131,6 +132,30 @@ namespace API.Controllers
                 return Ok("successful event delete");
             }
             catch (APIEventException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Comment.
+        /// </summary>
+        [HttpPut]
+        [Route("MakeEventDel/{id}")]
+        public IActionResult MakeEvenDel(int id)
+        {
+            try
+            {
+                var userDto = new EventDto
+                {
+                    Id = id,
+                    Del = 1
+                };
+                var data = _service.MakeEventDel(userDto.Id, userDto);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }

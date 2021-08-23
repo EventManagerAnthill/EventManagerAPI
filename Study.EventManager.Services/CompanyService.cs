@@ -17,12 +17,14 @@ namespace Study.EventManager.Services
         private IContextManager _contextManager;
         private IEnumerable<Company> data;
         private IUploadService _uploadService;
+        private readonly string _urlAdress;
 
-        public CompanyService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService)
+        public CompanyService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings)
         {
             _generateEmailWrapper = generateEmailWrapper;
             _contextManager = contextManager;
             _uploadService = uploadService;
+            _urlAdress = settings.FrontUrl;
         }
 
         public CompanyDto GetCompany(int id)
@@ -223,7 +225,9 @@ namespace Study.EventManager.Services
 
             var generateEmail = new GenerateEmailDto
             {
-                UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + companyId + "?",
+                //UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + companyId + "?",
+
+                UrlAdress = _urlAdress + "/company/" + companyId + "?",
                 EmailMainText = "Invitation to the company, for confirmation follow the link",
                 ObjectId = companyId,
                 Subject = "Welcome to the Company"
@@ -274,8 +278,8 @@ namespace Study.EventManager.Services
                 UserId = user.Id,
                 UserRole = 3
             };
-            var userToCompany = repoCompUser.Add(entity);
-            //end first variant
+            repoCompUser.Add(entity);
+            //end second variant
 
             _contextManager.Save();
             return "You successfully join the Company";

@@ -6,6 +6,7 @@ using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Wrappers.Contracts;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Study.EventManager.Services
 {
@@ -13,11 +14,13 @@ namespace Study.EventManager.Services
     {
         private IGenerateEmailWrapper _generateEmailWrapper;
         private IContextManager _contextManager;
+        private readonly string _urlAdress;
 
-        public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper)
+        public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings)
         {
             _generateEmailWrapper = generateEmailWrapper;
             _contextManager = contextManager;
+            _urlAdress = settings.FrontUrl;
         }
 
         public void sendInviteEmail(int EventId, string Email)
@@ -44,7 +47,9 @@ namespace Study.EventManager.Services
 
             var generateEmail = new GenerateEmailDto
             {
-                UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + EventId + "?",
+                //UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + EventId + "?",
+                
+                UrlAdress = _urlAdress + "/company/" + EventId + "?",
                 EmailMainText = "Invitation to the event, for confirmation follow the link",
                 ObjectId = EventId,
                 Subject = "Welcome to the Event"
@@ -62,25 +67,24 @@ namespace Study.EventManager.Services
             {
                 throw new ValidationException("User not found.");
             }
+     
+            var repoEventUser = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
+            var eventUser = repoEventUser.GetRecordByEventAndUser(user.Id, EventId);
 
-            var userEvents = repoUser.GetEventsByUser(user.Id);
-
-            var repoEvent = _contextManager.CreateRepositiry<IEventRepo>();
-            var userEvent = repoEvent.GetById(EventId);
-
-            if (userEvent == null)
-            {
-                throw new ValidationException("Event not found.");
-            }
-
-            if (userEvents.Any(x => x.Id == EventId))
+            if (!(eventUser == null))
             {
                 throw new ValidationException("User is already added to the event.");
             }
 
-            user.Events.Add(userEvent);
+            var entity = new EventUserLink
+            {
+                EventId = EventId,
+                UserId = user.Id,
+                UserRole = 3
+            };
+            repoEventUser.Add(entity);
+      
             _contextManager.Save();
-
             return "You successfully join the Event";
         }
 
@@ -108,6 +112,18 @@ namespace Study.EventManager.Services
                 var repo = _contextManager.CreateRepositiry<IEventRepo>();
                 repo.Add(entity);
                 _contextManager.Save();
+
+                //add user to the event
+                var repoEventUser = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
+                var eventUser = new EventUserLink
+                {
+                    EventId = entity.Id,
+                    UserId = user.Id,
+                    UserRole = 1
+                };
+                repoEventUser.Add(eventUser);
+                _contextManager.Save();
+
                 return MapToDto(entity);
             }
             catch
@@ -184,6 +200,54 @@ namespace Study.EventManager.Services
                 CompanyId = dto.CompanyId
             };
         }
+
+        public EventDto MakeEventDel(int EventId, EventDto dto)
+        {
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var data = repo.GetById(EventId);
+            data.Del = dto.Del;
+            _contextManager.Save();
+
+            sendEmailToUsers(EventId, "cancellation of an event", "The Event " + "'" + data.Name + "' was canceled");
+
+            return MapToDto(data);
+        }
+
+        public void sendEmailToUsers(int EventId, string subject, string mainMassage)
+        {
+            var eventRepo = _contextManager.CreateRepositiry<IEventRepo>();
+            var getEvent = eventRepo.GetById(EventId);
+            if (getEvent == null)
+            {
+                throw new ValidationException("Event not found");
+            }
+
+            var repo = _contextManager.CreateRepositiry<IEventUserLinkRepo>();                        
+            var data = repo.GetAll().Where(x => x.EventId == EventId);
+            var listUsers = repo.GetAllUsers(EventId);
+
+            if (listUsers == null)
+            {
+                throw new ValidationException("Users not found in this event");
+            }
+
+            var generateEmail = new GenerateEmailDto
+            {                
+                UrlAdress = _urlAdress+ "/event/" + EventId + "?",                
+                EmailMainText = mainMassage,
+                ObjectId = EventId,
+                Subject = subject
+            };
+
+            listUsers.Select(x => x.User);
+
+            foreach (EventUserLink user in listUsers)
+            {
+                Thread thread = new Thread(() => _generateEmailWrapper.GenerateEmail(generateEmail, user.User));
+                thread.Start(); 
+            }
+        }
+
     }
 }
 

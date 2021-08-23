@@ -18,12 +18,14 @@ namespace Study.EventManager.Services
         private IGenerateEmailWrapper _generateEmailWrapper;
         private IContextManager _contextManager;
         private IUploadService _uploadService;
-         
-        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService)
+        private readonly string _urlAdress;
+
+        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings)
         {         
             _generateEmailWrapper = generateEmailWrapper;            
             _contextManager = contextManager;
             _uploadService = uploadService;
+            _urlAdress = settings.FrontUrl;
         }
    
         public UserDto GetUser(int id)
@@ -47,7 +49,7 @@ namespace Study.EventManager.Services
             ValidateUser(dto.FirstName, dto.LastName, dto.Email);
             ValidatePassword(dto.Password);
             var isVerified = false;
-            if (!(dto.EmailVerification))
+            if (dto.EmailVerification)
             {
                 SendWelcomeEmail(dto);
                 isVerified = true;
@@ -179,7 +181,9 @@ namespace Study.EventManager.Services
 
                 var generateEmail = new GenerateEmailDto
                 {
-                    UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/signin?",
+                    //UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/signin?",
+
+                    UrlAdress = _urlAdress + "/signin?",
                     EmailMainText = "You are currently registered using",
                     ObjectId = 0,
                     Subject = "Welcome"

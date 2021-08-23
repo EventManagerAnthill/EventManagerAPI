@@ -88,10 +88,7 @@ namespace API
                      Configuration.GetSection("Authentication:Google");
 
                  options.ClientId = googleAuthNSection["ClientId"];
-                 options.ClientSecret = googleAuthNSection["ClientSecret"];                 
-                 //options.CallbackPath = "/api/user/google-response"; // Or register the default "/sigin-oidc"
-                 //options.Re. = "https://steventmanagerdev01.z13.web.core.windows.net"; // Or register the default "/sigin-oidc"
-
+                 options.ClientSecret = googleAuthNSection["ClientSecret"];                                 
                  options.Scope.Add("email");
              })
             .AddCookie()
@@ -102,7 +99,6 @@ namespace API
                 facebookOptions.AppId = facebookAuthNSection["AppId"];
                 facebookOptions.AppSecret = facebookAuthNSection["AppSecret"];
                 facebookOptions.CallbackPath = "/api/user/facebook-response";
-              //  facebookOptions.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             });
         
             ContainerConfiguration.Configure(services, _settings);

@@ -7,18 +7,18 @@ using System.Text;
 
 namespace Study.EventManager.Data.Configurations
 {
-    public class CompanyUserLinkConfig : IEntityTypeConfiguration<CompanyUserLink>
+    public class EventUserLinkConfig : IEntityTypeConfiguration<EventUserLink>
     {
-        public void Configure(EntityTypeBuilder<CompanyUserLink> builder)
+        public void Configure(EntityTypeBuilder<EventUserLink> builder)
         {
-            builder.ToTable("CompanyUserLink");
-            builder.HasKey(o => o.Id);            
+            builder.ToTable("EventUserLink");
+            builder.HasKey(o => o.Id);
             builder.Property(t => t.UserId);
-            builder.Property(t => t.CompanyId);
+            builder.Property(t => t.EventId);
             builder.Property(t => t.UserRole);
 
             builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(x => x.Company).WithMany().HasForeignKey(x => x.CompanyId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.Event).WithMany().HasForeignKey(x => x.EventId).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

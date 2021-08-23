@@ -13,5 +13,6 @@ namespace Study.EventManager.Services.Contract
         void DeleteEvent(int id);
         public void sendInviteEmail(int EventId, string Email);
         public string AcceptInvitation(int EventId, string Email);
+        public EventDto MakeEventDel(int id, EventDto dto);
     }
 }

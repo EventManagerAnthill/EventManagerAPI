@@ -9,5 +9,7 @@ namespace Study.EventManager.Services
         public string ConnectionString { get; set; }
 
         public EmailSettings MailSettings { get; set; }
+
+        public string FrontUrl { get; set; }
     }
 }

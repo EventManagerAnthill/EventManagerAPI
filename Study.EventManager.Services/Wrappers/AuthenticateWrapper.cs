@@ -16,6 +16,7 @@ namespace Study.EventManager.Services.Wrappers
         private readonly string _facebookURL;
         private readonly string _accesstokenUrl;
         private readonly string _userDataUrl;
+
         public AuthenticateWrapper()
         {
             _facebookURL = "https://graph.facebook.com";

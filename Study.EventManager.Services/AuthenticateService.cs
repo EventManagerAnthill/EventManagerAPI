@@ -16,11 +16,13 @@ namespace Study.EventManager.Services
         const string secretKey = "emailVerificationHash";
         private IGenerateEmailWrapper _generateEmailWrapper;        
         private IContextManager _contextManager;
+        private readonly string _urlAdress;
 
-        public AuthenticateService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper)
+        public AuthenticateService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings)
         {
             _contextManager = contextManager;
             _generateEmailWrapper = generateEmailWrapper;
+            _urlAdress = settings.FrontUrl;
         }
 
         public UserDto Authenticate(string email, string password)
@@ -130,7 +132,9 @@ namespace Study.EventManager.Services
 
             var generateEmail = new GenerateEmailDto
             {
-                UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/resetpassword?",
+                //UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/resetpassword?",
+
+                UrlAdress = _urlAdress + "/resetpassword?",
                 EmailMainText = "Password recovery",
                 ObjectId = 0,
                 Subject = "Password recovery"

@@ -25,5 +25,13 @@ namespace Study.EventManager.Services.Dto
 
         [Required]
         public int CompanyId { get; set; }
+
+        public int Del { get; set; }
+
+        public string OriginalFileName { get; set; }
+
+        public string ServerFileName { get; set; }
+
+        public string FotoUrl { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace Study.EventManager.Data.Configurations
             builder.Property(t => t.ServerFileName);
             builder.Property(t => t.FotoUrl);
 
-            builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);            
+            builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);            
         }
     }
 }

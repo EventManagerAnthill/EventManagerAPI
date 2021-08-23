@@ -14,7 +14,7 @@ namespace Study.EventManager.Services.Wrappers
     internal class EmailWrapper : IEmailWrapper
     {
         private readonly EmailSettings _mailSettings;
-
+        
         public EmailWrapper(Settings settings)
         {
             _mailSettings = settings.MailSettings;
@@ -24,7 +24,10 @@ namespace Study.EventManager.Services.Wrappers
         {
             var email = new MimeMessage();
             email.Sender = MailboxAddress.Parse(_mailSettings.Mail);
+
             email.To.Add(new MailboxAddress(model.ToName, model.ToAddress));
+
+
             email.Subject = model.Subject;
             var builder = new BodyBuilder();
             builder.HtmlBody = model.Body;
