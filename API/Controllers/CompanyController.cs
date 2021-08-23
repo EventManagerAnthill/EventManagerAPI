@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
+using System;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -23,9 +24,6 @@ namespace API.Controllers
             _service = service;
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>.
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetCompany(int id)
@@ -41,9 +39,6 @@ namespace API.Controllers
             }
         }
 
-        /// /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpPost("sendInviteEmail")]
         public IActionResult SendInviteEmail(CompanyUserModel model)
         {
@@ -58,9 +53,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpPost("acceptInvitation")]
         public IActionResult AcceptInvitation(CompanyUserModel model)
         {
@@ -75,9 +67,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpGet]
         [Route("all")]
         public IActionResult Companies()
@@ -93,9 +82,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpGet]
         [Route("GetAllCompaniesByOwner")]
         public IActionResult CompaniesByOwner(string email)
@@ -111,9 +97,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpGet]
         [Route("GetAllCompaniesByUser")]
         public IActionResult CompaniesByUser(string email)
@@ -129,9 +112,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpGet]
         [Route("GetCompanyCountUsers")]
         public IActionResult GetCompanyCountUsers(int companyId)
@@ -147,9 +127,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpPost]
         [Route("")]
         public IActionResult CreateCompany([FromBody]CompanyCreateModel model)
@@ -173,9 +150,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpPut]
         [Route("update")]
         public IActionResult UpdateCompany(int id, [FromBody] CompanyUpdateModel model)
@@ -199,9 +173,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpPut]
         [Route("MakeCompanyDel/{id}")]
         public IActionResult MakeCompanyDel(int id)
@@ -222,9 +193,6 @@ namespace API.Controllers
             }
         }
 
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpDelete]
         [Route("delete/{id}")]
         public IActionResult DeleteCompany(int id)
@@ -276,6 +244,39 @@ namespace API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet]
+        [Route("GetLinkToJoinCompany")]
+        public IActionResult GetLinkToJoinCompany(int Id, DateTime date)
+        {
+            try
+            {
+                var data = _service.GenerateLinkToJoin(Id, date);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("")]
+        public IActionResult JoinCompanyViaLink(JoinCompanyModel model)
+        {
+            try
+            {                                  
+                var result = _service.JoinCompanyViaLink(model.CompanyId, model.Email, model.Code);        
+                return Ok(result);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿using Study.EventManager.Model;
 using Study.EventManager.Services.Dto;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,5 +19,7 @@ namespace Study.EventManager.Services.Contract
         public string AcceptInvitation(int companyId, string Email);
         public int CountCompanyUser(int companyId);
         Task UploadCompanyFoto(int id, FileDto model);
+        public string GenerateLinkToJoin(int CompanyId, DateTime date);
+        public string JoinCompanyViaLink(int CompanyId, string email, string Code);
     }
 }

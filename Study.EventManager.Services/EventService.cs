@@ -183,7 +183,8 @@ namespace Study.EventManager.Services
                 Type = entity.Type,
                 HoldingDate = entity.HoldingDate,
                 Description = entity.Description,
-                CreateDate = entity.CreateDate
+                CreateDate = entity.CreateDate,
+                Del = entity.Del
             };
         }
 
@@ -197,7 +198,8 @@ namespace Study.EventManager.Services
                 UserId = id,
                 Description = dto.Description,
                 CreateDate = dto.CreateDate,
-                CompanyId = dto.CompanyId
+                CompanyId = dto.CompanyId,
+                Del = dto.Del
             };
         }
 

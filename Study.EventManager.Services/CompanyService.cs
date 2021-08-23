@@ -7,17 +7,20 @@ using Study.EventManager.Services.Wrappers.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Study.EventManager.Services
 {
     internal class CompanyService : ICompanyService
-    {        
+    {
         private IGenerateEmailWrapper _generateEmailWrapper;
         private IContextManager _contextManager;
         private IEnumerable<Company> data;
         private IUploadService _uploadService;
         private readonly string _urlAdress;
+        const string secretKey = "JoinCompanyViaLinkHash";
 
         public CompanyService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings)
         {
@@ -67,7 +70,7 @@ namespace Study.EventManager.Services
             repoCompUser.Add(companyUser);
             _contextManager.Save();
 
-            return MapToDto(entity);          
+            return MapToDto(entity);
         }
 
         public CompanyDto UpdateCompany(int id, CompanyDto dto)
@@ -80,7 +83,7 @@ namespace Study.EventManager.Services
                 if ((company.Name == dto.Name) && !(company.Id == dto.Id))
                 {
                     throw new ValidationException("Company with name <" + dto.Name + "> is already exists.");
-                } 
+                }
             }
 
             var data = repo.GetById(id);
@@ -107,13 +110,13 @@ namespace Study.EventManager.Services
 
             return MapToDto(data);
         }
-        
+
         public void DeleteCompany(int id)
         {
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var data = repo.GetById(id);
             var entity = repo.Delete(data);
-            _contextManager.Save();          
+            _contextManager.Save();
         }
 
         public IEnumerable<CompanyDto> GetAllByOwner(string email)
@@ -121,7 +124,7 @@ namespace Study.EventManager.Services
             try
             {
                 var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
-                
+
                 if (!(email == null))
                 {
                     var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
@@ -133,7 +136,7 @@ namespace Study.EventManager.Services
                 {
                     data = repo.GetAll().Where(x => x.Del == 0);
                 }
-              
+
                 return data.Select(x => MapToDto(x)).ToList();
             }
             catch
@@ -178,7 +181,7 @@ namespace Study.EventManager.Services
             if (entity == null)
             {
                 return null;
-            } 
+            }
             return new CompanyDto
             {
                 Id = entity.Id,
@@ -188,12 +191,12 @@ namespace Study.EventManager.Services
                 Description = entity.Description,
                 Del = entity.Del
             };
-        }  
+        }
 
         private Company MapToEntity(CompanyCreateDto dto, int userId)
         {
             return new Company
-            {   
+            {
                 Name = dto.Name,
                 UserId = userId,
                 Type = dto.Type,
@@ -213,7 +216,7 @@ namespace Study.EventManager.Services
 
             var company = GetCompany(companyId);
             if (!(company == null))
-            {                
+            {
                 throw new ValidationException("Company not found.");
             }
 
@@ -233,19 +236,19 @@ namespace Study.EventManager.Services
                 Subject = "Welcome to the Company"
             };
 
-            _generateEmailWrapper.GenerateEmail(generateEmail, user);          
+            _generateEmailWrapper.GenerateEmail(generateEmail, user);
         }
 
         public string AcceptInvitation(int companyId, string Email)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repoUser.GetUserByEmail(Email);         
-            
+            var user = repoUser.GetUserByEmail(Email);
+
             if (user == null)
             {
                 throw new ValidationException("User not found.");
             }
-                     
+
             var repoCompany = _contextManager.CreateRepositiry<ICompanyRepo>();
             var company = repoCompany.GetById(companyId);
 
@@ -266,7 +269,7 @@ namespace Study.EventManager.Services
             //second variant
             var repoCompUser = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
             var companyUser = repoCompUser.GetRecordByCompanyAndUser(user.Id, companyId);
-            
+
             if (!(companyUser == null))
             {
                 throw new ValidationException("User is already added to the company.");
@@ -328,5 +331,96 @@ namespace Study.EventManager.Services
             company.OriginalFileName = null;
             _contextManager.Save();
         }
+
+        public string GenerateLinkToJoin(int CompanyId, DateTime date)
+        {
+            var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
+            var company = repo.GetById(CompanyId);
+
+            if (company == null)
+            {
+                throw new ValidationException("Company not found");
+            }
+            
+            string hashUrl = GetHashString(secretKey + company.Name);  
+            
+            hashUrl = System.Web.HttpUtility.UrlEncode(hashUrl);
+            
+            string url;
+            if (!(date == DateTime.MinValue))
+            {
+                var dateStr = date.ToString("dd.MM.yyyy");
+                dateStr = System.Web.HttpUtility.UrlEncode(dateStr);
+                url = "?" + "companyid=" + company.Id + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
+            }
+            else
+            {
+                url = "?" + "companyid=" + company.Id + "&code={" + hashUrl + "}";
+            }
+            
+            url = _urlAdress + url;
+            return url;
+        }
+  
+        public string GetHashString(string s)
+        {
+            byte[] bytes = Encoding.Unicode.GetBytes(s);
+
+            MD5CryptoServiceProvider CSP = new MD5CryptoServiceProvider();
+
+            byte[] byteHash = CSP.ComputeHash(bytes);
+
+            string hash = string.Empty;
+
+            foreach (byte b in byteHash)
+                hash += string.Format("{0:x2}", b);
+
+            return hash;
+        }
+
+        public string JoinCompanyViaLink(int CompanyId, string email, string Code)
+        {
+            var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
+            var company = repo.GetById(CompanyId);
+            if (company == null)
+            {
+                throw new ValidationException("Company not found");
+            }
+
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetUserByEmail(email);
+            if (user == null)
+            {
+                throw new ValidationException("User not found");
+            }
+
+            string hashUrl = "{" + GetHashString(secretKey + company.Name) + "}";
+
+            if (Code == hashUrl)
+            {               
+                var repoCompUser = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
+                var companyUser = repoCompUser.GetRecordByCompanyAndUser(user.Id, CompanyId);
+
+                if (!(companyUser == null))
+                {
+                    throw new ValidationException("User is already added to the company.");
+                }
+
+                var entity = new CompanyUserLink
+                {
+                    CompanyId = CompanyId,
+                    UserId = user.Id,
+                    UserRole = 3
+                };
+                repoCompUser.Add(entity);
+                _contextManager.Save();
+
+                return "You are join the company";
+            }
+            else
+            {
+                return "Sorry, unexpected error";
+            }            
+        }     
     }
 } 
