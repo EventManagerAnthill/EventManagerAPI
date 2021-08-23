@@ -18,5 +18,6 @@ namespace Study.EventManager.Services.Contract
         public string AcceptInvitation(int companyId, string Email);
         public int CountCompanyUser(int companyId);
         Task UploadCompanyFoto(int id, FileDto model);
+        Task DeleteCompanyFoto(int CompanyId);
     }
 }

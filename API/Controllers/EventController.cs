@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace API.Controllers
 {
@@ -137,7 +138,6 @@ namespace API.Controllers
             }
         }
 
-
         /// <summary>
         /// Comment.
         /// </summary>
@@ -154,6 +154,50 @@ namespace API.Controllers
                 };
                 var data = _service.MakeEventDel(userDto.Id, userDto);
                 return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("upload")]
+        [HttpPost]
+        public async Task<IActionResult> Upload(int id, IFormFile file)//([FromForm] FileAPIModel model)
+        {
+            try
+            {
+                if (file.Length > 0)
+                {
+                    var fileDto = new FileDto
+                    {
+                        ImageFile = file,
+                        Container = "eventfotos"
+                    };
+
+                    await _service.UploadEventFoto(id, fileDto);
+                }
+                else
+                {
+                    throw new ValidationException("foto not found");
+                }
+
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("deleteFoto")]
+        public async Task<IActionResult> DeleteEventFoto(int EventId)
+        {
+            try
+            {
+                await _service.DeleteEventFoto(EventId);
+                return Ok();
             }
             catch (ValidationException ex)
             {

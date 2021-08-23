@@ -264,11 +264,11 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("deleteFoto")]
-        public async Task<IActionResult> DeleteCompanyFoto(UserEmailModel model)
+        public async Task<IActionResult> DeleteCompanyFoto(int CompanyId)
         {
             try
             {
-                //await _serviceUser.DeleteUserFoto(model.Email);
+                await _service.DeleteCompanyFoto(CompanyId);
                 return Ok();
             }
             catch (ValidationException ex)

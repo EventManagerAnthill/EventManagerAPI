@@ -301,7 +301,7 @@ namespace Study.EventManager.Services
             }
 
             var guidStr = Guid.NewGuid().ToString();
-            var serverFileName = "userId-" + company.Id.ToString() + "-" + guidStr;
+            var serverFileName = "companyId-" + company.Id.ToString() + "-" + guidStr;
 
             model.ServerFileName = serverFileName;
             var filePath = await _uploadService.Upload(model);
@@ -322,7 +322,7 @@ namespace Study.EventManager.Services
                 throw new ValidationException("Company not found");
             }
 
-            await _uploadService.Delete(company.ServerFileName, "userfotos");
+            await _uploadService.Delete(company.ServerFileName, "companyfotos");
             company.ServerFileName = null;
             company.FotoUrl = null;
             company.OriginalFileName = null;

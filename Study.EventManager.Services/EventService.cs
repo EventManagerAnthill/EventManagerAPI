@@ -4,9 +4,11 @@ using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Wrappers.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Study.EventManager.Services
 {
@@ -14,12 +16,14 @@ namespace Study.EventManager.Services
     {
         private IGenerateEmailWrapper _generateEmailWrapper;
         private IContextManager _contextManager;
+        private IUploadService _uploadService;
         private readonly string _urlAdress;
 
-        public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings)
+        public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings)
         {
             _generateEmailWrapper = generateEmailWrapper;
             _contextManager = contextManager;
+            _uploadService = uploadService;
             _urlAdress = settings.FrontUrl;
         }
 
@@ -248,6 +252,49 @@ namespace Study.EventManager.Services
             }
         }
 
+        public async Task UploadEventFoto(int eventId, FileDto model)
+        {
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var eventRecord = repo.GetById(eventId);
+
+            if (eventRecord == null)
+            {
+                throw new ValidationException("Event not found");
+            }
+
+            if (!(eventRecord.ServerFileName == null))
+            {
+                await _uploadService.Delete(eventRecord.ServerFileName, model.Container);
+            }
+
+            var guidStr = Guid.NewGuid().ToString();
+            var serverFileName = "eventId-" + eventRecord.Id.ToString() + "-" + guidStr;
+
+            model.ServerFileName = serverFileName;
+            var filePath = await _uploadService.Upload(model);
+            eventRecord.OriginalFileName = model.ImageFile.FileName;
+            eventRecord.FotoUrl = filePath.Url;
+            eventRecord.ServerFileName = filePath.ServerFileName + model.ImageFile.FileName;
+
+            _contextManager.Save();
+        }
+
+        public async Task DeleteEventFoto(int EventId)
+        {
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var eventRecord = repo.GetById(EventId);
+
+            if (eventRecord == null)
+            {
+                throw new ValidationException("Event not found");
+            }
+
+            await _uploadService.Delete(eventRecord.ServerFileName, "eventfotos");
+            eventRecord.ServerFileName = null;
+            eventRecord.FotoUrl = null;
+            eventRecord.OriginalFileName = null;
+            _contextManager.Save();
+        }
     }
 }
 
