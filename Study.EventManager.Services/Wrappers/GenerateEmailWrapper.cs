@@ -20,7 +20,7 @@ namespace Study.EventManager.Services.Wrappers
             _emailWrapper = emailWrapper;
         }
 
-        public void GenerateEmail(GenerateEmailDto dto, User user)
+        public void GenerateAndSendEmail(GenerateEmailDto dto, User user)
         {
             try
             {

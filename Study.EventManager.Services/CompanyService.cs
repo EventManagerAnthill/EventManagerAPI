@@ -1,15 +1,23 @@
-﻿using Study.EventManager.Data.Contract;
+﻿
+using CsvHelper;
+using Microsoft.AspNetCore.Http;
+using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
+using Study.EventManager.Services.Models.APIModels;
 using Study.EventManager.Services.Wrappers.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using ValidationException = Study.EventManager.Services.Exceptions.ValidationException;
 
 namespace Study.EventManager.Services
 {
@@ -20,6 +28,7 @@ namespace Study.EventManager.Services
         private IEnumerable<Company> data;
         private IUploadService _uploadService;
         private readonly string _urlAdress;
+
         const string secretKey = "JoinCompanyViaLinkHash";
 
         public CompanyService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings)
@@ -204,26 +213,36 @@ namespace Study.EventManager.Services
             };
         }
 
-        public void sendInviteEmail(int companyId, string Email)
-        {
+    /*    public void sendInviteEmail(int companyId, string Email)
+        {           
+            var company = GetCompany(companyId);
+            if (company == null)
+            {
+                throw new ValidationException("Company not found.");
+            }
+
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetUserByEmail(Email);
 
             if (user == null)
             {
-                throw new ValidationException("Incorrect email combination");
+                user = new User
+                {
+                    Email = Email,
+                    FirstName = "Dear",
+                    LastName = "Anonym",
+                    Username = "Anonym"
+                }; 
             }
-
-            var company = GetCompany(companyId);
-            if (!(company == null))
+            else
             {
-                throw new ValidationException("Company not found.");
-            }
+                var repo = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
+                var companyUser = repo.GetRecordByCompanyAndUser(user.Id, companyId);
 
-            var userCompanies = repoUser.GetCompaniesByUser(user.Id);
-            if (userCompanies.Any(x => x.Id == companyId))
-            {
-                throw new ValidationException("User with this email is already exist in company " + company.Name);
+                if (companyUser == null)
+                {
+                    throw new ValidationException("User with this email is already exist in company " + company.Name);
+                }               
             }
 
             var generateEmail = new GenerateEmailDto
@@ -236,8 +255,8 @@ namespace Study.EventManager.Services
                 Subject = "Welcome to the Company"
             };
 
-            _generateEmailWrapper.GenerateEmail(generateEmail, user);
-        }
+            _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);
+        }*/
 
         public string AcceptInvitation(int companyId, string Email)
         {
@@ -421,6 +440,141 @@ namespace Study.EventManager.Services
             {
                 return "Sorry, unexpected error";
             }            
-        }     
+        }
+
+        public void InviteUsersToCompany(CompanyTreatmentUsersModel model)
+        {          
+            var company = GetCompany(model.CompanyId);
+            if (company == null)
+            {
+                throw new ValidationException("Company not found.");
+            }
+
+            var generateEmail = new GenerateEmailDto
+            {
+                UrlAdress = _urlAdress + "/company/" + model.CompanyId + "?",
+                EmailMainText = "Invitation to the company, for confirmation follow the link",
+                ObjectId = model.CompanyId,
+                Subject = "Welcome to the Company"
+            };
+                     
+            foreach (string email in model.Email)
+            {
+                EmailFunctionality(email, model.CompanyId, generateEmail);
+            }         
+        }
+
+        public string AppointUserAsAdmin(CompanyTreatmentUsersModel model)
+        {
+            var company = GetCompany(model.CompanyId);
+            if (company == null)
+            {
+                throw new ValidationException("Company not found.");
+            }
+
+            var userError = "Something wrong with this email(s):";
+            foreach (string email in model.Email)
+            {
+                var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+                var user = repoUser.GetUserByEmail(email);
+                if (!(user == null))
+                {
+                    var repo = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
+                    var companyUser = repo.GetRecordByCompanyAndUser(user.Id, model.CompanyId);                    
+
+                    if (!(companyUser == null))
+                    {
+                        companyUser.UserRole = 2;
+                        _contextManager.Save();
+
+                        var generateEmail = new GenerateEmailDto
+                        {
+                            UrlAdress = _urlAdress + "/company/" + model.CompanyId + "?",
+                            EmailMainText = "Congratulations, you are Admin of " + company.Name +"! Now you can invite people to the company and create events.",
+                            ObjectId = model.CompanyId,
+                            Subject = "Company"
+                        };
+                        _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);
+                    }
+                    else
+                    {
+                        userError = userError + " " + email;
+                    }
+                }
+                else
+                {
+                    userError = userError + " " + email;
+                }                
+            }
+            if (userError == "Something wrong with this email(s):")
+            {
+                return "Users are successfully assigned";
+            }
+            else
+            {
+                return userError;
+            }
+        }
+        
+        public void AddUsersCSV(int CompanyId, IFormFile file)
+        {
+            var listEmails = new List<string>();
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {                
+                csv.Read();
+                csv.ReadHeader();
+                while (csv.Read())
+                {
+                    listEmails.Add(csv.GetField("Email"));                             
+                }       
+            }
+            var a = listEmails;
+
+            var generateEmail = new GenerateEmailDto
+            {
+                UrlAdress = _urlAdress + "/company/" + CompanyId + "?",
+                EmailMainText = "Invitation to the company, for confirmation follow the link",
+                ObjectId = CompanyId,
+                Subject = "Welcome to the Company"
+            };
+
+            foreach (string email in listEmails)
+            {
+                EmailFunctionality(email, CompanyId, generateEmail);
+            }
+        }
+
+        public void EmailFunctionality(string email, int CompanyId, GenerateEmailDto dto)
+        {
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetUserByEmail(email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    FirstName = "",
+                    LastName = "",
+                    Username = ""
+                };
+
+                Thread thread = new Thread(() => _generateEmailWrapper.GenerateAndSendEmail(dto, user));
+                thread.Start();
+            }
+            else
+            {
+                var repo = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
+                var companyUser = repo.GetRecordByCompanyAndUser(user.Id, CompanyId);
+
+                if (companyUser == null)
+                {
+                    Thread thread = new Thread(() => _generateEmailWrapper.GenerateAndSendEmail(dto, user));
+                    thread.Start();
+                }
+            }
+
+        }
     }
 } 

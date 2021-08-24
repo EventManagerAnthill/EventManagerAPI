@@ -140,7 +140,7 @@ namespace Study.EventManager.Services
                 Subject = "Password recovery"
             };
 
-            _generateEmailWrapper.GenerateEmail(generateEmail, user);            
+            _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);            
         }
 
         public string VerifyUrlEmail(string email, string code)

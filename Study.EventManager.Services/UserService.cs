@@ -189,7 +189,7 @@ namespace Study.EventManager.Services
                     Subject = "Welcome"
                 };
 
-                _generateEmailWrapper.GenerateEmail(generateEmail, user);
+                _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);
             }
             catch
             {

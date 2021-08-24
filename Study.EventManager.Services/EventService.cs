@@ -55,7 +55,7 @@ namespace Study.EventManager.Services
                 Subject = "Welcome to the Event"
             };
 
-            _generateEmailWrapper.GenerateEmail(generateEmail, user);
+            _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);
         }
 
         public string AcceptInvitation(int EventId, string Email)
@@ -257,11 +257,10 @@ namespace Study.EventManager.Services
 
             foreach (EventUserLink user in listUsers)
             {
-                Thread thread = new Thread(() => _generateEmailWrapper.GenerateEmail(generateEmail, user.User));
+                Thread thread = new Thread(() => _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user.User));
                 thread.Start(); 
             }
         }
-
     }
 }
 

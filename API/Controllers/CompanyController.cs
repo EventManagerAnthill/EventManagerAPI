@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
+using Study.EventManager.Services.Models.APIModels;
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -39,19 +42,19 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("sendInviteEmail")]
+/*        [HttpPost("sendInviteEmail")]
         public IActionResult SendInviteEmail(CompanyUserModel model)
         {
             try
             {
                 _service.sendInviteEmail(model.CompanyId, model.Email);
-                return Ok("link to join company is sent to specified  email");
+                return Ok("link to join the company is send to specified  email");
             }
             catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
 
         [HttpPost("acceptInvitation")]
         public IActionResult AcceptInvitation(CompanyUserModel model)
@@ -203,7 +206,7 @@ namespace API.Controllers
 
         [Route("upload")]
         [HttpPost]
-        public async Task<IActionResult> Upload(int id, IFormFile file)//([FromForm] FileAPIModel model)
+        public async Task<IActionResult> Upload(int id, IFormFile file)
         {
             try
             {
@@ -275,8 +278,56 @@ namespace API.Controllers
             }
         }
 
+        [HttpPost("InviteUsers")]
+        public IActionResult InviteEmail(CompanyTreatmentUsersModel model)
+        {
+            try
+            {
+                _service.InviteUsersToCompany(model);
+                return Ok("link to join the company is send to emails");
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
+        [HttpPost("AppointUserAsAdmin")]
+        public IActionResult AppointUserAsAdmin(CompanyTreatmentUsersModel model)
+        {
+            try
+            {
+                var result = _service.AppointUserAsAdmin(model);
+                return Ok(result);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
+        [Route("AddUsersCSV")]
+        [HttpPost]
+        public async Task<IActionResult> AddUsersCSV(int Companyid, IFormFile file)
+        {
+            try
+            {
+                if (file.Length > 0)
+                {
+                    _service.AddUsersCSV(Companyid, file);
+                }
+                else
+                {
+                    throw new ValidationException("file not found");
+                }
+
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
 
