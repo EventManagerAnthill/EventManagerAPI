@@ -132,8 +132,8 @@ namespace API.Controllers
                 {                   
                     var fileDto = new FileDto
                     {
-                        ImageFile = file,                
-                        Container = "userfotos"
+                        File = file,                
+                        Container = "userfotoscontainer"
                     };
 
                     await _serviceUser.UploadUserFoto(email, fileDto);  

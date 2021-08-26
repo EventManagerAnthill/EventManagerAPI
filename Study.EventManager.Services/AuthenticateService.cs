@@ -17,12 +17,14 @@ namespace Study.EventManager.Services
         private IGenerateEmailWrapper _generateEmailWrapper;        
         private IContextManager _contextManager;
         private readonly string _urlAdress;
+        private IEmailWrapper _emailWrapper;
 
-        public AuthenticateService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings)
+        public AuthenticateService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings, IEmailWrapper emailWrapper)
         {
             _contextManager = contextManager;
             _generateEmailWrapper = generateEmailWrapper;
             _urlAdress = settings.FrontUrl;
+            _emailWrapper = emailWrapper;
         }
 
         public UserDto Authenticate(string email, string password)
@@ -140,7 +142,8 @@ namespace Study.EventManager.Services
                 Subject = "Password recovery"
             };
 
-            _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);            
+            var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, user);
+            _emailWrapper.SendEmail(emailModel);
         }
 
         public string VerifyUrlEmail(string email, string code)

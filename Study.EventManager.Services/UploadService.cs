@@ -19,9 +19,9 @@ namespace Study.EventManager.Services
         public async Task<FileDto> Upload(FileDto model)
         {            
             var blobContainer = _blobServiceClient.GetBlobContainerClient(model.Container);           
-            var blobClient = blobContainer.GetBlobClient(model.ServerFileName + model.ImageFile.FileName);    
+            var blobClient = blobContainer.GetBlobClient(model.ServerFileName + model.File.FileName);    
             
-            await blobClient.UploadAsync(model.ImageFile.OpenReadStream());
+            await blobClient.UploadAsync(model.File.OpenReadStream());
 
             model.OriginalFileName = blobClient.Name;
             model.Url = blobClient.Uri.OriginalString;           
@@ -30,7 +30,7 @@ namespace Study.EventManager.Services
 
         public async Task<byte[]> Get(string imageName)
         {
-            var blobContainer = _blobServiceClient.GetBlobContainerClient("userfotos");
+            var blobContainer = _blobServiceClient.GetBlobContainerClient("userfotoscontainer");
 
             var blobClient = blobContainer.GetBlobClient(imageName);
             var downloadContent = await blobClient.DownloadAsync();

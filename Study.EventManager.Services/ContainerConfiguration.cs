@@ -23,6 +23,7 @@ namespace Study.EventManager.Services
             serviceCollection.AddScoped<IUploadService , UploadService >();
             serviceCollection.AddTransient<IGenerateEmailWrapper, GenerateEmailWrapper>();
             serviceCollection.AddTransient<IAuthenticateWrapper, AuthenticateWrapper>();
+            serviceCollection.AddTransient<IGenerateQRCode, GenerateQRCodeWrapper>();
         }
     } 
 }

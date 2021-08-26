@@ -1,5 +1,6 @@
 ﻿using Study.EventManager.Services.Dto;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Study.EventManager.Services.Contract
 {

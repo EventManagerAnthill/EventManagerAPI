@@ -8,10 +8,12 @@ namespace Study.EventManager.Services.Wrappers.Contracts
 {
     internal interface IGenerateEmailWrapper
     {
-        public void GenerateAndSendEmail(GenerateEmailDto dto, User user);
+        public EmailDto GenerateEmail(GenerateEmailDto dto, User user);
 
         public string GetUrl(string email, string urlAdress);
 
         public string GetHashString(string s);
+
+        public void GenerateAndSendEmail(GenerateEmailDto dto, User user);
     }
 }

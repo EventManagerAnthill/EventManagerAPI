@@ -1,10 +1,15 @@
-﻿using Study.EventManager.Data.Contract;
+﻿using IronPdf;
+using iText.Html2pdf;
+using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
+using Study.EventManager.Services.Models.ServiceModel;
 using Study.EventManager.Services.Wrappers.Contracts;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -14,13 +19,19 @@ namespace Study.EventManager.Services
     {
         private IGenerateEmailWrapper _generateEmailWrapper;
         private IContextManager _contextManager;
+        private IGenerateQRCode _generateQRCode;
         private readonly string _urlAdress;
+        private IEmailWrapper _emailWrapper;
+        private IUploadService _uploadService;
 
-        public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings)
+        public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings, IGenerateQRCode generateQRCode, IEmailWrapper emailWrapper, IUploadService uploadService)
         {
             _generateEmailWrapper = generateEmailWrapper;
             _contextManager = contextManager;
             _urlAdress = settings.FrontUrl;
+            _generateQRCode = generateQRCode;
+            _emailWrapper = emailWrapper;
+            _uploadService = uploadService;
         }
 
         public void sendInviteEmail(int EventId, string Email)
@@ -33,8 +44,8 @@ namespace Study.EventManager.Services
                 throw new ValidationException("Incorrect email combination");
             }
 
-            var company = GetEvent(EventId);
-            if (!(company == null))
+            var getEvent = GetEvent(EventId);
+            if (getEvent == null)
             {
                 throw new ValidationException("Company not found.");
             }
@@ -42,7 +53,7 @@ namespace Study.EventManager.Services
             var userEvents = repoUser.GetEventsByUser(user.Id);
             if (userEvents.Any(x => x.Id == EventId))
             {
-                throw new ValidationException("User with this email is already exist in event " + company.Name);
+                throw new ValidationException("User with this email is already exist in event " + getEvent.Name);
             }
 
             var generateEmail = new GenerateEmailDto
@@ -54,8 +65,9 @@ namespace Study.EventManager.Services
                 ObjectId = EventId,
                 Subject = "Welcome to the Event"
             };
-
-            _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);
+            
+            var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, user);
+            _emailWrapper.SendEmail(emailModel);
         }
 
         public string AcceptInvitation(int EventId, string Email)
@@ -66,6 +78,14 @@ namespace Study.EventManager.Services
             if (user == null)
             {
                 throw new ValidationException("User not found.");
+            }
+
+            var repoEvent = _contextManager.CreateRepositiry<IEventRepo>();
+            var companyEvent = repoEvent.GetById(EventId);
+
+            if (companyEvent == null)
+            {
+                throw new ValidationException("Event not found.");
             }
      
             var repoEventUser = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
@@ -84,8 +104,11 @@ namespace Study.EventManager.Services
             };
             repoEventUser.Add(entity);
       
-            _contextManager.Save();
-            return "You successfully join the Event";
+           // _contextManager.Save();
+
+            SendEventTicket(companyEvent, user);
+
+            return "You successfully join the Event, the ticket send to your email";
         }
 
         public EventDto GetEvent(int id)
@@ -257,9 +280,65 @@ namespace Study.EventManager.Services
 
             foreach (EventUserLink user in listUsers)
             {
-                Thread thread = new Thread(() => _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user.User));
+                Thread thread = new Thread(() => _emailWrapper.SendEmail(_generateEmailWrapper.GenerateEmail(generateEmail, user.User)));
                 thread.Start(); 
             }
+        }
+
+        public void SendEventTicket(Event eventU, User user)
+        {
+            var pdfBytes = GetEventTicket(eventU, user);
+          
+            var file = new FileSendEmail
+            {             
+                FileBytes = pdfBytes,                
+                FileName = eventU.Name + "_Ticket.pdf"
+            };
+           
+            var generateEmail = new GenerateEmailDto
+            {
+                UrlAdress = _urlAdress + "/event/" + eventU.Id + "?",
+                EmailMainText = "Your Ticket on Event",
+                ObjectId = eventU.Id,
+                Subject = "event ticket"
+            };
+
+            var emailModel= _generateEmailWrapper.GenerateEmail(generateEmail, user);
+            _emailWrapper.SendEmail(emailModel, file);
+        }
+
+        public byte[] GetEventTicket(Event eventU, User user)
+        {
+
+            string FileInputPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "TikectTemplateIn.html");                        
+            StreamReader str = new StreamReader(FileInputPath);
+            string MailText = str.ReadToEnd();
+            str.Close();
+
+            string foroUrl;
+            if (eventU.FotoUrl == null)
+            {
+                foroUrl = "src='https://eventmanagerstoragefiles.blob.core.windows.net/eventfotoscontainer/logoEvent.JPG'";
+            }
+            else
+            {
+                foroUrl = "src='" + eventU.FotoUrl+"'";
+            }
+            var imgBase64 = _generateQRCode.QRCode(_urlAdress);
+            var mailText = MailText.Replace("[EventFoto]", foroUrl)
+                .Replace("[USERNAME]", user.FirstName + " " + user.LastName)
+                .Replace("[NAME]", eventU.Name)
+                .Replace("[HOLDING]", eventU.HoldingDate.ToString())
+                .Replace("[DESCRIPTION]", eventU.Description)
+                .Replace("[QRCode]", imgBase64);
+
+
+            MemoryStream memStream = new MemoryStream();           
+            ConverterProperties converterProperties = new ConverterProperties();
+            HtmlConverter.ConvertToPdf(mailText, memStream);
+            byte[] pdfByte = memStream.ToArray();
+   
+            return pdfByte;               
         }
     }
 }

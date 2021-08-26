@@ -42,20 +42,6 @@ namespace API.Controllers
             }
         }
 
-/*        [HttpPost("sendInviteEmail")]
-        public IActionResult SendInviteEmail(CompanyUserModel model)
-        {
-            try
-            {
-                _service.sendInviteEmail(model.CompanyId, model.Email);
-                return Ok("link to join the company is send to specified  email");
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }*/
-
         [HttpPost("acceptInvitation")]
         public IActionResult AcceptInvitation(CompanyUserModel model)
         {
@@ -142,7 +128,6 @@ namespace API.Controllers
                     Email = model.Email,
                     Type = model.Type,
                     Description = model.Description
-
                 };
                 var data = _service.CreateCompany(companyCreateDto);
                 return Ok(data);
@@ -214,8 +199,8 @@ namespace API.Controllers
                 {                    
                     var fileDto = new FileDto
                     {
-                        ImageFile = file,                   
-                        Container = "companyfotos"
+                        File = file,                   
+                        Container = "companyfotoscontainer"
                     };
 
                     await _service.UploadCompanyFoto(id, fileDto);

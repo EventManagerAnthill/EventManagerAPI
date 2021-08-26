@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using iText.Html2pdf;
 using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
@@ -7,6 +8,7 @@ using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Wrappers.Contracts;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -19,13 +21,15 @@ namespace Study.EventManager.Services
         private IContextManager _contextManager;
         private IUploadService _uploadService;
         private readonly string _urlAdress;
+        private IEmailWrapper _emailWrapper;
 
-        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings)
+        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings, IEmailWrapper emailWrapper)
         {         
             _generateEmailWrapper = generateEmailWrapper;            
             _contextManager = contextManager;
             _uploadService = uploadService;
             _urlAdress = settings.FrontUrl;
+            _emailWrapper = emailWrapper;
         }
    
         public UserDto GetUser(int id)
@@ -49,7 +53,7 @@ namespace Study.EventManager.Services
             ValidateUser(dto.FirstName, dto.LastName, dto.Email);
             ValidatePassword(dto.Password);
             var isVerified = false;
-            if (dto.EmailVerification)
+            if (!(dto.EmailVerification))
             {
                 SendWelcomeEmail(dto);
                 isVerified = true;
@@ -189,7 +193,8 @@ namespace Study.EventManager.Services
                     Subject = "Welcome"
                 };
 
-                _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);
+                var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, user);
+                _emailWrapper.SendEmail(emailModel);
             }
             catch
             {
@@ -217,9 +222,9 @@ namespace Study.EventManager.Services
 
             model.ServerFileName = serverFileName;
             var filePath = await _uploadService.Upload(model);
-            user.OriginalFileName = model.ImageFile.FileName;
+            user.OriginalFileName = model.File.FileName;
             user.FotoUrl = filePath.Url;
-            user.ServerFileName = filePath.ServerFileName + model.ImageFile.FileName;
+            user.ServerFileName = filePath.ServerFileName + model.File.FileName;
 
             _contextManager.Save();         
         }
@@ -234,11 +239,22 @@ namespace Study.EventManager.Services
                 throw new ValidationException("User not found");
             }
 
-            await _uploadService.Delete(user.ServerFileName, "userfotos");
+            await _uploadService.Delete(user.ServerFileName, "userfotoscontainer");
             user.ServerFileName = null;
             user.FotoUrl = null;
             user.OriginalFileName = null;
             _contextManager.Save();
         }
-    }
+
+        public static void main()
+        {
+            using (FileStream htmlSource = File.Open("input.html", FileMode.Open))
+            using (FileStream pdfDest = File.Open("output.pdf", FileMode.OpenOrCreate))
+            {
+                ConverterProperties converterProperties = new ConverterProperties();
+                HtmlConverter.ConvertToPdf(htmlSource, pdfDest, converterProperties);
+            }
+        }
+
+}
 }

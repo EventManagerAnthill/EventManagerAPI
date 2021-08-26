@@ -22,15 +22,20 @@ namespace Study.EventManager.Services.Wrappers
 
         public void GenerateAndSendEmail(GenerateEmailDto dto, User user)
         {
+            var model = GenerateEmail(dto, user);
+            _emailWrapper.SendEmail(model);
+
+        }
+
+        public EmailDto GenerateEmail(GenerateEmailDto dto, User user)
+        {
             try
             {
                 string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
                 //string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
 
                 StreamReader str = new StreamReader(FilePath);
-                string MailText = str.ReadToEnd();
-                str.Close();
-
+                string MailText = str.ReadToEnd();                
                 var url = "";
 
                 if (dto.ObjectId == 0) 
@@ -46,7 +51,7 @@ namespace Study.EventManager.Services.Wrappers
 
                 var mailText = MailText.Replace("[username]", user.FirstName + " " + user.LastName).Replace("[email]", user.Email).Replace("[verifiedLink]", url).Replace("[mainText]", mainText);
 
-                var emailModel = new EmailDto
+                var emailModel = new EmailDto         
                 {
                     Subject = $"{dto.Subject} {user.Email}",
                     Body = mailText,
@@ -54,7 +59,7 @@ namespace Study.EventManager.Services.Wrappers
                     ToName = user.Username
                 };
 
-                _emailWrapper.SendEmail(emailModel);
+                return emailModel;
             }
             catch
             {
@@ -102,6 +107,6 @@ namespace Study.EventManager.Services.Wrappers
                 hash += string.Format("{0:x2}", b);
 
             return hash;
-        }
+        }     
     }
 }

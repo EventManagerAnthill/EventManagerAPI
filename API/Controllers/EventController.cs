@@ -39,7 +39,7 @@ namespace API.Controllers
             try
             {
                 var response = _service.AcceptInvitation(EventId, Email);
-                return Ok(1);
+                return Ok(response);
             }
             catch (APICompanyExceptions ex)
             {
@@ -137,10 +137,6 @@ namespace API.Controllers
             }
         }
 
-
-        /// <summary>
-        /// Comment.
-        /// </summary>
         [HttpPut]
         [Route("MakeEventDel/{id}")]
         public IActionResult MakeEvenDel(int id)

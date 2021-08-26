@@ -28,15 +28,17 @@ namespace Study.EventManager.Services
         private IEnumerable<Company> data;
         private IUploadService _uploadService;
         private readonly string _urlAdress;
+        private IEmailWrapper _emailWrapper;
 
         const string secretKey = "JoinCompanyViaLinkHash";
 
-        public CompanyService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings)
+        public CompanyService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings, IEmailWrapper emailWrapper)
         {
             _generateEmailWrapper = generateEmailWrapper;
             _contextManager = contextManager;
             _uploadService = uploadService;
             _urlAdress = settings.FrontUrl;
+            _emailWrapper = emailWrapper;
         }
 
         public CompanyDto GetCompany(int id)
@@ -327,9 +329,9 @@ namespace Study.EventManager.Services
 
             model.ServerFileName = serverFileName;
             var filePath = await _uploadService.Upload(model);
-            company.OriginalFileName = model.ImageFile.FileName;
+            company.OriginalFileName = model.File.FileName;
             company.FotoUrl = filePath.Url;
-            company.ServerFileName = filePath.ServerFileName + model.ImageFile.FileName;
+            company.ServerFileName = filePath.ServerFileName + model.File.FileName;
 
             _contextManager.Save();
         }
@@ -344,7 +346,7 @@ namespace Study.EventManager.Services
                 throw new ValidationException("Company not found");
             }
 
-            await _uploadService.Delete(company.ServerFileName, "userfotos");
+            await _uploadService.Delete(company.ServerFileName, "userfotoscontainer");
             company.ServerFileName = null;
             company.FotoUrl = null;
             company.OriginalFileName = null;
@@ -493,8 +495,9 @@ namespace Study.EventManager.Services
                             EmailMainText = "Congratulations, you are Admin of " + company.Name +"! Now you can invite people to the company and create events.",
                             ObjectId = model.CompanyId,
                             Subject = "Company"
-                        };
-                        _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);
+                        };                        
+                        var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, user);
+                        _emailWrapper.SendEmail(emailModel);
                     }
                     else
                     {
