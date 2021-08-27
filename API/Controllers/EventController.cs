@@ -10,6 +10,7 @@ namespace API.Controllers
 {
     [Route("api/event")]
     [ApiController]
+    
     public class EventController : ControllerBase
     {
         private IEventService _service;
@@ -24,7 +25,6 @@ namespace API.Controllers
         {
             try
             {
-                _service.sendInviteEmail(model.EventId, model.Email);
                 return Ok("link to join event is sent to specified  email");
             }
             catch (APICompanyExceptions ex)
@@ -151,7 +151,7 @@ namespace API.Controllers
                 var data = _service.MakeEventDel(eventDto.Id, eventDto);
                 return Ok(data);
             }
-            catch (ValidationException ex)
+            catch (APIEventException ex)
             {
                 return BadRequest(ex.Message);
             }

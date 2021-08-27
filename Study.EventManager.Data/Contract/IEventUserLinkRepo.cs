@@ -11,5 +11,7 @@ namespace Study.EventManager.Data.Contract
         public EventUserLink GetRecordByEventAndUser(int UserId, int EventId);
 
         public List<EventUserLink> GetAllUsers(int EventId);
+
+        public List<EventUserLink> GetEventsByUser(int UserId, int del = 0);
     }
 }

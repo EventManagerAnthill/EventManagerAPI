@@ -15,6 +15,8 @@ namespace Study.EventManager.Data
 
         public DbSet<EventUserLink> EventUsers { get; set; }
 
+        public DbSet<CompanyUserLink> CompanyUsers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CompanyConfiguration());
@@ -23,13 +25,13 @@ namespace Study.EventManager.Data
             modelBuilder.ApplyConfiguration(new CompanyUserLinkConfig());
             modelBuilder.ApplyConfiguration(new EventUserLinkConfig());
 
-            modelBuilder.Entity<User>()
+/*            modelBuilder.Entity<User>()
                 .HasMany(c => c.Companies)
                 .WithMany(u => u.Users);
                 
             modelBuilder.Entity<User>()
                 .HasMany(c => c.Events)
-                .WithMany(u => u.Users);                 
+                .WithMany(u => u.Users);  */               
         }
     }
 }

@@ -14,10 +14,9 @@ namespace Study.EventManager.Services.Contract
         CompanyDto CreateCompany(CompanyCreateDto dto);
         CompanyDto UpdateCompany(int id, CompanyDto dto);
         IEnumerable<CompanyDto> GetAllByOwner(string email = null);
-        List<Company> GetAllByUser(string email);
+        List<CompanyUserLink> GetAllByUser(string email);
         void DeleteCompany(int id);
-        CompanyDto MakeCompanyDel(int id, CompanyDto dto);
-      //  public void sendInviteEmail(int companyId, string Email);        
+        CompanyDto MakeCompanyDel(int id, CompanyDto dto);   
         public string AcceptInvitation(int companyId, string Email);
         public int CountCompanyUser(int companyId);
         Task UploadCompanyFoto(int id, FileDto model);

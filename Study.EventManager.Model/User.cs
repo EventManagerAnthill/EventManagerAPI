@@ -68,10 +68,6 @@ namespace Study.EventManager.Model
 
         public bool isSocialNetworks { get; set; }
 
-        public virtual List<Company> Companies { get; set; } = new List<Company>();
-
-        public virtual List<Event> Events { get; set; } = new List<Event>();
-
         public string OriginalFileName { get; set; }
 
         public string ServerFileName { get; set; }

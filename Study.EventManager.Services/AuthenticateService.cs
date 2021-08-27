@@ -133,9 +133,7 @@ namespace Study.EventManager.Services
             }
 
             var generateEmail = new GenerateEmailDto
-            {
-                //UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/resetpassword?",
-
+            {             
                 UrlAdress = _urlAdress + "/resetpassword?",
                 EmailMainText = "Password recovery",
                 ObjectId = 0,
@@ -180,5 +178,6 @@ namespace Study.EventManager.Services
            
             return true;
         }
+
     }
 }

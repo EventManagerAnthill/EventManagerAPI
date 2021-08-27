@@ -1,7 +1,6 @@
 ﻿using API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Study.EventManager.Services.Contract;
-
 using Study.EventManager.Services.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -13,6 +12,7 @@ namespace API.Controllers
     [Authorize]
     [Route("api/user")]
     [ApiController]
+  
     public class UserController : ControllerBase
     {
         private IUserService _serviceUser;

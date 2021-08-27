@@ -33,42 +33,7 @@ namespace Study.EventManager.Services
             _emailWrapper = emailWrapper;
             _uploadService = uploadService;
         }
-
-        public void sendInviteEmail(int EventId, string Email)
-        {
-            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repoUser.GetUserByEmail(Email);
-
-            if (user == null)
-            {
-                throw new ValidationException("Incorrect email combination");
-            }
-
-            var getEvent = GetEvent(EventId);
-            if (getEvent == null)
-            {
-                throw new ValidationException("Company not found.");
-            }
-
-            var userEvents = repoUser.GetEventsByUser(user.Id);
-            if (userEvents.Any(x => x.Id == EventId))
-            {
-                throw new ValidationException("User with this email is already exist in event " + getEvent.Name);
-            }
-
-            var generateEmail = new GenerateEmailDto
-            {
-                //UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + EventId + "?",
-                
-                UrlAdress = _urlAdress + "/company/" + EventId + "?",
-                EmailMainText = "Invitation to the event, for confirmation follow the link",
-                ObjectId = EventId,
-                Subject = "Welcome to the Event"
-            };
-            
-            var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, user);
-            _emailWrapper.SendEmail(emailModel);
-        }
+       
 
         public string AcceptInvitation(int EventId, string Email)
         {
@@ -104,7 +69,7 @@ namespace Study.EventManager.Services
             };
             repoEventUser.Add(entity);
       
-           // _contextManager.Save();
+            _contextManager.Save();
 
             SendEventTicket(companyEvent, user);
 
@@ -174,7 +139,7 @@ namespace Study.EventManager.Services
         {
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var data = repo.GetById(id);
-            var entity = repo.Delete(data);
+            repo.Delete(data);
             _contextManager.Save();
         }
 

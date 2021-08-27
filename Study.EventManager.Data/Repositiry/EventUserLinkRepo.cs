@@ -21,5 +21,11 @@ namespace Study.EventManager.Data.Repositiry
             var listUsers = _eventManagerContext.EventUsers.Where(x => x.EventId == EventId).Include(x => x.User).ToList();
             return listUsers;
         }
+
+        public List<EventUserLink> GetEventsByUser(int UserId, int del = 0)
+        {
+            var listEvents = _eventManagerContext.EventUsers.Where(x => x.UserId == UserId && x.Event.Del == del).Include(x => x.Event).ToList();
+            return listEvents;
+        }
     }
 }

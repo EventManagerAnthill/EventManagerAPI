@@ -66,11 +66,7 @@ namespace Study.EventManager.Services
             repoCompany.Add(entity);
 
             _contextManager.Save();
-            user.Companies.Add(entity);
-
-            _contextManager.Save();
-
-            //second variant
+                                    
             var repoCompUser = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
             var companyUser = new CompanyUserLink
             {
@@ -126,65 +122,46 @@ namespace Study.EventManager.Services
         {
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var data = repo.GetById(id);
-            var entity = repo.Delete(data);
+            repo.Delete(data);
             _contextManager.Save();
         }
 
         public IEnumerable<CompanyDto> GetAllByOwner(string email)
         {
-            try
-            {
-                var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
+            var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
 
-                if (!(email == null))
-                {
-                    var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-                    var user = repoUser.GetUserByEmail(email);
-
-                    data = repo.GetAll().Where(x => x.Del == 0 && x.UserId == user.Id);
-                }
-                else
-                {
-                    data = repo.GetAll().Where(x => x.Del == 0);
-                }
-
-                return data.Select(x => MapToDto(x)).ToList();
-            }
-            catch
-            {
-                throw new ValidationException("Sorry, unexpected error.");
-            }
-        }
-
-        public List<Company> GetAllByUser(string email)
-        {
-            try
+            if (!(email == null))
             {
                 var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
                 var user = repoUser.GetUserByEmail(email);
 
-                var listUserCompanies = repoUser.GetCompaniesByUser(user.Id);
-
-                return listUserCompanies;
+                data = repo.GetAll().Where(x => x.Del == 0 && x.UserId == user.Id);
             }
-            catch
+            else
             {
-                throw new ValidationException("Sorry, unexpected error.");
+                data = repo.GetAll().Where(x => x.Del == 0);
             }
+
+            return data.Select(x => MapToDto(x)).ToList();
+        }
+
+        public List<CompanyUserLink> GetAllByUser(string email)
+        {
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetUserByEmail(email);
+
+            var repoUserCompanies = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
+
+            var listUserCompanies = repoUserCompanies.GetCompaniesByUser(user.Id);
+
+            return listUserCompanies;
         }
 
         public int CountCompanyUser(int companyId)
         {
-            try
-            {
-                var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
-                var cnt = repo.GetCompanyCountUsers(companyId);
-                return cnt;
-            }
-            catch
-            {
-                throw new ValidationException("Sorry, unexpected error.");
-            }
+            var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
+            var cnt = 1;//repo.GetCompanyCountUsers(companyId);
+            return cnt;
         }
 
         private CompanyDto MapToDto(Company entity)
@@ -213,52 +190,7 @@ namespace Study.EventManager.Services
                 Type = dto.Type,
                 Description = dto.Description
             };
-        }
-
-    /*    public void sendInviteEmail(int companyId, string Email)
-        {           
-            var company = GetCompany(companyId);
-            if (company == null)
-            {
-                throw new ValidationException("Company not found.");
-            }
-
-            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repoUser.GetUserByEmail(Email);
-
-            if (user == null)
-            {
-                user = new User
-                {
-                    Email = Email,
-                    FirstName = "Dear",
-                    LastName = "Anonym",
-                    Username = "Anonym"
-                }; 
-            }
-            else
-            {
-                var repo = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
-                var companyUser = repo.GetRecordByCompanyAndUser(user.Id, companyId);
-
-                if (companyUser == null)
-                {
-                    throw new ValidationException("User with this email is already exist in company " + company.Name);
-                }               
-            }
-
-            var generateEmail = new GenerateEmailDto
-            {
-                //UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/company/" + companyId + "?",
-
-                UrlAdress = _urlAdress + "/company/" + companyId + "?",
-                EmailMainText = "Invitation to the company, for confirmation follow the link",
-                ObjectId = companyId,
-                Subject = "Welcome to the Company"
-            };
-
-            _generateEmailWrapper.GenerateAndSendEmail(generateEmail, user);
-        }*/
+        }    
 
         public string AcceptInvitation(int companyId, string Email)
         {
@@ -277,17 +209,7 @@ namespace Study.EventManager.Services
             {
                 throw new ValidationException("Company not found.");
             }
-
-            //first variant
-            var userCompanies = repoUser.GetCompaniesByUser(user.Id);
-            if (userCompanies.Any(x => x.Id == companyId))
-            {
-                throw new ValidationException("User is already added to the company.");
-            }
-            user.Companies.Add(company);
-            //end first variant
-
-            //second variant
+          
             var repoCompUser = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
             var companyUser = repoCompUser.GetRecordByCompanyAndUser(user.Id, companyId);
 
@@ -303,7 +225,6 @@ namespace Study.EventManager.Services
                 UserRole = 3
             };
             repoCompUser.Add(entity);
-            //end second variant
 
             _contextManager.Save();
             return "You successfully join the Company";
@@ -509,7 +430,7 @@ namespace Study.EventManager.Services
                     userError = userError + " " + email;
                 }                
             }
-            if (userError == "Something wrong with this email(s):")
+            if (userError == "Something wrong with this email:")
             {
                 return "Users are successfully assigned";
             }

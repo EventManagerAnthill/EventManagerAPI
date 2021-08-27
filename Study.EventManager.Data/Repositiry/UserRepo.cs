@@ -23,22 +23,13 @@ namespace Study.EventManager.Data.Repositiry
             return user;
         }
 
-        public List<Company> GetCompaniesByUser(int UserId, int del = 0)
+/*        public List<Company> GetCompaniesByUser(int UserId, int del = 0)
         {
             var userCompanies = _eventManagerContext.Companies
                 .Where(c => c.Users.Any(u => u.Id == UserId) && c.Del == del)
                 .ToList();           
 
             return userCompanies;
-        }
-
-        public List<Event> GetEventsByUser(int UserId)
-        {
-            var userEvents = _eventManagerContext.Events
-              .Where(c => c.Users.Any(u => u.Id == UserId))
-              .ToList();
-
-            return userEvents;
-        }
+        }*/
     }
 }

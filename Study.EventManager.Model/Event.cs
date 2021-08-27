@@ -31,8 +31,6 @@ namespace Study.EventManager.Model
 
         public string Description { get; set; }        
 
-        public virtual List<User> Users { get; set; } = new List<User>();
-
         public int Del { get; set; }
 
         public string OriginalFileName { get; set; }

@@ -1,5 +1,4 @@
-﻿using API.Exceptions;
-using API.Models;
+﻿using API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,16 +7,14 @@ using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Models.APIModels;
 using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace API.Controllers
 {
     [Authorize]
-    [ApiExplorerSettings(GroupName = "v1")]
     [Route("api/company")]
     [ApiController]
+
     public class CompanyController : ControllerBase
     {
         private ICompanyService _service;
@@ -72,7 +69,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllCompaniesByOwner")]
+        [Route("getAllCompaniesByOwner")]
         public IActionResult CompaniesByOwner(string email)
         {
             try
@@ -87,7 +84,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("GetAllCompaniesByUser")]
+        [Route("getAllCompaniesByUser")]
         public IActionResult CompaniesByUser(string email)
         {
             try
@@ -102,7 +99,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("GetCompanyCountUsers")]
+        [Route("getCompanyCountUsers")]
         public IActionResult GetCompanyCountUsers(int companyId)
         {
             try
@@ -162,7 +159,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Route("MakeCompanyDel/{id}")]
+        [Route("makeCompanyDel/{id}")]
         public IActionResult MakeCompanyDel(int id)
         {
             try
@@ -234,7 +231,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("GetLinkToJoinCompany")]
+        [Route("getLinkToJoinCompany")]
         public IActionResult GetLinkToJoinCompany(int Id, DateTime date)
         {
             try
@@ -249,7 +246,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route("")]
+        [Route("joinCompanyViaLink")]
         public IActionResult JoinCompanyViaLink(JoinCompanyModel model)
         {
             try
@@ -263,7 +260,8 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("InviteUsers")]
+        [HttpPost]
+        [Route("InviteUsers")]
         public IActionResult InviteEmail(CompanyTreatmentUsersModel model)
         {
             try
@@ -277,7 +275,8 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost("AppointUserAsAdmin")]
+        [HttpPost]
+        [Route("appointUserAsAdmin")]
         public IActionResult AppointUserAsAdmin(CompanyTreatmentUsersModel model)
         {
             try
@@ -291,8 +290,8 @@ namespace API.Controllers
             }
         }
 
-        [Route("AddUsersCSV")]
         [HttpPost]
+        [Route("addUsersCSV")]
         public async Task<IActionResult> AddUsersCSV(int Companyid, IFormFile file)
         {
             try

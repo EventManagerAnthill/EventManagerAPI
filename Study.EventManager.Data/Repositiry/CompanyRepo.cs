@@ -21,23 +21,5 @@ namespace Study.EventManager.Data.Repositiry
             var company = _eventManagerContext.Set<Company>().FirstOrDefault(x => x.Name == Name);
             return company;
         }
-
-        public List<User> GetCompanyUsers(int CompanyId, int del = 0)
-        {
-            var userCompanies = _eventManagerContext.Users
-                      .Where(c => c.Companies.Any(u => u.Id == CompanyId && u.Del == del))
-                      .ToList();
-
-            return userCompanies;
-        }
-
-        public int GetCompanyCountUsers(int CompanyId)
-        {
-            var userCompanies = _eventManagerContext.Users
-                      .Where(c => c.Companies.Any(u => u.Id == CompanyId))
-                      .ToList();
-
-            return userCompanies.Count;
-        }
     }
 }

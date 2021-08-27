@@ -15,15 +15,6 @@ namespace Study.EventManager.Data.Repositiry
             var events = _eventManagerContext.Set<Event>().FirstOrDefault(x => x.UserId == UserId);
             return events;
         }
-
-        public List<User> GetEventUsers(int EventId)
-        {
-            var eventUser = _eventManagerContext.Events
-                         .Include(c => c.Users)
-                         .Where(u => u.Id == EventId)
-                         .FirstOrDefault();
-            return eventUser.Users.ToList();
-        }
     }
 }
 

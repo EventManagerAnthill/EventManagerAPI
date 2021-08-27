@@ -22,7 +22,7 @@ namespace API.Controllers
     [Route("api/authenticate")]
     [ApiController]
 
-    [ApiExplorerSettings(IgnoreApi = true)]
+    //[ApiExplorerSettings(IgnoreApi = true)]
     public class AuthenticateController : ControllerBase
     {
         private IAuthenticateService _serviceAuth;
@@ -161,16 +161,16 @@ namespace API.Controllers
             }
         }
 
-        public JwtTokenModel GiveJWTToken(string email, string lastname)
+        private JwtTokenModel GiveJWTToken(string email, string lastname)
         {
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
-                 issuer: _authOptions.Issuer,
-                 audience: _authOptions.Audience,
-                 notBefore: now,
-                 claims: GetClaims(lastname, email),
-                 expires: now.Add(TimeSpan.FromMinutes(_authOptions.LifeTime)),
-                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(_authOptions.SecretKey), SecurityAlgorithms.HmacSha256));
+                    issuer: _authOptions.Issuer,
+                    audience: _authOptions.Audience,
+                    notBefore: now,
+                    claims: GetClaims(lastname, email),
+                    expires: now.Add(TimeSpan.FromMinutes(_authOptions.LifeTime)),
+                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(_authOptions.SecretKey), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             var response = new JwtTokenModel
