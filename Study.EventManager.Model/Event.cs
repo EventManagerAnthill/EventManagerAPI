@@ -10,6 +10,17 @@ namespace Study.EventManager.Model
         internal Event()
         { }
 
+        public Event(string eventName, int eventUserId, EventTypes eventType, string companyDescription)
+        {
+            if (string.IsNullOrEmpty(eventName) || string.IsNullOrEmpty(eventUserId.ToString()) || string.IsNullOrEmpty(eventType.ToString()) || string.IsNullOrEmpty(companyDescription))
+                throw new ArgumentNullException("Fill all required fields");
+
+            Name = eventName;
+            UserId = eventUserId;
+            Type = eventType;
+            Description = companyDescription;
+            Del = 0;
+        }
         public int Id { get; set; } 
 
         public string Name { get; set; } 
@@ -29,9 +40,9 @@ namespace Study.EventManager.Model
 
         public int Status { get; set; } = 0;
 
-        public string Description { get; set; }        
+        public string Description { get; set; }
 
-        public int Del { get; set; }
+        public int Del { get; set; } = 0;
 
         public string OriginalFileName { get; set; }
 

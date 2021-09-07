@@ -64,7 +64,7 @@ namespace Study.EventManager.Services.Test
         public void GetUserByIdTest()
         {
             //act             
-            var result = _userService.GetUser(1);
+            var result = _userService.GetUser("asd");
 
             //assert
             Assert.AreNotEqual(0, result.Id);
@@ -79,7 +79,7 @@ namespace Study.EventManager.Services.Test
                 Email = "sadasd@gmail.com",
                 FirstName = "test",
                 LastName = "test",
-                Middlename = "Middlename",                         
+                MiddleName = "Middlename",                         
                 Phone = "8989632332"              
 
             };

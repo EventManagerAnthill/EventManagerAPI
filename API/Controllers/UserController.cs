@@ -16,21 +16,20 @@ namespace API.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _serviceUser;
-        private readonly IUploadService _uploadService;
 
-        public UserController(IUserService service, IUploadService uploadService)
+        public UserController(IUserService service)
         {
             _serviceUser = service;
-            _uploadService = uploadService;
+
         }                      
 
         [HttpGet]
-        [Route("{id}")]
-        public IActionResult GetUser(int id)
+        [Route("getUser")]
+        public IActionResult GetUser(string email)
         {
             try
             {
-                var data = _serviceUser.GetUser(id);
+                var data = _serviceUser.GetUser(email);
                 return Ok(data);
             }
             catch (ValidationException ex)
@@ -56,6 +55,7 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+
         [Route("")]
         public IActionResult CreateUser([FromBody] UserCreateModel model)
         {
@@ -91,10 +91,9 @@ namespace API.Controllers
                     Id = id,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    Middlename = model.Middlename,
+                    MiddleName = model.MiddleName,
                     BirthDate = model.BirthDate,
                     Phone = model.Phone,
-                    Email = model.Username,
                     Sex = model.Sex
                 };
 
@@ -136,14 +135,12 @@ namespace API.Controllers
                         Container = "userfotoscontainer"
                     };
 
-                    await _serviceUser.UploadUserFoto(email, fileDto);  
+                    return Ok(await _serviceUser.UploadUserFoto(email, fileDto));  
                 }
                 else
                 {
                     throw new ValidationException("foto not found");
-                }
-
-                return Ok();
+                }        
             }
             catch (ValidationException ex)
             {
@@ -153,17 +150,56 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("deleteFoto")]
-        public async Task<IActionResult> DeleteUserFoto(UserEmailModel model)
+        public async Task<IActionResult> DeleteUserFoto(string email)
         {
             try
             {
-                await _serviceUser.DeleteUserFoto(model.Email);
-                return Ok();
+                var user = await _serviceUser.DeleteUserFoto(email);
+                return Ok(user);
             }
             catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut]
+        [Route("updatePassword")]
+        public IActionResult UpdatePasswordUser([FromBody] UpdateUserPasswordModel model)
+        {
+            try
+            {
+                var userPassDto = new UserUpdatePasswordDto
+                {
+                    UserId = model.UserId,
+                    Password = model.Password
+                };
+
+                var data = _serviceUser.UpdatePasswordUser(userPassDto);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+/*        [HttpGet]
+        [Route("searchByName")]
+        public IActionResult SearchByName()
+        {
+            try
+            {
+                var data = _serviceUser.GetAll();
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }*/
+
+
     }    
 }

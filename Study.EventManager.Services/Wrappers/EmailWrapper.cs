@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Study.EventManager.Services.Wrappers
 {
-    internal class EmailWrapper : IEmailWrapper
+    internal class EmailWrapper //: IEmailWrapper
     {
         private readonly EmailSettings _mailSettings;
         

@@ -9,8 +9,8 @@ namespace Study.EventManager.Services.Contract
     {
         UserDto Authenticate(string email, string password);
         string VerifyUrlEmail(string email, string code);
-        public void sendRestoreEmail(string email);
-        public string restorePass(string email, string password, string code);
-        public bool SocialNetworksAuthenticate(string email, string name, string givenName, string familyName);
+        void sendRestoreEmail(string email);
+        string restorePass(string email, string password, string code);
+        bool SocialNetworksAuthenticate(string email, string name, string givenName, string familyName);
     }
 }

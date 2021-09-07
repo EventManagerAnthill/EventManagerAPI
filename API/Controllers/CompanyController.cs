@@ -54,27 +54,12 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route("all")]
-        public IActionResult Companies()
-        {
-            try
-            {
-                var data = _service.GetAllByOwner();
-                return Ok(data);
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpGet]
         [Route("getAllCompaniesByOwner")]
-        public IActionResult CompaniesByOwner(string email)
+        public IActionResult CompaniesByOwner(int userId, int page = 1, int pageSize = 20)
         {
             try
             {
-                var data = _service.GetAllByOwner(email);
+                var data = _service.GetAllByOwner(userId, page, pageSize);
                 return Ok(data);
             }
             catch (ValidationException ex)
@@ -85,33 +70,18 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAllCompaniesByUser")]
-        public IActionResult CompaniesByUser(string email)
+        public IActionResult CompaniesByUser(int userId, int page = 1, int pageSize = 20)
         {
             try
             {
-                var data = _service.GetAllByUser(email);
+                var data = _service.GetAllByUser(userId, page, pageSize);
                 return Ok(data);
             }
             catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        [HttpGet]
-        [Route("getCompanyCountUsers")]
-        public IActionResult GetCompanyCountUsers(int companyId)
-        {
-            try
-            {
-                var data = _service.CountCompanyUser(companyId);
-                return Ok(data);
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        }  
 
         [HttpPost]
         [Route("")]
@@ -122,7 +92,7 @@ namespace API.Controllers
                 var companyCreateDto = new CompanyCreateDto
                 {
                     Name = model.Name,
-                    Email = model.Email,
+                    UserId = model.UserId,
                     Type = model.Type,
                     Description = model.Description
                 };
@@ -200,14 +170,12 @@ namespace API.Controllers
                         Container = "companyfotoscontainer"
                     };
 
-                    await _service.UploadCompanyFoto(id, fileDto);
+                    return Ok(await _service.UploadCompanyFoto(id, fileDto));
                 }
                 else
                 {
                     throw new ValidationException("foto not found");
-                }
-
-                return Ok();
+                }               
             }
             catch (ValidationException ex)
             {
@@ -217,12 +185,12 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("deleteFoto")]
-        public async Task<IActionResult> DeleteCompanyFoto(UserEmailModel model)
+        public async Task<IActionResult> DeleteCompanyFoto(int CompanyId)
         {
             try
             {
-                //await _serviceUser.DeleteUserFoto(model.Email);
-                return Ok();
+                var company = await _service.DeleteCompanyFoto(CompanyId);
+                return Ok(company);
             }
             catch (ValidationException ex)
             {
@@ -261,7 +229,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route("InviteUsers")]
+        [Route("inviteUsers")]
         public IActionResult InviteEmail(CompanyTreatmentUsersModel model)
         {
             try
@@ -291,6 +259,21 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Route("demoteAdminToUser")]
+        public IActionResult DemoteAdminToUser(int companyId, int userId)
+        {
+            try
+            {
+                _service.DemoteAdminToUser(companyId, userId);
+                return Ok("Admin successfully demote");
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
         [Route("addUsersCSV")]
         public async Task<IActionResult> AddUsersCSV(int Companyid, IFormFile file)
         {
@@ -306,6 +289,36 @@ namespace API.Controllers
                 }
 
                 return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("getCompanyEvents")]
+        public IActionResult GetCompanyEvents(int CompanyId, int page = 1, int pageSize = 20)
+        {
+            try
+            {
+                var data = _service.GetCompanyEvents(CompanyId, page, pageSize);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("deleteMember")]
+        public IActionResult DeleteCompanyMember(int companyId, int userId)
+        {
+            try
+            {
+                 _service.DeleteCompanyMember(companyId, userId);
+                return Ok("User deleted successfully");
             }
             catch (ValidationException ex)
             {

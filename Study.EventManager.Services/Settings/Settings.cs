@@ -11,5 +11,7 @@ namespace Study.EventManager.Services
         public EmailSettings MailSettings { get; set; }
 
         public string FrontUrl { get; set; }
+
+        public string MailKey { get; set; }
     }
 }

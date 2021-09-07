@@ -10,10 +10,21 @@ namespace Study.EventManager.Data.Repositiry
 {
     public class CompanyRepo : AbstractRepo<Company>, ICompanyRepo
     {
-        public Company GetAllCompaniesByUser(int UserId, int del = 0)
+        public List<Company> GetAllCompaniesByOwner(int UserId, int page, int pageSize, int del = 0)
         {
-            var companies = _eventManagerContext.Set<Company>().FirstOrDefault(x => x.UserId == UserId && x.Del == del);
+            var companies = _eventManagerContext.Set<Company>()
+                .Where(x => x.UserId == UserId && x.Del == del)
+                .OrderBy(x => x.Name)
+                .Skip(0 * pageSize)
+                .Take(pageSize)
+                .ToList();
             return companies;
+        }
+
+        public int GetAllCompaniesByOwnerCount(int UserId, int del = 0)
+        {
+            var companiesCount = _eventManagerContext.Set<Company>().Where(x => x.UserId == UserId && x.Del == del).Count();
+            return companiesCount;
         }
 
         public Company GetCompanyByName(string Name)

@@ -21,7 +21,7 @@ namespace API.Controllers
         }
 
         [HttpPost("sendInviteEmail")]
-        public IActionResult SendInviteEmail(EventUserModel model)
+        public IActionResult SendInviteEmail()
         {
             try
             {
@@ -83,7 +83,7 @@ namespace API.Controllers
         {
             try
             {
-                var data = _service.GetEventsByUserId(id);
+                var data = _service.GetEventByUserId(id);
                 return Ok(data);
             }
             catch (APIEventException ex)
@@ -94,11 +94,22 @@ namespace API.Controllers
      
         [HttpPost]
         [Route("")]
-        public IActionResult CreateEvent([FromBody] EventDto model)
+        public IActionResult CreateEvent([FromBody] EventCreateModel model)
         {
             try
             {
-                var data = _service.CreateEvent(model);
+                var eventCreateDto = new EventCreateDto
+                {
+                    Name = model.Name,
+                    UserId = model.UserId,
+                    Type = model.Type,
+                    Description = model.Description,
+                    CreateDate = model.CreateDate,
+                    HoldingDate = model.HoldingDate,
+                    CompanyId = model.CompanyId
+                    
+                };
+                var data = _service.CreateEvent(eventCreateDto);
                 return Ok(data);
             }
             catch (APIEventException ex)
@@ -172,6 +183,36 @@ namespace API.Controllers
                 return Ok(data);
             }
             catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("getAllEventsByUser")]
+        public IActionResult CompaniesByUser(string email)
+        {
+            try
+            {
+                var data = _service.GetAllByUser(email);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("eventReview")]
+        public IActionResult EventReview(EventReviewCreateDto dto)
+        {
+            try
+            {                
+                var data = _service.EventReview(dto);
+                return Ok(data);
+            }
+            catch (APIEventException ex)
             {
                 return BadRequest(ex.Message);
             }

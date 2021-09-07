@@ -11,8 +11,10 @@ using ContainerConfiguration = Study.EventManager.Services.ContainerConfiguratio
 using Microsoft.OpenApi.Models;
 using System;
 using System.Reflection;
-using System.IO;
+using AutoMapper;
 using Azure.Storage.Blobs;
+using API.Tasks;
+using API.Tasks.Scheduling;
 
 namespace API
 {
@@ -31,7 +33,7 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
+            services.AddAutoMapper(typeof(Startup));
             services.AddSwaggerGenNewtonsoftSupport();          
             services.AddSwaggerGen(c =>
             {
@@ -100,7 +102,15 @@ namespace API
                 facebookOptions.AppSecret = facebookAuthNSection["AppSecret"];
                 facebookOptions.CallbackPath = "/api/user/facebook-response";
             });
-        
+
+            // Add scheduled tasks & scheduler
+            services.AddSingleton<IScheduledTask, SomeTask>();
+            services.AddScheduler((sender, args) =>
+            {
+                Console.Write(args.Exception.Message);
+                args.SetObserved();
+            });
+
             ContainerConfiguration.Configure(services, _settings);
         }
        

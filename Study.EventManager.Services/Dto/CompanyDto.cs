@@ -19,5 +19,11 @@ namespace Study.EventManager.Services.Dto
         public string Description { get; set; }
 
         public int Del { get; set; }
+
+        public string OriginalFileName { get; set; }      
+
+        public string FotoUrl { get; set; }
+
+        public int UserRole { get; set; }
     }
 }

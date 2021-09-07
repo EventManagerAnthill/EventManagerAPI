@@ -21,6 +21,6 @@ namespace Study.EventManager.Model
         public virtual Company Company { get; set; }
 
         [Required]
-        public int UserRole { get; set; }
+        public int UserCompanyRole { get; set; }
     }
 }
