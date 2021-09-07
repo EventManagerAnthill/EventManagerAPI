@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 
 namespace API.Models
 {
-    public class Facebook
+    public class UpdateUserPasswordModel
     {
-     
-        public string name { get; set; }
+        public int UserId { get; set; }
 
-
-        public string id { get; set; }
+        public string Password { get; set; }
     }
 }

@@ -18,7 +18,7 @@ namespace Study.EventManager.Services.Dto
         public EventTypes Type { get; set; }
 
         [Required]
-        public string Email { get; set; }
+        public int  UserId { get; set; }
 
         public int Status { get; set; }
 

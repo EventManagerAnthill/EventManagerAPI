@@ -73,5 +73,8 @@ namespace Study.EventManager.Model
         public string ServerFileName { get; set; }
 
         public string FotoUrl { get; set; }
+
+        [Required]
+        public UserRoleEnum Role { get; set; } = 0;
     }
 }

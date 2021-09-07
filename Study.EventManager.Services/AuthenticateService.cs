@@ -1,5 +1,6 @@
 ﻿using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
+using Study.EventManager.Model.Enums;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
@@ -31,7 +32,7 @@ namespace Study.EventManager.Services
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var userByEmail = repo.GetUserByEmail(email);
-
+          
             if (!(userByEmail == null))
             {           
                 if (userByEmail.isSocialNetworks)
@@ -68,7 +69,8 @@ namespace Study.EventManager.Services
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
                 Email = entity.Email,
-                Username = entity.Username
+                Username = entity.Username,
+                Role = entity.Role
             };
         }
 
@@ -178,6 +180,5 @@ namespace Study.EventManager.Services
            
             return true;
         }
-
     }
 }

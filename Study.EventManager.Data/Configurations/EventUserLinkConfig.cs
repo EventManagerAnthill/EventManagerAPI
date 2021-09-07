@@ -15,7 +15,7 @@ namespace Study.EventManager.Data.Configurations
             builder.HasKey(o => o.Id);
             builder.Property(t => t.UserId);
             builder.Property(t => t.EventId);
-            builder.Property(t => t.UserRole);
+            builder.Property(t => t.UserEventRole);
 
             builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(x => x.Event).WithMany().HasForeignKey(x => x.EventId).OnDelete(DeleteBehavior.NoAction);

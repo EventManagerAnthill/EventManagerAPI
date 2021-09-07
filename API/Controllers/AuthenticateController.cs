@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Study.EventManager.Model.Enums;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
@@ -28,8 +29,10 @@ namespace API.Controllers
         private IAuthenticateService _serviceAuth;
         private AuthOptions _authOptions;
         private IAuthenticateWrapper _authenticateWrapper;
+      
 
-        public AuthenticateController(IUserService serviceUser, IAuthenticateService serviceAuth, IConfiguration config, IAuthenticateWrapper authenticateWrapper)
+        public AuthenticateController(IUserService serviceUser, IAuthenticateService serviceAuth
+            , IConfiguration config, IAuthenticateWrapper authenticateWrapper)
         {
             _authenticateWrapper = authenticateWrapper;
             _serviceAuth = serviceAuth;
@@ -43,7 +46,7 @@ namespace API.Controllers
             try
             {
                 var user = _serviceAuth.Authenticate(model.Email, model.Password);
-                var response = GiveJWTToken(user.Email, user.LastName);
+                var response = GiveJWTToken(user.Email, user.Role.ToString());
 
                 return Ok(response);
             }
@@ -129,7 +132,7 @@ namespace API.Controllers
 
                 _serviceAuth.SocialNetworksAuthenticate(userGoogle.Email, userGoogle.Name, userGoogle.GivenName, userGoogle.FamilyName);
 
-                var response = GiveJWTToken(userGoogle.Email, userGoogle.FamilyName);
+                var response = GiveJWTToken(userGoogle.Email, "0");
                 return Ok(response);
             }
             catch (Exception ee)
@@ -151,7 +154,7 @@ namespace API.Controllers
                 _serviceAuth.SocialNetworksAuthenticate(facebookUserInfo.email, facebookUserInfo.first_name,
                                                     facebookUserInfo.last_name, data.Url);
 
-                var response = GiveJWTToken(facebookUserInfo.email, facebookUserInfo.last_name);
+                var response = GiveJWTToken(facebookUserInfo.email, "0");
 
                 return Ok(response);
             }
@@ -161,14 +164,15 @@ namespace API.Controllers
             }
         }
 
-        private JwtTokenModel GiveJWTToken(string email, string lastname)
+        private JwtTokenModel GiveJWTToken(string email, string role)
         {
             var now = DateTime.UtcNow;
             var jwt = new JwtSecurityToken(
                     issuer: _authOptions.Issuer,
                     audience: _authOptions.Audience,
                     notBefore: now,
-                    claims: GetClaims(lastname, email),
+
+                    claims: GetClaims(role),
                     expires: now.Add(TimeSpan.FromMinutes(_authOptions.LifeTime)),
                     signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(_authOptions.SecretKey), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
@@ -176,18 +180,36 @@ namespace API.Controllers
             var response = new JwtTokenModel
             {
                 access_token = encodedJwt,
-                email = email
+                email = email,
+
             };
 
             return response;
         }
 
-        private IEnumerable<Claim> GetClaims(string LastName, string email)
+        private IEnumerable<Claim> GetClaims(string role)
         {
             return new[]
             {
-                new Claim(ClaimTypes.NameIdentifier , LastName)
-            };
+                new Claim("role", role)
+            };            
+        }
+
+
+
+        [AllowAnonymous]
+        [HttpPost("sendboxEmail")]
+        public IActionResult SendBoxEmail()
+        {
+            try
+            {
+             
+                return Ok("link to restore your password sent to email");
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     } 
 };

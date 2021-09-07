@@ -16,16 +16,32 @@ namespace Study.EventManager.Data.Repositiry
             return userCompanies;
         }
 
-        public List<CompanyUserLink> GetCompaniesByUser(int UserId, int del = 0)
+        public List<Company> GetCompaniesByUser(int UserId, int page, int pageSize, int del = 0)
         {
-          /*  var userCompanies = _eventManagerContext.Companies
-                .Where(c => c.Users.Any(u => u.Id == UserId) && c.Del == del)
-                .ToList();*/
-
-
-            //var listCompanies = _eventManagerContext.CompanyUsers.Where(x => x.UserId == UserId).Include(x => x.Company.Del == del).ToList();
-            var listCompanies = _eventManagerContext.CompanyUsers.Where(x => x.UserId == UserId && x.Company.Del == del).Include(x => x.Company).ToList();
+            var listCompanies = _eventManagerContext.CompanyUsers.Where(x => x.UserId == UserId && x.Company.Del == del).Select(x => x.Company)
+                .OrderBy(x => x.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
             return listCompanies;
+        }
+
+        public int GetCompaniesByUserCount(int UserId, int del = 0)
+        {
+            var countCompanies = _eventManagerContext.CompanyUsers.Where(x => x.UserId == UserId && x.Company.Del == del).Select(x => x.Company).Count();
+            return countCompanies;
+        }
+
+        public int GetUserRole(int userId, int companyId)
+        {
+            var userRole = _eventManagerContext.CompanyUsers.Where(x => x.UserId == userId && x.CompanyId == companyId).Select(x => x.UserCompanyRole).First();
+            return userRole;
+        }
+
+        public List<CompanyUserLink> GetCompanyUserLinkListForUser(int userId, List<int> companyIdList)
+        {
+            var companyUserLinks = _eventManagerContext.CompanyUsers.Where(x => x.UserId == userId && companyIdList.Contains(x.CompanyId)).ToList();
+            return companyUserLinks;
         }
 
         public List<CompanyUserLink> GetAllUsers(int CompanyId)

@@ -68,10 +68,10 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserCompanyRole")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserRole")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -135,6 +135,34 @@ namespace Study.EventManager.Data.Migrations
                     b.ToTable("Event");
                 });
 
+            modelBuilder.Entity("Study.EventManager.Model.EventReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StarReview")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TextReview")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventReview");
+                });
+
             modelBuilder.Entity("Study.EventManager.Model.EventUserLink", b =>
                 {
                     b.Property<int>("Id")
@@ -145,10 +173,10 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserEventRole")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserRole")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -199,6 +227,9 @@ namespace Study.EventManager.Data.Migrations
 
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<string>("ServerFileName")
                         .HasColumnType("nvarchar(max)");
@@ -262,6 +293,25 @@ namespace Study.EventManager.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Study.EventManager.Model.EventReview", b =>
+                {
+                    b.HasOne("Study.EventManager.Model.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Study.EventManager.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Event");
 
                     b.Navigation("User");
                 });

@@ -21,6 +21,6 @@ namespace Study.EventManager.Model
         public virtual Event Event { get; set; }
 
         [Required]
-        public int UserRole { get; set; }
+        public int UserEventRole { get; set; }
     }
 }

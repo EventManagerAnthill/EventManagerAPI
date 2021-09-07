@@ -15,7 +15,7 @@ namespace API.Models
         [Required]
         public string LastName { get; set; }
 
-        public string Middlename { get; set; }
+        public string MiddleName { get; set; }
 
         public DateTime BirthDate { get; set; }
        

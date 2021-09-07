@@ -22,10 +22,10 @@ namespace Study.EventManager.Data.Repositiry
             return listUsers;
         }
 
-        public List<EventUserLink> GetEventsByUser(int UserId, int del = 0)
+        public List<Event> GetEventsByUser(int UserId, int del = 0)
         {
-            var listEvents = _eventManagerContext.EventUsers.Where(x => x.UserId == UserId && x.Event.Del == del).Include(x => x.Event).ToList();
+            var listEvents = _eventManagerContext.EventUsers.Where(x => x.UserId == UserId && x.Event.Del == del).Select(x => x.Event).ToList();
             return listEvents;
-        }
+        }        
     }
 }

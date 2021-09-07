@@ -14,7 +14,7 @@ namespace Study.EventManager.Services.Dto
         [Required]
         public string LastName { get; set; }
 
-        public string Middlename { get; set; }
+        public string MiddleName { get; set; }
 
         public DateTime BirthDate { get; set; }
 
@@ -32,5 +32,7 @@ namespace Study.EventManager.Services.Dto
         public string ServerFileName { get; set; }
 
         public string FotoUrl { get; set; }
+
+        public UserRoleEnum Role { get; set; }
     }
 }

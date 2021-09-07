@@ -1,4 +1,5 @@
-﻿using IronPdf;
+﻿using AutoMapper;
+using IronPdf;
 using iText.Html2pdf;
 using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
@@ -23,8 +24,10 @@ namespace Study.EventManager.Services
         private readonly string _urlAdress;
         private IEmailWrapper _emailWrapper;
         private IUploadService _uploadService;
+        private readonly IMapper _mapper;
 
-        public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings, IGenerateQRCode generateQRCode, IEmailWrapper emailWrapper, IUploadService uploadService)
+        public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings, IGenerateQRCode generateQRCode
+            , IEmailWrapper emailWrapper, IUploadService uploadService, IMapper mapper)
         {
             _generateEmailWrapper = generateEmailWrapper;
             _contextManager = contextManager;
@@ -32,6 +35,7 @@ namespace Study.EventManager.Services
             _generateQRCode = generateQRCode;
             _emailWrapper = emailWrapper;
             _uploadService = uploadService;
+            _mapper = mapper;
         }
        
 
@@ -65,7 +69,7 @@ namespace Study.EventManager.Services
             {
                 EventId = EventId,
                 UserId = user.Id,
-                UserRole = 3
+                UserEventRole = 3
             };
             repoEventUser.Add(entity);
       
@@ -80,23 +84,22 @@ namespace Study.EventManager.Services
         {
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var data = repo.GetById(id);
-            var result = MapToDto(data);
+            var result = _mapper.Map<EventDto>(data);
             return result;
         }
 
-        public EventDto CreateEvent(EventDto dto)
+        public EventDto CreateEvent(EventCreateDto dto)
         {
             try
             {
                 var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-                var user = repoUser.GetUserByEmail(dto.Email);
+                var user = repoUser.GetById(dto.UserId);
 
                 if (user == null)
                 {
                     throw new ValidationException("User not found");
-                }
-
-                var entity = MapToEntity(user.Id, dto);
+                }  
+                var entity = _mapper.Map<Event>(dto);
                 var repo = _contextManager.CreateRepositiry<IEventRepo>();
                 repo.Add(entity);
                 _contextManager.Save();
@@ -107,12 +110,12 @@ namespace Study.EventManager.Services
                 {
                     EventId = entity.Id,
                     UserId = user.Id,
-                    UserRole = 1
+                    UserEventRole = 1
                 };
                 repoEventUser.Add(eventUser);
                 _contextManager.Save();
 
-                return MapToDto(entity);
+                return _mapper.Map<EventDto>(entity);
             }
             catch
             {
@@ -132,7 +135,7 @@ namespace Study.EventManager.Services
             data.Description = dto.Description;
 
             _contextManager.Save();
-            return MapToDto(data);
+            return _mapper.Map<EventDto>(data);
         }
 
         public void DeleteEvent(int id)
@@ -147,50 +150,17 @@ namespace Study.EventManager.Services
         {
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var data = repo.GetAll();
-            return data.Select(x => MapToDto(x)).ToList();
+            return data.Select(x => _mapper.Map<EventDto>(x)).ToList();
         }
 
-        public EventDto GetEventsByUserId(int UserId)
+        public EventDto GetEventByUserId(int UserId)
         {
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var data = repo.GetAllEventsByUser(UserId);
-            var result = MapToDto(data);
+            var result = _mapper.Map<EventDto>(data);
             return result;
-        }
-
-        private EventDto MapToDto(Event entity)
-        {
-            if (entity == null)
-            {
-                return null;
-            }
-            return new EventDto
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Type = entity.Type,
-                HoldingDate = entity.HoldingDate,
-                Description = entity.Description,
-                CreateDate = entity.CreateDate,
-                Del = entity.Del
-            };
-        }
-
-        private Event MapToEntity(int id, EventDto dto)
-        {
-            return new Event
-            {
-                Name = dto.Name,
-                Type = dto.Type,
-                HoldingDate = dto.HoldingDate,
-                UserId = id,
-                Description = dto.Description,
-                CreateDate = dto.CreateDate,
-                CompanyId = dto.CompanyId,
-                Del = dto.Del
-            };
-        }
-
+        }     
+     
         public EventDto MakeEventDel(int EventId, EventDto dto)
         {
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
@@ -199,8 +169,7 @@ namespace Study.EventManager.Services
             _contextManager.Save();
 
             sendEmailToUsers(EventId, "cancellation of an event", "The Event " + "'" + data.Name + "' was canceled");
-
-            return MapToDto(data);
+            return _mapper.Map<EventDto>(data); 
         }
         
         public EventDto CancelEvent(int EventId, EventDto dto)
@@ -212,7 +181,7 @@ namespace Study.EventManager.Services
 
             sendEmailToUsers(EventId, "cancellation of an event", "The Event " + "'" + data.Name + "' was canceled");
 
-            return MapToDto(data);
+            return _mapper.Map<EventDto>(data);
         }
         
         public void sendEmailToUsers(int EventId, string subject, string mainMassage)
@@ -254,6 +223,7 @@ namespace Study.EventManager.Services
         {
             var pdfBytes = GetEventTicket(eventU, user);
           
+
             var file = new FileSendEmail
             {             
                 FileBytes = pdfBytes,                
@@ -268,14 +238,16 @@ namespace Study.EventManager.Services
                 Subject = "event ticket"
             };
 
-            var emailModel= _generateEmailWrapper.GenerateEmail(generateEmail, user);
+            var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, user);
+
             _emailWrapper.SendEmail(emailModel, file);
         }
 
         public byte[] GetEventTicket(Event eventU, User user)
         {
 
-            string FileInputPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "TikectTemplateIn.html");                        
+            //string FileInputPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "TikectTemplateIn.html");                        
+            string FileInputPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "TikectTemplateIn.html");                        
             StreamReader str = new StreamReader(FileInputPath);
             string MailText = str.ReadToEnd();
             str.Close();
@@ -304,6 +276,35 @@ namespace Study.EventManager.Services
             byte[] pdfByte = memStream.ToArray();
    
             return pdfByte;               
+        }
+
+        public List<Event> GetAllByUser(string email)
+        {
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetUserByEmail(email);
+
+            var repoUserCompanies = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
+
+            var listUserCompanies = repoUserCompanies.GetEventsByUser(user.Id);
+
+            return listUserCompanies;
+        }
+
+        public EventReviewDto EventReview(EventReviewCreateDto dto)
+        {
+            var repoReview = _contextManager.CreateRepositiry<IEventReviewRepo>();
+            var review = repoReview.GetAll().Where(x => x.UserId == dto.UserId && x.EventId == dto.EventId);
+            if (review != null)
+            {
+                throw new ValidationException("You have already leave feedback on this event");
+            }
+            var entity = _mapper.Map<EventReview>(dto);
+
+            repoReview.Add(entity);
+            _contextManager.Save();
+
+            var eventDto = _mapper.Map<EventReviewDto>(entity);
+            return eventDto;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using AutoMapper;
+using Azure.Storage.Blobs;
 using iText.Html2pdf;
 using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
@@ -22,21 +23,24 @@ namespace Study.EventManager.Services
         private IUploadService _uploadService;
         private readonly string _urlAdress;
         private IEmailWrapper _emailWrapper;
+        private readonly IMapper _mapper;
 
-        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, Settings settings, IEmailWrapper emailWrapper)
+        public UserService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IUploadService uploadService, IMapper mapper
+            , Settings settings, IEmailWrapper emailWrapper)
         {         
             _generateEmailWrapper = generateEmailWrapper;            
             _contextManager = contextManager;
             _uploadService = uploadService;
             _urlAdress = settings.FrontUrl;
             _emailWrapper = emailWrapper;
+            _mapper = mapper;
         }
    
-        public UserDto GetUser(int id)
+        public UserDto GetUser(string email)
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            var data = repo.GetById(id);
-            var result = MapToDto(data);
+            var user = repo.GetUserByEmail(email);          
+            var result = _mapper.Map<UserDto>(user);
             return result;
         }
 
@@ -63,26 +67,25 @@ namespace Study.EventManager.Services
             repo.Add(entity);
             _contextManager.Save();
            
-            return MapToDto(entity);
+            return _mapper.Map<UserDto>(entity);
         }
 
         public UserDto UpdateUser(int id, UserDto dto)
         {
-            ValidateUser(dto.FirstName, dto.LastName, dto.Email);
+           // ValidateUser(dto.FirstName, dto.LastName, dto.Email);
 
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var data = repo.GetById(id);
 
             data.FirstName = dto.FirstName;
             data.LastName = dto.LastName;
-            data.Middlename = dto.Middlename;
+            data.Middlename = dto.MiddleName;
             data.BirthDate = dto.BirthDate;
-            data.Email = dto.Email;
             data.Phone = dto.Phone;
             data.Sex = dto.Sex;
 
             _contextManager.Save();
-            return MapToDto(data);
+            return _mapper.Map<UserDto>(data);
         }
        
         public void DeleteUser(int id)
@@ -97,7 +100,7 @@ namespace Study.EventManager.Services
         {
             var repo = _contextManager.CreateRepositiry<IUserRepo>();
             var data = repo.GetAll();
-            return data.Select(x => MapToDto(x)).ToList();
+            return data.Select(x => _mapper.Map<UserDto>(x)).ToList();
         }        
         
         public void ValidateUser(string FirstName, string LastName, string Email)
@@ -141,35 +144,7 @@ namespace Study.EventManager.Services
             {
                 throw new ValidationException("Password should contain at least one numeric value.");
             }
-        }
-       
-        private UserDto MapToDto(User entity)
-        {
-            if (entity == null)
-            {
-                return null;
-            }
-            return new UserDto
-            {
-                Id = entity.Id,
-                FirstName = entity.FirstName,
-                LastName = entity.LastName,
-                Email = entity.Email,
-                Username = entity.Username
-            };
-        }
-
-        private User MapToEntity(UserCreateDto dto)
-        {
-            return new User
-            {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Email = dto.Email,
-                Username = dto.Username,
-                Password = dto.Password
-            };
-        }
+        }                  
 
         public void SendWelcomeEmail(UserCreateDto dto)
         {
@@ -185,8 +160,6 @@ namespace Study.EventManager.Services
 
                 var generateEmail = new GenerateEmailDto
                 {
-                    //UrlAdress = "https://steventmanagerdev01.z13.web.core.windows.net/signin?",
-
                     UrlAdress = _urlAdress + "/signin?",
                     EmailMainText = "You are currently registered using",
                     ObjectId = 0,
@@ -202,7 +175,7 @@ namespace Study.EventManager.Services
             }
         }
 
-        public async Task UploadUserFoto(string email, FileDto model)
+        public async Task<UserDto> UploadUserFoto(string email, FileDto model)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetUserByEmail(email);
@@ -226,10 +199,12 @@ namespace Study.EventManager.Services
             user.FotoUrl = filePath.Url;
             user.ServerFileName = filePath.ServerFileName + model.File.FileName;
 
-            _contextManager.Save();         
+            _contextManager.Save();
+
+            return _mapper.Map<UserDto>(user);
         }
 
-        public async Task DeleteUserFoto(string email)
+        public async Task<UserDto> DeleteUserFoto(string email)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetUserByEmail(email);
@@ -244,17 +219,31 @@ namespace Study.EventManager.Services
             user.FotoUrl = null;
             user.OriginalFileName = null;
             _contextManager.Save();
+
+            return _mapper.Map<UserDto>(user);
         }
 
-        public static void main()
+        public UserDto UpdatePasswordUser(UserUpdatePasswordDto dto)
         {
-            using (FileStream htmlSource = File.Open("input.html", FileMode.Open))
-            using (FileStream pdfDest = File.Open("output.pdf", FileMode.OpenOrCreate))
-            {
-                ConverterProperties converterProperties = new ConverterProperties();
-                HtmlConverter.ConvertToPdf(htmlSource, pdfDest, converterProperties);
-            }
+            var repo = _contextManager.CreateRepositiry<IUserRepo>();
+            var data = repo.GetById(dto.UserId);
+
+            ValidatePassword(dto.Password);
+            data.Password = dto.Password;
+
+            _contextManager.Save();
+            return _mapper.Map<UserDto>(data);
         }
 
-}
+/*        public IEnumerable<UserDto> SearchByName(string FirstName, string Lastname)
+        {
+            var repo = _contextManager.CreateRepositiry<IUserRepo>();
+            if (!string.IsNullOrEmpty(FirstName))
+            {
+                //var data = repo.GetAll().Where(e => e.FirstName.Contains(FirstName));
+            }
+            var data = repo.GetAll().Where(e => e.FirstName.Contains(FirstName));
+            return _mapper.Map<UserDto>(data);
+        }*/
+    }
 }

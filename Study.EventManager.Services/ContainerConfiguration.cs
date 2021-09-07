@@ -13,16 +13,19 @@ namespace Study.EventManager.Services
     {
         public static void Configure(IServiceCollection serviceCollection, Settings settings)
         {
+            serviceCollection.AddAutoMapper(typeof(ContainerConfiguration));
+
             Data.ContainerConfiguration.Configure(serviceCollection, settings.ConnectionString);
             serviceCollection.AddSingleton(settings);
             serviceCollection.AddScoped<ICompanyService, CompanyService>();
             serviceCollection.AddScoped<IEventService, EventService>();
             serviceCollection.AddScoped<IUserService, UserService>();
             serviceCollection.AddScoped<IAuthenticateService, AuthenticateService>();
-            serviceCollection.AddTransient<IEmailWrapper, EmailWrapper>();
+            serviceCollection.AddTransient<IEmailWrapper, SendBoxWrapper>();
             serviceCollection.AddScoped<IUploadService , UploadService >();
+            serviceCollection.AddScoped<IAdminService, AdminService>();       
             serviceCollection.AddTransient<IGenerateEmailWrapper, GenerateEmailWrapper>();
-            serviceCollection.AddTransient<IAuthenticateWrapper, AuthenticateWrapper>();
+            serviceCollection.AddTransient<IAuthenticateWrapper, AuthenticateWrapper>();          
             serviceCollection.AddTransient<IGenerateQRCode, GenerateQRCodeWrapper>();
         }
     } 
