@@ -26,11 +26,15 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetCompany(int id)
+        public IActionResult GetCompany(int id, int userId )
         {
             try
             {
-                var data = _service.GetCompany(id);
+                if (userId == 0)
+                {
+                    return BadRequest("User not found");
+                }
+                var data = _service.GetCompany(id, userId);
                 return Ok(data);
             }
             catch (ValidationException ex)
@@ -55,7 +59,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAllCompaniesByOwner")]
-        public IActionResult CompaniesByOwner(int userId, int page = 1, int pageSize = 20)
+        public IActionResult CompaniesByOwner(int userId, int page = 1, int pageSize = 10)
         {
             try
             {
@@ -70,7 +74,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAllCompaniesByUser")]
-        public IActionResult CompaniesByUser(int userId, int page = 1, int pageSize = 20)
+        public IActionResult CompaniesByUser(int userId, int page = 1, int pageSize = 10)
         {
             try
             {
@@ -298,11 +302,26 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getCompanyEvents")]
-        public IActionResult GetCompanyEvents(int CompanyId, int page = 1, int pageSize = 20)
+        public IActionResult GetCompanyEvents(int CompanyId, int page = 1, int pageSize = 10)
         {
             try
             {
                 var data = _service.GetCompanyEvents(CompanyId, page, pageSize);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("getCompanyUsers")]
+        public IActionResult GetCompanyUsers(int CompanyId, int page = 1, int pageSize = 10, string firstName = "", string lastName = "")
+        {
+            try
+            {
+                var data = _service.GetCompanyUsers(CompanyId, page, pageSize, firstName, lastName);
                 return Ok(data);
             }
             catch (ValidationException ex)

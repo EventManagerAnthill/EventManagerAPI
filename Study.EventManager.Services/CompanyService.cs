@@ -44,12 +44,31 @@ namespace Study.EventManager.Services
             _mapper = mapper;
         }
 
-        public CompanyDto GetCompany(int id)
+        public CompanyDto GetCompany(int companyId, int userId = 0)
         {
-            var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
-            var comp = repo.GetById(id);
-            var result = _mapper.Map<CompanyDto>(comp);
-            return result;
+            try
+            {
+                var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
+                var comp = repo.GetById(companyId);
+                var result = _mapper.Map<CompanyDto>(comp);
+
+                var repoUserCompanies = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
+                result.UserRole = repoUserCompanies.GetUserRole(userId, companyId);
+
+                if (result.Type == 2)
+                {
+                    if (result.UserRole == 0)
+                    {
+                        throw new ValidationException("Can't show company");
+                    }
+                }
+
+                return result;
+            }
+            catch
+            {
+                throw new ValidationException("Can't show company");
+            }
         }
 
         public CompanyDto CreateCompany(CompanyCreateDto dto)
@@ -141,11 +160,16 @@ namespace Study.EventManager.Services
             }
             var comp = repo.GetAllCompaniesByOwner(user.Id, page, pageSize);
 
-            var companyDto = _mapper.Map<List<CompanyDto>>(comp);
+            var companyListDto = _mapper.Map<List<CompanyDto>>(comp);
+
+            foreach (var oneCompany in companyListDto)
+            {               
+                oneCompany.UserRole = 1;
+            }
 
             var retDto = new PagedCompaniesDto()
             {
-                Companies = companyDto,
+                Companies = companyListDto,
                 Paging = new PagingDto()
                 {
                     CurrentPage = page,
@@ -369,8 +393,10 @@ namespace Study.EventManager.Services
         }
 
         public void InviteUsersToCompany(CompanyTreatmentUsersModel model)
-        {          
-            var company = GetCompany(model.CompanyId);
+        {
+            var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
+            var company = repo.GetById(model.CompanyId);
+           
             if (company == null)
             {
                 throw new ValidationException("Company not found.");
@@ -392,7 +418,9 @@ namespace Study.EventManager.Services
 
         public string AppointUserAsAdmin(CompanyTreatmentUsersModel model)
         {
-            var company = GetCompany(model.CompanyId);
+            var repoComp = _contextManager.CreateRepositiry<ICompanyRepo>();
+            var company = repoComp.GetById(model.CompanyId);
+            
             if (company == null)
             {
                 throw new ValidationException("Company not found.");
@@ -519,6 +547,26 @@ namespace Study.EventManager.Services
                     CurrentPage = page,
                     PageSize = pageSize,
                     TotalItems = repo.GetAllEventsByCompanyIdCount(CompanyId)
+                }
+            };
+            return retDto;
+        }
+
+        public PagedUsersDto GetCompanyUsers(int CompanyId, int page, int pageSize, string firstName, string lastName)
+        {
+            var repo = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
+
+            var data = repo.GetAllUsers(CompanyId, page, pageSize, firstName, lastName);
+            var userDto = _mapper.Map<List<UserDto>>(data);
+
+            var retDto = new PagedUsersDto()
+            {
+                Users = userDto,
+                Paging = new PagingDto()
+                {
+                    CurrentPage = page,
+                    PageSize = pageSize,
+                    TotalItems = repo.GetAllUsersCount(CompanyId)
                 }
             };
             return retDto;
