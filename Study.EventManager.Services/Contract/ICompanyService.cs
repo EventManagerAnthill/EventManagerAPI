@@ -10,11 +10,9 @@ namespace Study.EventManager.Services.Contract
 {
     public interface ICompanyService
     {
-        CompanyDto GetCompany(int id);
+        CompanyDto GetCompany(int id, int userId);
         CompanyDto CreateCompany(CompanyCreateDto dto);
-        CompanyDto UpdateCompany(int id, CompanyDto dto);
-        PagedCompaniesDto GetAllByOwner(int userId, int page, int pageSize);
-        PagedCompaniesDto GetAllByUser(int userId, int page, int pageSize);
+        CompanyDto UpdateCompany(int id, CompanyDto dto);        
         void DeleteCompany(int id);
         CompanyDto MakeCompanyDel(int id, CompanyDto dto);   
         string AcceptInvitation(int companyId, string Email);     
@@ -24,9 +22,13 @@ namespace Study.EventManager.Services.Contract
         void InviteUsersToCompany(CompanyTreatmentUsersModel model);
         string AppointUserAsAdmin(CompanyTreatmentUsersModel model);
         void AddUsersCSV(int CompanyId, IFormFile file);
-        Task<CompanyDto> DeleteCompanyFoto(int CompanyId);
-        PagedEventsDto GetCompanyEvents(int CompanyId, int page, int pageSize);
+        Task<CompanyDto> DeleteCompanyFoto(int CompanyId);        
         void DeleteCompanyMember(int companyId, int userId);
         void DemoteAdminToUser(int companyId, int userId);
+
+        PagedCompaniesDto GetAllByOwner(int userId, int page, int pageSize);
+        PagedCompaniesDto GetAllByUser(int userId, int page, int pageSize);
+        PagedEventsDto GetCompanyEvents(int CompanyId, int page, int pageSize);
+        PagedUsersDto GetCompanyUsers(int CompanyId, int page, int pageSize, string firstName, string lastName);
     }
 }
