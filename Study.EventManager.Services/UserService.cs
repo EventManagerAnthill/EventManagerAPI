@@ -56,14 +56,13 @@ namespace Study.EventManager.Services
             
             ValidateUser(dto.FirstName, dto.LastName, dto.Email);
             ValidatePassword(dto.Password);
-            var isVerified = false;
+            
             if (!(dto.EmailVerification))
             {
-                SendWelcomeEmail(dto);
-                isVerified = true;
+                SendWelcomeEmail(dto);                
             }
 
-            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email, isVerified);
+            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email, dto.EmailVerification);
             repo.Add(entity);
             _contextManager.Save();
            
@@ -234,16 +233,5 @@ namespace Study.EventManager.Services
             _contextManager.Save();
             return _mapper.Map<UserDto>(data);
         }
-
-/*        public IEnumerable<UserDto> SearchByName(string FirstName, string Lastname)
-        {
-            var repo = _contextManager.CreateRepositiry<IUserRepo>();
-            if (!string.IsNullOrEmpty(FirstName))
-            {
-                //var data = repo.GetAll().Where(e => e.FirstName.Contains(FirstName));
-            }
-            var data = repo.GetAll().Where(e => e.FirstName.Contains(FirstName));
-            return _mapper.Map<UserDto>(data);
-        }*/
     }
 }

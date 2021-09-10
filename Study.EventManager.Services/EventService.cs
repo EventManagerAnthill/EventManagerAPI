@@ -38,7 +38,6 @@ namespace Study.EventManager.Services
             _mapper = mapper;
         }
        
-
         public string AcceptInvitation(int EventId, string Email)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
@@ -69,7 +68,7 @@ namespace Study.EventManager.Services
             {
                 EventId = EventId,
                 UserId = user.Id,
-                UserEventRole = 3
+                UserEventRole = (int)Model.Enums.EventUserRoleEnum.User
             };
             repoEventUser.Add(entity);
       
@@ -110,7 +109,7 @@ namespace Study.EventManager.Services
                 {
                     EventId = entity.Id,
                     UserId = user.Id,
-                    UserEventRole = 1
+                    UserEventRole = (int)Model.Enums.EventUserRoleEnum.Owner
                 };
                 repoEventUser.Add(eventUser);
                 _contextManager.Save();

@@ -43,12 +43,6 @@ namespace Study.EventManager.Services.Wrappers
             var to = new EmailAddress(dto.ToAddress);
             var pwd = GenerateToken();
 
-
-            //string body = string.Empty;
-            //string FileTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
-            //string FileTemplatePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
-
-
             var htmlContent = dto.Body;
             var textContent = "";
 

@@ -10,7 +10,7 @@ namespace Study.EventManager.Data.Contract
     {
         CompanyUserLink GetRecordByCompanyAndUser(int UserId, int CompanyId);
 
-        List<Company> GetCompaniesByUser(int UserId, int page, int pageSize, int del = 0);
+        List<Company> GetCompaniesByUser(int UserId, int page, int pageSize, string companyName = "", int del = 0);
 
         int GetCompaniesByUserCount(int UserId, int del = 0);
 

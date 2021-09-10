@@ -59,11 +59,11 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAllCompaniesByOwner")]
-        public IActionResult CompaniesByOwner(int userId, int page = 1, int pageSize = 10)
+        public IActionResult CompaniesByOwner(int userId, int page = 1, int pageSize = 10, string companyName = "")
         {
             try
             {
-                var data = _service.GetAllByOwner(userId, page, pageSize);
+                var data = _service.GetAllByOwner(userId, page, pageSize, companyName);
                 return Ok(data);
             }
             catch (ValidationException ex)
@@ -74,11 +74,11 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAllCompaniesByUser")]
-        public IActionResult CompaniesByUser(int userId, int page = 1, int pageSize = 10)
+        public IActionResult CompaniesByUser(int userId, int page = 1, int pageSize = 10, string companyName = "")
         {
             try
             {
-                var data = _service.GetAllByUser(userId, page, pageSize);
+                var data = _service.GetAllByUser(userId, page, pageSize, companyName);
                 return Ok(data);
             }
             catch (ValidationException ex)
@@ -138,12 +138,7 @@ namespace API.Controllers
         {
             try
             {
-                var companyDto = new CompanyDto
-                {
-                    Id = id,
-                    Del = 1
-                };
-                var data = _service.MakeCompanyDel(companyDto.Id, companyDto);
+                var data = _service.MakeCompanyDel(id);
                 return Ok(data);
             }
             catch (ValidationException ex)
@@ -162,7 +157,7 @@ namespace API.Controllers
 
         [Route("upload")]
         [HttpPost]
-        public async Task<IActionResult> Upload(int id, IFormFile file)
+        public async Task<IActionResult> Upload(int companyId, IFormFile file)
         {
             try
             {
@@ -174,7 +169,7 @@ namespace API.Controllers
                         Container = "companyfotoscontainer"
                     };
 
-                    return Ok(await _service.UploadCompanyFoto(id, fileDto));
+                    return Ok(await _service.UploadCompanyFoto(companyId, fileDto));
                 }
                 else
                 {
@@ -239,7 +234,7 @@ namespace API.Controllers
             try
             {
                 _service.InviteUsersToCompany(model);
-                return Ok("link to join the company is send to emails");
+                return Ok("Link to join the company is sent to emails");
             }
             catch (ValidationException ex)
             {

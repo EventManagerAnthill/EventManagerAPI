@@ -23,7 +23,7 @@ namespace Study.EventManager.Services.Test
             ContainerConfiguration.Configure(services, settings);
             var serviceProvider = services.BuildServiceProvider();
             _companyService = serviceProvider.GetService<ICompanyService>();
-        }        
+        }
 
         [TestMethod]
         public void CreateDeleteCompanyTest()
@@ -34,7 +34,7 @@ namespace Study.EventManager.Services.Test
             var dto = new CompanyCreateDto
             {
                 Name = "Nameasdasd",
-                
+
                 Type = 1,
                 Description = "CompanyDtoDescriptionCompanyDto"
 
@@ -48,22 +48,22 @@ namespace Study.EventManager.Services.Test
 
             _companyService.DeleteCompany(companyID);
         }
-        
+
         [TestMethod]
         public void GetAllByCompanyUsersTest()
         {
             //act             
-           // var result = _companyService.GetAllByUser("slavikyarkin@gmail.com",1,1);
+            // var result = _companyService.GetAllByUser("slavikyarkin@gmail.com",1,1);
 
             //assert
-          //  Assert.AreNotEqual(0, result);
+            //  Assert.AreNotEqual(0, result);
         }
 
         [TestMethod]
         public void GetAllCompaniesByOwnerTest()
         {
             //act             
-           // var result = _companyService.GetAllByOwner("slavikyarkin@gmail.com");
+            // var result = _companyService.GetAllByOwner("slavikyarkin@gmail.com");
 
             //assert
             //Assert.AreNotEqual(0, result);
@@ -73,10 +73,10 @@ namespace Study.EventManager.Services.Test
         public void GetCompanyByIdTest()
         {
             //act             
-          //  var result = _companyService.GetCompany(1);
+            //  var result = _companyService.GetCompany(1);
 
             //assert
-           // Assert.AreNotEqual(0, result.Id);
+            // Assert.AreNotEqual(0, result.Id);
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace Study.EventManager.Services.Test
         {
             var dto = new CompanyDto
             {
-                Name = "Name",       
+                Name = "Name",
                 Type = 1,
                 Description = "Description"
             };
@@ -95,20 +95,21 @@ namespace Study.EventManager.Services.Test
             Assert.AreNotEqual(0, result.Id);
         }
 
-        [TestMethod]
-        public void MakeCompanyDelTest()
-        {
-            var dto = new CompanyDto
-            {
-                Name = "Name",
-                Type = 1,
-                Description = "Description"
-            };
-            //act             
-            var result = _companyService.MakeCompanyDel(1, dto);
+        /*        [TestMethod]
+                public void MakeCompanyDelTest()
+                {
+                    var dto = new CompanyDto
+                    {
+                        Name = "Name",
+                        Type = 1,
+                        Description = "Description"
+                    };
+                    //act             
+                   // var result = _companyService.MakeCompanyDel(1, dto);
 
-            //assert
-            Assert.AreNotEqual(0, result.Id);
-        }      
+                    //assert
+                    Assert.AreNotEqual(0, result.Id);
+                }      
+            }*/
     }
 }

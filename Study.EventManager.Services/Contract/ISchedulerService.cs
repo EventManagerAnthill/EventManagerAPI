@@ -8,9 +8,7 @@ namespace Study.EventManager.Services.Contract
     public interface ISchedulerService: IDisposable
     {
         void Dispose();
-
         Task ToDoSomething();
         Task CheckFinishedEvents();
-
     }
 }

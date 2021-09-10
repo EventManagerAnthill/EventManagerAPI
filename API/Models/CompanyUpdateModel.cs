@@ -15,7 +15,6 @@ namespace API.Models
         [Required]
         public int Type { get; set; }
 
-        [Required]
         public string Description { get; set; }
     }
 }

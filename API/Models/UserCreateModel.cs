@@ -15,6 +15,8 @@ namespace API.Models
         [Required]
         public string LastName { get; set; }
 
+        public DateTime BirthDate { get; set; }
+
         [Required]
         public string Email { get; set; }
         
@@ -23,6 +25,6 @@ namespace API.Models
         [Required]
         public string Password { get; set; }
 
-        public bool EmailVerification { get; set; }
+        public bool EmailVerification { get; set; } = false;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Study.EventManager.Services.Dto
 {
@@ -9,6 +10,8 @@ namespace Study.EventManager.Services.Dto
 
         [Required]
         public string LastName { get; set; }
+
+        public DateTime BirthDate { get; set; }
 
         [Required]
         public string Email { get; set; }

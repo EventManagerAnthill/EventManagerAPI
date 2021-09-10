@@ -55,7 +55,6 @@ namespace API.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-
         [Route("")]
         public IActionResult CreateUser([FromBody] UserCreateModel model)
         {
@@ -65,6 +64,7 @@ namespace API.Controllers
                 {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
+                    BirthDate = model.BirthDate,
                     Email = model.Email,
                     Username = model.Username,
                     Password = model.Password,
@@ -183,23 +183,5 @@ namespace API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-
-/*        [HttpGet]
-        [Route("searchByName")]
-        public IActionResult SearchByName()
-        {
-            try
-            {
-                var data = _serviceUser.GetAll();
-                return Ok(data);
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }*/
-
-
     }    
 }

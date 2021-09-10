@@ -16,9 +16,10 @@ namespace Study.EventManager.Data.Repositiry
             return userCompanies;
         }
 
-        public List<Company> GetCompaniesByUser(int UserId, int page, int pageSize, int del = 0)
+        public List<Company> GetCompaniesByUser(int UserId, int page, int pageSize, string companyName, int del = 0)
         {
             var listCompanies = _eventManagerContext.CompanyUsers.Where(x => x.UserId == UserId && x.Company.Del == del).Select(x => x.Company)
+                .Where(x => x.Name.Contains(companyName) || "" == companyName)
                 .OrderBy(x => x.Name)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -37,7 +38,6 @@ namespace Study.EventManager.Data.Repositiry
             try
             {
                 var userRole = _eventManagerContext.CompanyUsers.Where(x => x.UserId == userId && x.CompanyId == companyId).Select(x => x.UserCompanyRole).First();
-
                 return userRole;
             }
             catch

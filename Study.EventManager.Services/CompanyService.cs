@@ -55,12 +55,9 @@ namespace Study.EventManager.Services
                 var repoUserCompanies = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
                 result.UserRole = repoUserCompanies.GetUserRole(userId, companyId);
 
-                if (result.Type == 2)
+                if (result.Type == (int)Model.Enums.CompanyTypes.Private && result.UserRole == 0)
                 {
-                    if (result.UserRole == 0)
-                    {
-                        throw new ValidationException("Can't show company");
-                    }
+                    throw new ValidationException("Can't show the company");
                 }
 
                 return result;
@@ -94,7 +91,7 @@ namespace Study.EventManager.Services
             {
                 CompanyId = entity.Id,
                 UserId = user.Id,
-                UserCompanyRole = 1
+                UserCompanyRole = (int)Model.Enums.CompanyUserRoleEnum.Owner
             };
             repoCompUser.Add(companyUser);
             _contextManager.Save();
@@ -130,11 +127,11 @@ namespace Study.EventManager.Services
             return _mapper.Map<CompanyDto>(data); 
         }
 
-        public CompanyDto MakeCompanyDel(int id, CompanyDto dto)
+        public CompanyDto MakeCompanyDel(int id)
         {
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var data = repo.GetById(id);
-            data.Del = dto.Del;
+            data.Del = 1;
             _contextManager.Save();
 
             return _mapper.Map<CompanyDto>(data);
@@ -148,7 +145,7 @@ namespace Study.EventManager.Services
             _contextManager.Save();
         }
 
-        public PagedCompaniesDto GetAllByOwner(int userId, int page, int pageSize)
+        public PagedCompaniesDto GetAllByOwner(int userId, int page, int pageSize, string companyName)
         {
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();            
 
@@ -158,13 +155,13 @@ namespace Study.EventManager.Services
             {
                 throw new ValidationException("User not found");
             }
-            var comp = repo.GetAllCompaniesByOwner(user.Id, page, pageSize);
+            var comp = repo.GetAllCompaniesByOwner(user.Id, page, pageSize, companyName);
 
             var companyListDto = _mapper.Map<List<CompanyDto>>(comp);
 
             foreach (var oneCompany in companyListDto)
             {               
-                oneCompany.UserRole = 1;
+                oneCompany.UserRole = (int)Model.Enums.CompanyUserRoleEnum.Owner;
             }
 
             var retDto = new PagedCompaniesDto()
@@ -180,13 +177,13 @@ namespace Study.EventManager.Services
             return retDto;                       
         }
 
-        public PagedCompaniesDto GetAllByUser(int userId, int page, int pageSize)
+        public PagedCompaniesDto GetAllByUser(int userId, int page, int pageSize, string companyName)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetById(userId);
 
             var repoUserCompanies = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
-            var listUserCompanies = repoUserCompanies.GetCompaniesByUser(user.Id, page, pageSize);
+            var listUserCompanies = repoUserCompanies.GetCompaniesByUser(user.Id, page, pageSize, companyName);
 
             var companyListDto = _mapper.Map<List<CompanyDto>>(listUserCompanies);
             var companyIdList = companyListDto.Select(c => c.Id).ToList();
@@ -245,7 +242,7 @@ namespace Study.EventManager.Services
             {
                 CompanyId = companyId,
                 UserId = user.Id,
-                UserCompanyRole = 3
+                UserCompanyRole = (int)Model.Enums.CompanyUserRoleEnum.User
             };
             repoCompUser.Add(entity);
 
@@ -277,8 +274,8 @@ namespace Study.EventManager.Services
             company.FotoUrl = filePath.Url;
             company.ServerFileName = filePath.ServerFileName + model.File.FileName;
 
-            _contextManager.Save();
-
+            _contextManager.Save();         
+    
             return _mapper.Map<CompanyDto>(company);
         }
 
@@ -379,7 +376,7 @@ namespace Study.EventManager.Services
                 {
                     CompanyId = CompanyId,
                     UserId = user.Id,
-                    UserCompanyRole = 3
+                    UserCompanyRole = (int)Model.Enums.CompanyUserRoleEnum.User
                 };
                 repoCompUser.Add(entity);
                 _contextManager.Save();
@@ -438,7 +435,7 @@ namespace Study.EventManager.Services
 
                     if (!(companyUser == null))
                     {
-                        companyUser.UserCompanyRole = 2;
+                        companyUser.UserCompanyRole = (int)Model.Enums.CompanyUserRoleEnum.Admin;
                         _contextManager.Save();
 
                         var generateEmail = new GenerateEmailDto
@@ -529,7 +526,6 @@ namespace Study.EventManager.Services
                     thread.Start();
                 }
             }
-
         }
 
         public PagedEventsDto GetCompanyEvents(int CompanyId, int page, int pageSize)
@@ -623,7 +619,7 @@ namespace Study.EventManager.Services
 
             if (!(companyUser == null))
             {
-                companyUser.UserCompanyRole = 3;
+                companyUser.UserCompanyRole = (int)Model.Enums.CompanyUserRoleEnum.User;
                 _contextManager.Save();
             }
         }

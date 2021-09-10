@@ -130,7 +130,7 @@ namespace API.Controllers
                 settings.Audience = new List<string>() { "752253873246-cg9qrlhp0tmtn7cd8vpg4qrfk03br55c.apps.googleusercontent.com" };
                 GoogleJsonWebSignature.Payload userGoogle = GoogleJsonWebSignature.ValidateAsync(data.IdToken, settings).Result;
 
-                _serviceAuth.SocialNetworksAuthenticate(userGoogle.Email, userGoogle.Name, userGoogle.GivenName, userGoogle.FamilyName);
+                _serviceAuth.SocialNetworksAuthenticate(userGoogle.Email, userGoogle.GivenName, userGoogle.FamilyName, userGoogle.Picture);
 
                 var response = GiveJWTToken(userGoogle.Email, "0");
                 return Ok(response);
@@ -193,23 +193,6 @@ namespace API.Controllers
             {
                 new Claim("role", role)
             };            
-        }
-
-
-
-        [AllowAnonymous]
-        [HttpPost("sendboxEmail")]
-        public IActionResult SendBoxEmail()
-        {
-            try
-            {
-             
-                return Ok("link to restore your password sent to email");
-            }
-            catch (ValidationException ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
     } 
 };

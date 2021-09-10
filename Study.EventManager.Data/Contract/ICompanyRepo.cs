@@ -7,7 +7,7 @@ namespace Study.EventManager.Data.Contract
 {
     public interface ICompanyRepo : IRepository<Company>
     {
-        List<Company> GetAllCompaniesByOwner(int UserId, int page = 1, int pageSize = 20, int del = 0);
+        List<Company> GetAllCompaniesByOwner(int UserId, int page = 1, int pageSize = 20, string companyName = "", int del = 0);
 
         public int GetAllCompaniesByOwnerCount(int UserId, int del = 0);
 

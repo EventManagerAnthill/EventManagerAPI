@@ -9,6 +9,5 @@ namespace Study.EventManager.Services.Models.APIModels
         public string id { get; set; }
 
         public string name { get; set; }
-
     }
 }

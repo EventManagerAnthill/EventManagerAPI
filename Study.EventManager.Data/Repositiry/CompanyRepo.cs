@@ -10,10 +10,10 @@ namespace Study.EventManager.Data.Repositiry
 {
     public class CompanyRepo : AbstractRepo<Company>, ICompanyRepo
     {
-        public List<Company> GetAllCompaniesByOwner(int UserId, int page, int pageSize, int del = 0)
+        public List<Company> GetAllCompaniesByOwner(int UserId, int page, int pageSize, string companyName, int del = 0)
         {
             var companies = _eventManagerContext.Set<Company>()
-                .Where(x => x.UserId == UserId && x.Del == del)
+                .Where(x => (x.UserId == UserId && x.Del == del) && (x.Name.Contains(companyName) || "" == companyName))
                 .OrderBy(x => x.Name)
                 .Skip(0 * pageSize)
                 .Take(pageSize)

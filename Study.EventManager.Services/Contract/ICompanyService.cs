@@ -14,7 +14,7 @@ namespace Study.EventManager.Services.Contract
         CompanyDto CreateCompany(CompanyCreateDto dto);
         CompanyDto UpdateCompany(int id, CompanyDto dto);        
         void DeleteCompany(int id);
-        CompanyDto MakeCompanyDel(int id, CompanyDto dto);   
+        CompanyDto MakeCompanyDel(int id);   
         string AcceptInvitation(int companyId, string Email);     
         Task<CompanyDto> UploadCompanyFoto(int id, FileDto model);
         string GenerateLinkToJoin(int CompanyId, DateTime date);
@@ -26,8 +26,8 @@ namespace Study.EventManager.Services.Contract
         void DeleteCompanyMember(int companyId, int userId);
         void DemoteAdminToUser(int companyId, int userId);
 
-        PagedCompaniesDto GetAllByOwner(int userId, int page, int pageSize);
-        PagedCompaniesDto GetAllByUser(int userId, int page, int pageSize);
+        PagedCompaniesDto GetAllByOwner(int userId, int page, int pageSize, string companyName);
+        PagedCompaniesDto GetAllByUser(int userId, int page, int pageSize, string companyName);
         PagedEventsDto GetCompanyEvents(int CompanyId, int page, int pageSize);
         PagedUsersDto GetCompanyUsers(int CompanyId, int page, int pageSize, string firstName, string lastName);
     }
