@@ -14,7 +14,7 @@ namespace API.Tasks
 {
     public class SomeTask : IScheduledTask
     {
-        public string Schedule => "00 12 * * *";
+        public string Schedule => "0 12 * */2";
 
         IServiceScopeFactory _scopeFactory;
         public SomeTask(IServiceScopeFactory scopeFactory)

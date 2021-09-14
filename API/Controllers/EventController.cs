@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace API.Controllers
 {
@@ -25,6 +26,7 @@ namespace API.Controllers
         {
             try
             {
+
                 return Ok("link to join event is sent to specified  email");
             }
             catch (APICompanyExceptions ex)
@@ -83,7 +85,7 @@ namespace API.Controllers
         {
             try
             {
-                var data = _service.GetEventByUserId(id);
+                var data = _service.GetEventByUserOwnerId(id);
                 return Ok(data);
             }
             catch (APIEventException ex)
@@ -177,7 +179,7 @@ namespace API.Controllers
                 var eventDto = new EventDto
                 {
                     Id = id,
-                    Status = 1
+                    Status = 2
                 };
                 var data = _service.CancelEvent(eventDto.Id, eventDto);
                 return Ok(data);
@@ -190,11 +192,11 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("getAllEventsByUser")]
-        public IActionResult CompaniesByUser(string email)
+        public IActionResult CompaniesByUser(int userId, int page = 1, int pageSize = 10, string eventName = "")
         {
             try
             {
-                var data = _service.GetAllByUser(email);
+                var data = _service.GetAllByUser(userId, page, pageSize, eventName);
                 return Ok(data);
             }
             catch (ValidationException ex)
@@ -213,6 +215,48 @@ namespace API.Controllers
                 return Ok(data);
             }
             catch (APIEventException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Route("upload")]
+        [HttpPost]
+        public async Task<IActionResult> Upload(int eventId, IFormFile file)
+        {
+            try
+            {
+                if (file.Length > 0)
+                {
+                    var fileDto = new FileDto
+                    {
+                        File = file,
+                        Container = "eventfotoscontainer"
+                    };
+
+                    return Ok(await _service.UploadEventFoto(eventId, fileDto));
+                }
+                else
+                {
+                    throw new ValidationException("foto not found");
+                }
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("deleteFoto")]
+        public async Task<IActionResult> DeleteCompanyFoto(int EventId)
+        {
+            try
+            {
+                var eventFile = await _service.DeleteEventFoto(EventId);
+                return Ok(eventFile);
+            }
+            catch (ValidationException ex)
             {
                 return BadRequest(ex.Message);
             }

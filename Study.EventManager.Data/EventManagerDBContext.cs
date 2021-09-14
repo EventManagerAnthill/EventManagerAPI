@@ -25,6 +25,8 @@ namespace Study.EventManager.Data
             modelBuilder.ApplyConfiguration(new CompanyUserLinkConfig());
             modelBuilder.ApplyConfiguration(new EventUserLinkConfig());
             modelBuilder.ApplyConfiguration(new EventReviewConfiguration());
+            modelBuilder.ApplyConfiguration(new CompanySubConfiguration());
+            modelBuilder.ApplyConfiguration(new SubscriptionRatesConfig());
 
 /*            modelBuilder.Entity<User>()
                 .HasMany(c => c.Companies)

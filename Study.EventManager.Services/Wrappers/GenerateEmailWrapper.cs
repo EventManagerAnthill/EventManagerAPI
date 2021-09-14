@@ -31,7 +31,7 @@ namespace Study.EventManager.Services.Wrappers
         {
             try
             {
-                //string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
+               //  string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "WelcomeTemplate.html");
                 string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "WelcomeTemplate.html");
 
                 StreamReader str = new StreamReader(FilePath);
