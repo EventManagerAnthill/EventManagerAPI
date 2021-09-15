@@ -1,20 +1,27 @@
 ﻿using AutoMapper;
+using CsvHelper;
 using IronPdf;
 using iText.Html2pdf;
+using Microsoft.AspNetCore.Http;
 using Study.EventManager.Data.Contract;
 using Study.EventManager.Model;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
+using Study.EventManager.Services.Models.APIModels;
 using Study.EventManager.Services.Models.ServiceModel;
 using Study.EventManager.Services.Wrappers.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ValidationException = Study.EventManager.Services.Exceptions.ValidationException;
 
 namespace Study.EventManager.Services
 {
@@ -26,10 +33,13 @@ namespace Study.EventManager.Services
         private readonly string _urlAdress;
         private IEmailWrapper _emailWrapper;
         private IUploadService _uploadService;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper;        
+        private ISubscriptionService _subscriptionService;
+
+        const string secretKey = "JoinEventViaLinkHash";
 
         public EventService(IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, Settings settings, IGenerateQRCode generateQRCode
-            , IEmailWrapper emailWrapper, IUploadService uploadService, IMapper mapper)
+            , IEmailWrapper emailWrapper, IUploadService uploadService, IMapper mapper, ISubscriptionService subscriptionServicer)
         {
             _generateEmailWrapper = generateEmailWrapper;
             _contextManager = contextManager;
@@ -38,6 +48,7 @@ namespace Study.EventManager.Services
             _emailWrapper = emailWrapper;
             _uploadService = uploadService;
             _mapper = mapper;
+            _subscriptionService = subscriptionServicer;
         }
        
         public string AcceptInvitation(int EventId, string Email)
@@ -45,7 +56,7 @@ namespace Study.EventManager.Services
             var repoEvent = _contextManager.CreateRepositiry<IEventRepo>();
             var companyEvent = repoEvent.GetById(EventId);
 
-            CheckSubscription(companyEvent.CompanyId);
+            _subscriptionService.CheckSubscription(companyEvent.CompanyId);
 
             if (companyEvent == null)
             {
@@ -83,17 +94,38 @@ namespace Study.EventManager.Services
             return "You successfully join the Event, the ticket send to your email";
         }
 
-        public EventDto GetEvent(int id)
+        public EventDto GetEvent(int eventId, int userId)
         {
-            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+/*            var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var data = repo.GetById(id);
             var result = _mapper.Map<EventDto>(data);
-            return result;
+            return result;*/
+
+            try
+            {
+                var repo = _contextManager.CreateRepositiry<IEventRepo>();
+                var evnt = repo.GetById(eventId);
+                var result = _mapper.Map<EventDto>(evnt);
+
+                var repoUserEvents = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
+                result.UserRole = repoUserEvents.GetUserRole(userId, eventId);
+
+                if (result.Type == Model.Enums.EventTypes.Private && result.UserRole == 0)
+                {
+                    throw new ValidationException("Can't show the event");
+                }
+
+                return result;
+            }
+            catch
+            {
+                throw new ValidationException("Can't show event");
+            }
         }
 
         public EventDto CreateEvent(EventCreateDto dto)
         {
-            CheckSubscription(dto.CompanyId);
+            _subscriptionService.CheckSubscription(dto.CompanyId);
 
             try
             {
@@ -130,7 +162,7 @@ namespace Study.EventManager.Services
 
         public EventDto UpdateEvent(int id, EventDto dto)
         {
-            CheckSubscription(dto.CompanyId);
+            _subscriptionService.CheckSubscription(dto.CompanyId);
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var data = repo.GetById(id);    
             
@@ -195,7 +227,7 @@ namespace Study.EventManager.Services
             var eventRepo = _contextManager.CreateRepositiry<IEventRepo>();
             var getEvent = eventRepo.GetById(EventId);
 
-            CheckSubscription(getEvent.CompanyId);
+            _subscriptionService.CheckSubscription(getEvent.CompanyId);
 
             if (getEvent == null)
             {
@@ -203,7 +235,7 @@ namespace Study.EventManager.Services
             }
 
             var repo = _contextManager.CreateRepositiry<IEventUserLinkRepo>();                        
-            var data = repo.GetAll().Where(x => x.EventId == EventId);
+            var data = repo.GetAll(x => x.EventId == EventId);
             var listUsers = repo.GetAllUsers(EventId);
 
             if (listUsers == null)
@@ -230,7 +262,7 @@ namespace Study.EventManager.Services
 
         public void SendEventTicket(Event eventU, User user)
         {
-            CheckSubscription(eventU.CompanyId);
+            _subscriptionService.CheckSubscription(eventU.CompanyId);
 
             var pdfBytes = GetEventTicket(eventU, user);
           
@@ -325,7 +357,7 @@ namespace Study.EventManager.Services
         public EventReviewDto EventReview(EventReviewCreateDto dto)
         {
             var repoReview = _contextManager.CreateRepositiry<IEventReviewRepo>();
-            var review = repoReview.GetAll().Where(x => x.UserId == dto.UserId && x.EventId == dto.EventId);
+            var review = repoReview.GetAll(x => x.UserId == dto.UserId && x.EventId == dto.EventId);
             if (review != null)
             {
                 throw new ValidationException("You have already leave feedback on this event");
@@ -339,30 +371,12 @@ namespace Study.EventManager.Services
             return eventDto;
         }
 
-        private void CheckSubscription(int companyId)
-        {
-            try
-            {
-                var repoSub = _contextManager.CreateRepositiry<ICompanySubRepo>();
-                var sub = repoSub.GetStatusOfSubscription(companyId);
-
-                if (!sub)
-                {
-                    throw new ValidationException("Company subscription is finished.");
-                }
-            }
-            catch
-            {
-                throw new ValidationException("Company subscription is finished.");
-            }
-        }
-
         public async Task<EventDto> UploadEventFoto(int EventId, FileDto model)
         {     
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var eventF = repo.GetById(EventId);
 
-            CheckSubscription(eventF.CompanyId);
+            _subscriptionService.CheckSubscription(eventF.CompanyId);
 
             if (eventF == null)
             {
@@ -395,7 +409,7 @@ namespace Study.EventManager.Services
 
             if (eventFile == null)
             {
-                throw new ValidationException("Company not found");
+                throw new Exceptions.ValidationException("Company not found");
             }
 
             await _uploadService.Delete(eventFile.ServerFileName, "eventfotoscontainer");
@@ -405,6 +419,191 @@ namespace Study.EventManager.Services
             _contextManager.Save();
             var eventyDto = _mapper.Map<EventDto>(eventFile);
             return eventyDto;
+        }
+
+        public void AddUsersCSV(int EventId, IFormFile file)
+        {
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var eventRecord = repo.GetById(EventId);
+            _subscriptionService.CheckSubscription(eventRecord.CompanyId);
+
+            var listEmails = new List<string>();
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            {
+                csv.Read();
+                csv.ReadHeader();
+                while (csv.Read())
+                {
+                    listEmails.Add(csv.GetField("Email"));
+                }
+            } 
+
+            var generateEmail = new GenerateEmailDto
+            {
+                UrlAdress = _urlAdress + "/event/" + EventId + "?",
+                EmailMainText = "Invitation to the event, for confirmation follow the link",
+                ObjectId = EventId,
+                Subject = "Welcome to the Event"
+            };
+
+            foreach (string email in listEmails)
+            {
+                EmailFunctionality(email, EventId, generateEmail);
+            }
+        }
+
+        public void EmailFunctionality(string email, int EventId, GenerateEmailDto dto)
+        {
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetUserByEmail(email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    FirstName = "",
+                    LastName = "",
+                    Username = ""
+                };
+
+                Thread thread = new Thread(() => _generateEmailWrapper.GenerateAndSendEmail(dto, user));
+                thread.Start();
+            }
+            else
+            {
+                var repo = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
+                var companyUser = repo.GetRecordByEventAndUser(user.Id, EventId);
+
+                if (companyUser == null)
+                {
+                    Thread thread = new Thread(() => _generateEmailWrapper.GenerateAndSendEmail(dto, user));
+                    thread.Start();
+                }
+            }
+        }
+
+        public void InviteUsersToEvent(EventTreatmentUsersModel model)
+        {            
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var eventRecord = repo.GetById(model.EventId);
+
+            _subscriptionService.CheckSubscription(eventRecord.CompanyId);
+
+            if (eventRecord == null)
+            {
+                throw new ValidationException("Event not found.");
+            }
+
+            var generateEmail = new GenerateEmailDto
+            {
+                UrlAdress = _urlAdress + "/event/" + model.EventId + "?",
+                EmailMainText = "Invitation to the event, for confirmation follow the link",
+                ObjectId = model.EventId,
+                Subject = "Welcome to the Event"
+            };
+
+            foreach (string email in model.Email)
+            {
+                EmailFunctionality(email, model.EventId, generateEmail);
+            }
+        }
+
+        public string GenerateLinkToJoin(int EventId, DateTime date)
+        {
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var eventRecord = repo.GetById(EventId);
+
+            _subscriptionService.CheckSubscription(eventRecord.CompanyId);
+
+            if (eventRecord == null)
+            {
+                throw new ValidationException("Company not found");
+            }
+
+            string hashUrl = GetHashString(secretKey + eventRecord.Name);
+
+            hashUrl = System.Web.HttpUtility.UrlEncode(hashUrl);
+
+            string url;
+            if (!(date == DateTime.MinValue))
+            {
+                var dateStr = date.ToString("dd.MM.yyyy");
+                dateStr = System.Web.HttpUtility.UrlEncode(dateStr);
+                url = "?" + "eventid=" + eventRecord.Id + "&validTo=" + dateStr + "&code={" + hashUrl + "}";
+            }
+            else
+            {
+                url = "?" + "eventid=" + eventRecord.Id + "&code={" + hashUrl + "}";
+            }
+
+            url = _urlAdress + url;
+            return url;
+        }
+
+        public string GetHashString(string s)
+        {
+            byte[] bytes = Encoding.Unicode.GetBytes(s);
+
+            MD5CryptoServiceProvider CSP = new MD5CryptoServiceProvider();
+
+            byte[] byteHash = CSP.ComputeHash(bytes);
+
+            string hash = string.Empty;
+
+            foreach (byte b in byteHash)
+                hash += string.Format("{0:x2}", b);
+
+            return hash;
+        }
+
+        public string JoinEventViaLink(int EventId, string email, string Code)
+        {            
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var eventRecord = repo.GetById(EventId);
+
+            _subscriptionService.CheckSubscription(eventRecord.CompanyId);
+
+            if (eventRecord == null)
+            {
+                throw new ValidationException("Event not found");
+            }
+
+            var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
+            var user = repoUser.GetUserByEmail(email);
+            if (user == null)
+            {
+                throw new ValidationException("User not found");
+            }
+
+            string hashUrl = "{" + GetHashString(secretKey + eventRecord.Name) + "}";
+
+            if (Code == hashUrl)
+            {
+                var repoCompUser = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
+                var companyUser = repoCompUser.GetRecordByCompanyAndUser(user.Id, EventId);
+
+                if (!(companyUser == null))
+                {
+                    throw new ValidationException("User is already added to the event.");
+                }
+
+                var entity = new CompanyUserLink
+                {
+                    CompanyId = EventId,
+                    UserId = user.Id,
+                    UserCompanyRole = (int)Model.Enums.EventUserRoleEnum.User
+                };
+                repoCompUser.Add(entity);
+                _contextManager.Save();
+
+                return "You are join the event";
+            }
+            else
+            {
+                return "Sorry, unexpected error";
+            }
         }
     }
 }

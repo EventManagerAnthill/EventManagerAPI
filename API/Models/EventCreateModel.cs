@@ -22,7 +22,7 @@ namespace API.Models
 
         public DateTime CreateDate { get; set; }
 
-        public DateTime HoldingDate { get; set; }
+        public DateTime HoldingDate { get; set; } = DateTime.UtcNow.Date;
 
         [Required]
         public int CompanyId { get; set; }

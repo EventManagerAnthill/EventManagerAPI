@@ -26,7 +26,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetCompany(int id, int userId )
+        public IActionResult GetCompany(int id, int userId)
         {
             try
             {

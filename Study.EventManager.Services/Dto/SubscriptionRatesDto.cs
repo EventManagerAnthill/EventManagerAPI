@@ -1,23 +1,19 @@
-﻿using Study.EventManager.Model.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Study.EventManager.Model
+namespace Study.EventManager.Services.Dto
 {
-    public class SubscriptionRates
+    public class SubscriptionRatesDto
     {
-        internal SubscriptionRates()
-        { }
-
         public int Id { get; set; }
 
         [Required]
         public string Name { get; set; }
 
         [Required]
-        public int ValidityDays{ get; set; }
+        public int ValidityDays { get; set; }
 
         [Required]
         public float Price { get; set; }
@@ -34,6 +30,6 @@ namespace Study.EventManager.Model
 
         public string FotoUrl { get; set; }
 
-        public int Del { get; set; } = (int)ObjectDel.Active;
+        public int Del { get; set; }
     }
 }

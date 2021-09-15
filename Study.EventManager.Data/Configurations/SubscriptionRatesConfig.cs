@@ -19,6 +19,7 @@ namespace Study.EventManager.Data.Configurations
             builder.Property(t => t.Price).IsRequired();            
             builder.Property(t => t.isFree).IsRequired();
             builder.Property(t => t.Description).IsRequired();
+            builder.Property(t => t.Del);
         }
     }
 }

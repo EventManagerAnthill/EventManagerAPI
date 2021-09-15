@@ -42,12 +42,12 @@ namespace Study.EventManager.Services
         public async Task CheckFinishedEvents()
         {
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
-            var listEvents = repo.GetAll().Where(x => x.HoldingDate.Date == DateTime.UtcNow.Date);
+            var listEvents = repo.GetAll(x => x.HoldingDate.Date == DateTime.UtcNow.Date);
 
             foreach (var oneEvent in listEvents)
             {
                 var repoEventUsers = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
-                var eventListUsers = repoEventUsers.GetListUsers(oneEvent.Id);    //GetAll().Where(x => x.EventId == oneEvent.Id).Select(x => x.User);
+                var eventListUsers = repoEventUsers.GetListUsers(oneEvent.Id);
 
                 foreach (var user in eventListUsers)
                 {

@@ -10,6 +10,7 @@ namespace Study.EventManager.Data.Repositiry
 {
     public class SubscriptionRatesRepo : AbstractRepo<SubscriptionRates>, ISubscriptionRatesRepo
     {
+
      
     }
 }

@@ -14,12 +14,14 @@ namespace Study.EventManager.Data.Configurations
         {
             builder.ToTable("CompanySubscription");
             builder.HasKey(o => o.Id);
+            builder.Property(t => t.SubscriptionId).IsRequired();
             builder.Property(t => t.UserId).IsRequired();
             builder.Property(t => t.CompanyId).IsRequired();
             builder.Property(t => t.SubEndDt).IsRequired();
             builder.Property(t => t.UseTrialVersion).IsRequired();
 
             builder.HasOne(x => x.Company).WithMany().HasForeignKey(x => x.CompanyId).OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.Subscription).WithMany().HasForeignKey(x => x.SubscriptionId).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.NoAction);
         }
     }
