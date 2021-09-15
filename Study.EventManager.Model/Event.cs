@@ -38,7 +38,7 @@ namespace Study.EventManager.Model
         public int CompanyId { get; set; }
         public virtual Company Company { get; set; }
 
-        public int Status { get; set; } = 0;
+        public int Status { get; set; } = 1;
 
         public string Description { get; set; }
 

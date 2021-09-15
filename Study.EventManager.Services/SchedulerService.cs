@@ -42,27 +42,25 @@ namespace Study.EventManager.Services
         public async Task CheckFinishedEvents()
         {
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
-            var listEvents = repo.GetAll();
+            var listEvents = repo.GetAll().Where(x => x.HoldingDate.Date == DateTime.UtcNow.Date);
+
             foreach (var oneEvent in listEvents)
             {
-                if (oneEvent.HoldingDate.Date == DateTime.UtcNow.Date)
+                var repoEventUsers = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
+                var eventListUsers = repoEventUsers.GetListUsers(oneEvent.Id);    //GetAll().Where(x => x.EventId == oneEvent.Id).Select(x => x.User);
+
+                foreach (var user in eventListUsers)
                 {
-                    var repoEventUsers = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
-                    var eventListUsers = repoEventUsers.GetAll().Where(x => x.EventId == oneEvent.Id).Select(x => x.User);
-
-                    foreach (var user in eventListUsers)
+                    var generateEmail = new GenerateEmailDto
                     {
-                        var generateEmail = new GenerateEmailDto
-                        {
-                            UrlAdress = "as" + "/signin?",
-                            EmailMainText = "To leave a review follow the link",
-                            ObjectId = 0,
-                            Subject = "Event review"
-                        };
+                        UrlAdress = "as" + "/signin?",
+                        EmailMainText = "To leave a review follow the link",
+                        ObjectId = 0,
+                        Subject = "Event review"
+                    };
 
-                        var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, user);
-                        _emailWrapper.SendEmail(emailModel);
-                    }                    
+                    var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, user);
+                    _emailWrapper.SendEmail(emailModel);
                 }
             }
         }

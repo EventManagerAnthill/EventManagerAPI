@@ -22,10 +22,34 @@ namespace Study.EventManager.Data.Repositiry
             return listUsers;
         }
 
-        public List<Event> GetEventsByUser(int UserId, int del = 0)
+        public List<Event> GetEventsByUser(int userId, int page, int pageSize, string eventName, int del = 0)
         {
-            var listEvents = _eventManagerContext.EventUsers.Where(x => x.UserId == UserId && x.Event.Del == del).Select(x => x.Event).ToList();
+            var listEvents = _eventManagerContext.EventUsers.Where(x => x.UserId == userId && x.Event.Del == del).Select(x => x.Event)
+                .Where(x => x.Name.Contains(eventName) || "" == eventName)
+                .OrderBy(x => x.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
             return listEvents;
-        }        
+        }
+
+        public int GetEventsByUserCount(int userId, int del = 0)
+        {
+            var countEvents = _eventManagerContext.EventUsers.Where(x => x.UserId == userId && x.Event.Del == del).Select(x => x.Event).Count();
+            return countEvents;
+        }
+
+        public List<EventUserLink> GetCompanyUserLinkListForUser(int userId, List<int> eventIdList)
+        {
+            var eventUserLinks = _eventManagerContext.EventUsers.Where(x => x.UserId == userId && eventIdList.Contains(x.EventId)).ToList();
+            return eventUserLinks;
+        }
+
+        public List<User> GetListUsers(int eventId)
+        {
+            var eventUsers = _eventManagerContext.EventUsers.Where(x => x.EventId == eventId).Select(x => x.User).ToList();
+            var eventUsesssrs = _eventManagerContext.EventUsers.Where(x => x.EventId == eventId).ToList();
+            return eventUsers;
+        }
     }
 }

@@ -96,11 +96,24 @@ namespace Study.EventManager.Services
             repoCompUser.Add(companyUser);
             _contextManager.Save();
 
+
+            var repoCompSub = _contextManager.CreateRepositiry<ICompanySubRepo>();
+            var companySub =  new CompanySubscription
+            {
+                CompanyId = entity.Id,
+                UserId = user.Id,
+                SubEndDt = DateTime.UtcNow.Date,
+                UseTrialVersion = (int)Model.Enums.CompanyTrialVersionEnum.ReadyToUseTrial
+            };
+            repoCompSub.Add(companySub);
+            _contextManager.Save();
+
             return _mapper.Map<CompanyDto>(entity);
         }
 
         public CompanyDto UpdateCompany(int id, CompanyDto dto)
         {
+            CheckSubscription(id);
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var company = repo.GetCompanyByName(dto.Name);
 
@@ -214,6 +227,7 @@ namespace Study.EventManager.Services
 
         public string AcceptInvitation(int companyId, string Email)
         {
+            CheckSubscription(companyId);
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetUserByEmail(Email);
 
@@ -252,6 +266,7 @@ namespace Study.EventManager.Services
 
         public async Task<CompanyDto> UploadCompanyFoto(int CompanyId, FileDto model)
         {
+            CheckSubscription(CompanyId);
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var company = repo.GetById(CompanyId);
 
@@ -289,7 +304,7 @@ namespace Study.EventManager.Services
                 throw new ValidationException("Company not found");
             }
 
-            await _uploadService.Delete(company.ServerFileName, "userfotoscontainer");
+            await _uploadService.Delete(company.ServerFileName, "companyfotoscontainer");
             company.ServerFileName = null;
             company.FotoUrl = null;
             company.OriginalFileName = null;
@@ -300,6 +315,7 @@ namespace Study.EventManager.Services
 
         public string GenerateLinkToJoin(int CompanyId, DateTime date)
         {
+            CheckSubscription(CompanyId);
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var company = repo.GetById(CompanyId);
 
@@ -346,6 +362,7 @@ namespace Study.EventManager.Services
 
         public string JoinCompanyViaLink(int CompanyId, string email, string Code)
         {
+            CheckSubscription(CompanyId);
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var company = repo.GetById(CompanyId);
             if (company == null)
@@ -391,6 +408,7 @@ namespace Study.EventManager.Services
 
         public void InviteUsersToCompany(CompanyTreatmentUsersModel model)
         {
+            CheckSubscription(model.CompanyId);
             var repo = _contextManager.CreateRepositiry<ICompanyRepo>();
             var company = repo.GetById(model.CompanyId);
            
@@ -415,6 +433,7 @@ namespace Study.EventManager.Services
 
         public string AppointUserAsAdmin(CompanyTreatmentUsersModel model)
         {
+            CheckSubscription(model.CompanyId);
             var repoComp = _contextManager.CreateRepositiry<ICompanyRepo>();
             var company = repoComp.GetById(model.CompanyId);
             
@@ -470,6 +489,7 @@ namespace Study.EventManager.Services
         
         public void AddUsersCSV(int CompanyId, IFormFile file)
         {
+            CheckSubscription(CompanyId);
             var listEmails = new List<string>();
             using (var reader = new StreamReader(file.OpenReadStream()))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
@@ -499,6 +519,8 @@ namespace Study.EventManager.Services
 
         public void EmailFunctionality(string email, int CompanyId, GenerateEmailDto dto)
         {
+            CheckSubscription(CompanyId);
+
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetUserByEmail(email);
 
@@ -530,6 +552,8 @@ namespace Study.EventManager.Services
 
         public PagedEventsDto GetCompanyEvents(int CompanyId, int page, int pageSize)
         {
+            CheckSubscription(CompanyId);
+
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
 
             var data = repo.GetAllEventsByCompanyId(CompanyId, page, pageSize);
@@ -550,6 +574,7 @@ namespace Study.EventManager.Services
 
         public PagedUsersDto GetCompanyUsers(int CompanyId, int page, int pageSize, string firstName, string lastName)
         {
+            CheckSubscription(CompanyId);
             var repo = _contextManager.CreateRepositiry<ICompanyUserLinkRepo>();
 
             var data = repo.GetAllUsers(CompanyId, page, pageSize, firstName, lastName);
@@ -570,6 +595,7 @@ namespace Study.EventManager.Services
 
         public void DeleteCompanyMember(int companyId, int userId)
         {
+            CheckSubscription(companyId);
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetById(userId);
 
@@ -598,6 +624,7 @@ namespace Study.EventManager.Services
 
         public void DemoteAdminToUser(int companyId, int userId)
         {
+            CheckSubscription(companyId);
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetById(userId);
 
@@ -621,6 +648,24 @@ namespace Study.EventManager.Services
             {
                 companyUser.UserCompanyRole = (int)Model.Enums.CompanyUserRoleEnum.User;
                 _contextManager.Save();
+            }
+        }
+
+        private void CheckSubscription(int companyId)
+        {
+            try
+            {
+                var repoSub = _contextManager.CreateRepositiry<ICompanySubRepo>();
+                var sub = repoSub.GetStatusOfSubscription(companyId);
+
+                if (!sub)
+                {
+                    throw new ValidationException("Company subscription is finished.");
+                }
+            }
+            catch
+            {
+                throw new ValidationException("Company subscription is finished.");
             }
         }
     }

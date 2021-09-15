@@ -18,6 +18,8 @@ namespace Study.EventManager.Data
             serviceCollection.AddScoped<ICompanyUserLinkRepo, CompanyUserLinkRepo>();
             serviceCollection.AddScoped<IEventUserLinkRepo, EventUserLinkRepo>();
             serviceCollection.AddScoped<IEventReviewRepo, EventReviewRepo>();
+            serviceCollection.AddScoped<ICompanySubRepo, CompanySubRepo>();
+            serviceCollection.AddScoped<ISubscriptionRatesRepo, SubscriptionRatesRepo>();
             serviceCollection.AddDbContext<EventManagerDbContext>(option => option.UseSqlServer(connectionString));
             serviceCollection.AddScoped<IContextManager, ContextManager>();
         }

@@ -8,10 +8,16 @@ namespace Study.EventManager.Data.Contract
 {
     public interface IEventUserLinkRepo : IRepository<EventUserLink>
     {
-        public EventUserLink GetRecordByEventAndUser(int UserId, int EventId);
+        EventUserLink GetRecordByEventAndUser(int UserId, int EventId);
 
-        public List<EventUserLink> GetAllUsers(int EventId);
+        List<EventUserLink> GetAllUsers(int EventId);
 
-        public List<Event> GetEventsByUser(int UserId, int del = 0);
+        List<Event> GetEventsByUser(int userId, int page, int pageSize, string eventName, int del = 0);
+
+        int GetEventsByUserCount(int userId, int del = 0);
+
+        List<EventUserLink> GetCompanyUserLinkListForUser(int userId, List<int> eventIdList);
+
+        public List<User> GetListUsers(int eventId);
     }
 }

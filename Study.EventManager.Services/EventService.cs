@@ -8,11 +8,13 @@ using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Exceptions;
 using Study.EventManager.Services.Models.ServiceModel;
 using Study.EventManager.Services.Wrappers.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Study.EventManager.Services
 {
@@ -40,6 +42,16 @@ namespace Study.EventManager.Services
        
         public string AcceptInvitation(int EventId, string Email)
         {
+            var repoEvent = _contextManager.CreateRepositiry<IEventRepo>();
+            var companyEvent = repoEvent.GetById(EventId);
+
+            CheckSubscription(companyEvent.CompanyId);
+
+            if (companyEvent == null)
+            {
+                throw new ValidationException("Event not found.");
+            }           
+
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
             var user = repoUser.GetUserByEmail(Email);
 
@@ -47,15 +59,7 @@ namespace Study.EventManager.Services
             {
                 throw new ValidationException("User not found.");
             }
-
-            var repoEvent = _contextManager.CreateRepositiry<IEventRepo>();
-            var companyEvent = repoEvent.GetById(EventId);
-
-            if (companyEvent == null)
-            {
-                throw new ValidationException("Event not found.");
-            }
-     
+           
             var repoEventUser = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
             var eventUser = repoEventUser.GetRecordByEventAndUser(user.Id, EventId);
 
@@ -89,6 +93,8 @@ namespace Study.EventManager.Services
 
         public EventDto CreateEvent(EventCreateDto dto)
         {
+            CheckSubscription(dto.CompanyId);
+
             try
             {
                 var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
@@ -124,6 +130,7 @@ namespace Study.EventManager.Services
 
         public EventDto UpdateEvent(int id, EventDto dto)
         {
+            CheckSubscription(dto.CompanyId);
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var data = repo.GetById(id);    
             
@@ -152,7 +159,7 @@ namespace Study.EventManager.Services
             return data.Select(x => _mapper.Map<EventDto>(x)).ToList();
         }
 
-        public EventDto GetEventByUserId(int UserId)
+        public EventDto GetEventByUserOwnerId(int UserId)
         {
             var repo = _contextManager.CreateRepositiry<IEventRepo>();
             var data = repo.GetAllEventsByUser(UserId);
@@ -167,7 +174,7 @@ namespace Study.EventManager.Services
             data.Del = dto.Del;
             _contextManager.Save();
 
-            sendEmailToUsers(EventId, "cancellation of an event", "The Event " + "'" + data.Name + "' was canceled");
+            SendEmailToUsers(EventId, "cancellation of an event", "The Event " + "'" + data.Name + "' was canceled");
             return _mapper.Map<EventDto>(data); 
         }
         
@@ -178,15 +185,18 @@ namespace Study.EventManager.Services
             data.Status = dto.Status;
             _contextManager.Save();
 
-            sendEmailToUsers(EventId, "cancellation of an event", "The Event " + "'" + data.Name + "' was canceled");
+            SendEmailToUsers(EventId, "cancellation of an event", "The Event " + "'" + data.Name + "' was canceled");
 
             return _mapper.Map<EventDto>(data);
         }
         
-        public void sendEmailToUsers(int EventId, string subject, string mainMassage)
+        public void SendEmailToUsers(int EventId, string subject, string mainMassage)
         {
             var eventRepo = _contextManager.CreateRepositiry<IEventRepo>();
             var getEvent = eventRepo.GetById(EventId);
+
+            CheckSubscription(getEvent.CompanyId);
+
             if (getEvent == null)
             {
                 throw new ValidationException("Event not found");
@@ -220,9 +230,10 @@ namespace Study.EventManager.Services
 
         public void SendEventTicket(Event eventU, User user)
         {
+            CheckSubscription(eventU.CompanyId);
+
             var pdfBytes = GetEventTicket(eventU, user);
           
-
             var file = new FileSendEmail
             {             
                 FileBytes = pdfBytes,                
@@ -244,7 +255,6 @@ namespace Study.EventManager.Services
 
         public byte[] GetEventTicket(Event eventU, User user)
         {
-
             //string FileInputPath = Path.Combine(Directory.GetCurrentDirectory(), "..\\Study.EventManager.Services", "Resources", "TikectTemplateIn.html");                        
             string FileInputPath = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "TikectTemplateIn.html");                        
             StreamReader str = new StreamReader(FileInputPath);
@@ -277,16 +287,39 @@ namespace Study.EventManager.Services
             return pdfByte;               
         }
 
-        public List<Event> GetAllByUser(string email)
+        public PagedEventsDto GetAllByUser(int userId, int page, int pageSize, string eventName)
         {
             var repoUser = _contextManager.CreateRepositiry<IUserRepo>();
-            var user = repoUser.GetUserByEmail(email);
+            var user = repoUser.GetById(userId);
 
-            var repoUserCompanies = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
+            var repoUserEvents = _contextManager.CreateRepositiry<IEventUserLinkRepo>();
+            var listUserEvents = repoUserEvents.GetEventsByUser(user.Id, page, pageSize, eventName);
 
-            var listUserCompanies = repoUserCompanies.GetEventsByUser(user.Id);
+            var eventListDto = _mapper.Map<List<EventDto>>(listUserEvents);
+            var eventIdList = eventListDto.Select(c => c.Id).ToList();
+            var eventLinks = repoUserEvents.GetCompanyUserLinkListForUser(userId, eventIdList);
 
-            return listUserCompanies;
+            foreach (var oneEvent in eventListDto)
+            {
+                var thisEventLink = eventLinks.Where(c => c.EventId == oneEvent.Id).FirstOrDefault();
+                if (thisEventLink != null)
+                {
+                    oneEvent.UserRole = thisEventLink.UserEventRole;
+                }
+            }
+
+            var retDto = new PagedEventsDto()
+            {
+                Events = eventListDto,
+                Paging = new PagingDto()
+                {
+                    CurrentPage = page,
+                    PageSize = pageSize,
+                    TotalItems = repoUserEvents.GetEventsByUserCount(user.Id)
+                }
+            };
+
+            return retDto;
         }
 
         public EventReviewDto EventReview(EventReviewCreateDto dto)
@@ -304,6 +337,74 @@ namespace Study.EventManager.Services
 
             var eventDto = _mapper.Map<EventReviewDto>(entity);
             return eventDto;
+        }
+
+        private void CheckSubscription(int companyId)
+        {
+            try
+            {
+                var repoSub = _contextManager.CreateRepositiry<ICompanySubRepo>();
+                var sub = repoSub.GetStatusOfSubscription(companyId);
+
+                if (!sub)
+                {
+                    throw new ValidationException("Company subscription is finished.");
+                }
+            }
+            catch
+            {
+                throw new ValidationException("Company subscription is finished.");
+            }
+        }
+
+        public async Task<EventDto> UploadEventFoto(int EventId, FileDto model)
+        {     
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var eventF = repo.GetById(EventId);
+
+            CheckSubscription(eventF.CompanyId);
+
+            if (eventF == null)
+            {
+                throw new ValidationException("Event not found");
+            }
+
+            if (!(eventF.ServerFileName == null))
+            {
+                await _uploadService.Delete(eventF.ServerFileName, model.Container);
+            }
+
+            var guidStr = Guid.NewGuid().ToString();
+            var serverFileName = "userId-" + eventF.Id.ToString() + "-" + guidStr;
+
+            model.ServerFileName = serverFileName;
+            var filePath = await _uploadService.Upload(model);
+            eventF.OriginalFileName = model.File.FileName;
+            eventF.FotoUrl = filePath.Url;
+            eventF.ServerFileName = filePath.ServerFileName + model.File.FileName;
+
+            _contextManager.Save();
+
+            return _mapper.Map<EventDto>(eventF);
+        }
+
+        public async Task<EventDto> DeleteEventFoto(int EventId)
+        {
+            var repo = _contextManager.CreateRepositiry<IEventRepo>();
+            var eventFile = repo.GetById(EventId);
+
+            if (eventFile == null)
+            {
+                throw new ValidationException("Company not found");
+            }
+
+            await _uploadService.Delete(eventFile.ServerFileName, "eventfotoscontainer");
+            eventFile.ServerFileName = null;
+            eventFile.FotoUrl = null;
+            eventFile.OriginalFileName = null;
+            _contextManager.Save();
+            var eventyDto = _mapper.Map<EventDto>(eventFile);
+            return eventyDto;
         }
     }
 }

@@ -35,5 +35,7 @@ namespace Study.EventManager.Services.Dto
         public string ServerFileName { get; set; }
 
         public string FotoUrl { get; set; }
+
+        public int UserRole { get; set; }
     }
 }
