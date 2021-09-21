@@ -25,6 +25,7 @@ namespace Study.EventManager.Services
             serviceCollection.AddTransient<IEmailWrapper, EmailWrapper>();
             serviceCollection.AddScoped<IUploadService, UploadService>();
             serviceCollection.AddScoped<ISchedulerService, SchedulerService>();
+            serviceCollection.AddScoped<ISubscriptionService, SubscriptionService>();
             serviceCollection.AddScoped<IAdminService, AdminService>();       
             serviceCollection.AddTransient<IGenerateEmailWrapper, GenerateEmailWrapper>();
             serviceCollection.AddTransient<IAuthenticateWrapper, AuthenticateWrapper>();          

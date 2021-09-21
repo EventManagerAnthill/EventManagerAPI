@@ -47,9 +47,21 @@ namespace Study.EventManager.Data.Repositiry
 
         public List<User> GetListUsers(int eventId)
         {
-            var eventUsers = _eventManagerContext.EventUsers.Where(x => x.EventId == eventId).Select(x => x.User).ToList();
-            var eventUsesssrs = _eventManagerContext.EventUsers.Where(x => x.EventId == eventId).ToList();
+            var eventUsers = _eventManagerContext.EventUsers.Where(x => x.EventId == eventId).Select(x => x.User).ToList();           
             return eventUsers;
+        }
+
+        public int GetUserRole(int userId, int eventId)
+        {
+            try
+            {
+                var userRole = _eventManagerContext.EventUsers.Where(x => x.UserId == userId && x.EventId == eventId).Select(x => x.UserEventRole).First();
+                return userRole;
+            }
+            catch
+            {
+                return 0;
+            }
         }
     }
 }

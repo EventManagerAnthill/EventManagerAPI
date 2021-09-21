@@ -17,17 +17,22 @@ namespace Study.EventManager.Model
 
             Name = eventName;
             UserId = eventUserId;
+            CreateDate = DateTime.UtcNow.Date;
             Type = eventType;
             Description = companyDescription;
-            Del = 0;
+            Del = (int)ObjectDel.Active;
         }
         public int Id { get; set; } 
 
         public string Name { get; set; } 
 
-        public DateTime CreateDate { get; set; } 
+        public DateTime CreateDate { get; set; }
 
-        public DateTime HoldingDate { get; set; } 
+        public DateTime BeginHoldingDate { get; set; } = DateTime.UtcNow.Date;
+
+        public DateTime HoldingDate { get; set; } = DateTime.UtcNow.Date;
+
+        public string EventTimeZone { get; set; }
 
         public EventTypes Type { get; set; } 
 
@@ -38,11 +43,11 @@ namespace Study.EventManager.Model
         public int CompanyId { get; set; }
         public virtual Company Company { get; set; }
 
-        public int Status { get; set; } = 1;
+        public int Status { get; set; } = (int)EventStatus.Active;
 
         public string Description { get; set; }
 
-        public int Del { get; set; } = 0;
+        public int Del { get; set; } = (int)ObjectDel.Active;
 
         public string OriginalFileName { get; set; }
 

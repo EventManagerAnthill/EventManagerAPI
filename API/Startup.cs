@@ -104,7 +104,9 @@ namespace API
             });
 
             // Add scheduled tasks & scheduler
-            services.AddSingleton<IScheduledTask, SomeTask>();
+            services.AddSingleton<IScheduledTask, CheckFinishedEventTask>();
+            services.AddSingleton<IScheduledTask, SubscriptionEmailTask>();
+
             services.AddScheduler((sender, args) =>
             {
                 Console.Write(args.Exception.Message);

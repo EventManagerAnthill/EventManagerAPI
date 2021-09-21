@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Study.EventManager.Model.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -12,6 +13,9 @@ namespace Study.EventManager.Model
 
         public int Id { get; set; }
 
+        public int? SubscriptionId { get; set; }
+        public virtual SubscriptionRates Subscription { get; set; }
+
         [Required]
         public int CompanyId { get; set; }      
         public virtual Company Company { get; set; }
@@ -24,6 +28,7 @@ namespace Study.EventManager.Model
         public DateTime SubEndDt { get; set; } = DateTime.UtcNow.Date;
 
         [Required]
-        public int UseTrialVersion { get; set; } = 1;
+        public int UseTrialVersion { get; set; } = (int)CompanyTrialVersionEnum.AlreadyUsedTrial;
     }
 }
+  

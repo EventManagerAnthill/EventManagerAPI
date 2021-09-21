@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Study.EventManager.Services.Contract;
 using Study.EventManager.Services.Dto;
+using Study.EventManager.Services.Models.APIModels;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -51,11 +53,11 @@ namespace API.Controllers
         
         [HttpGet]
         [Route("{id}")]
-        public IActionResult GetEvent(int id)
+        public IActionResult GetEvent(int id, int userId)
         {
             try
             {
-                var data = _service.GetEvent(id);
+                var data = _service.GetEvent(id, userId);
                 return Ok(data);
             }
             catch (APIEventException ex)
@@ -107,7 +109,9 @@ namespace API.Controllers
                     Type = model.Type,
                     Description = model.Description,
                     CreateDate = model.CreateDate,
+                    BeginHoldingDate = model.BeginHoldingDate,
                     HoldingDate = model.HoldingDate,
+                    EventTimeZone = model.EventTimeZone,
                     CompanyId = model.CompanyId
                     
                 };
@@ -179,7 +183,7 @@ namespace API.Controllers
                 var eventDto = new EventDto
                 {
                     Id = id,
-                    Status = 2
+                    Status = (int)Study.EventManager.Model.Enums.EventUserRoleEnum.User
                 };
                 var data = _service.CancelEvent(eventDto.Id, eventDto);
                 return Ok(data);
@@ -255,6 +259,74 @@ namespace API.Controllers
             {
                 var eventFile = await _service.DeleteEventFoto(EventId);
                 return Ok(eventFile);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("addUsersCSV")]
+        public async Task<IActionResult> AddUsersCSV(int Eventid, IFormFile file)
+        {
+            try
+            {
+                if (file.Length > 0)
+                {
+                    _service.AddUsersCSV(Eventid, file);
+                }
+                else
+                {
+                    throw new ValidationException("file not found");
+                }
+
+                return Ok();
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("inviteUsers")]
+        public IActionResult InviteEmail(EventTreatmentUsersModel model)
+        {
+            try
+            {
+                _service.InviteUsersToEvent(model);
+                return Ok("Link to join the event is sent to emails");
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("getLinkToJoinEvent")]
+        public IActionResult GetLinkToJoinCompany(int Id, DateTime date)
+        {
+            try
+            {
+                var data = _service.GenerateLinkToJoin(Id, date);
+                return Ok(data);
+            }
+            catch (ValidationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("joinEventViaLink")]
+        public IActionResult JoinCompanyViaLink(JoinCompanyModel model)
+        {
+            try
+            {
+                var result = _service.JoinEventViaLink(model.CompanyId, model.Email, model.Code);
+                return Ok(result);
             }
             catch (ValidationException ex)
             {

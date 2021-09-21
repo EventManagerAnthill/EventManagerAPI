@@ -62,7 +62,7 @@ namespace Study.EventManager.Services
                 SendWelcomeEmail(dto);                
             }
 
-            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email, dto.EmailVerification);
+            User entity = new User(dto.Username, dto.Password, dto.FirstName, dto.LastName, dto.Email, dto.EmailVerification, dto.BirthDate);
             repo.Add(entity);
             _contextManager.Save();
            

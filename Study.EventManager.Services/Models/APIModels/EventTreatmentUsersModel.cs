@@ -5,10 +5,10 @@ using System.Text;
 
 namespace Study.EventManager.Services.Models.APIModels
 {
-    public class CompanyTreatmentUsersModel
+    public class EventTreatmentUsersModel
     {
         [Required]
-        public int CompanyId { get; set; }
+        public int EventId { get; set; }
 
         [Required]
         public string[] Email { get; set; }

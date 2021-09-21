@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6447da13-b639-4215-8e8c-721689e19571",
+		"_postman_id": "7e6f1f75-0902-4089-bba1-11fdef85229b",
 		"name": "API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,19 +11,35 @@
 				{
 					"name": "GET /company/:id",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYmYiOjE2MzEwOTUwNTgsImV4cCI6MTYzMTE4MTQ1OCwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.dLWPe17Vxl30qKGkCzYLDfkdsp_rwSzzUMlMJa7etdk",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "https://localhost:44332/api/company/1",
-							"protocol": "https",
+							"raw": "http://localhost:61320/api/company/5?userId=9",
+							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "44332",
+							"port": "61320",
 							"path": [
 								"api",
 								"company",
-								"1"
+								"5"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "9"
+								}
 							]
 						}
 					},
@@ -31,18 +47,89 @@
 				},
 				{
 					"name": "GET /company/all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYmYiOjE2MzA2NjMxMDksImV4cCI6MTYzMDc0OTUwOSwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.XULFVlAQJi7MPsbpvGHVUZT1wtZkaAxnV0oR6eqO_Kw",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"2\",\r\n  \"code\": \"{6f1f07f198932278f30b678af050d0e3}\",\r\n  \"email\": \"slavikyarkin@gmail.com\",\r\n  \"validTo\": \"05.08.2021\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{host}}/api/company/all",
+							"raw": "http://localhost:61320/api/company/all?email=slavikyarkin@gmail.com",
+							"protocol": "http",
 							"host": [
-								"{{host}}"
+								"localhost"
 							],
+							"port": "61320",
 							"path": [
 								"api",
 								"company",
 								"all"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "slavikyarkin@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST sendInvite",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IklhcmtpbiIsIm5iZiI6MTYyODE0NTQ5NCwiZXhwIjoxNjI4MjMxODk0LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.n9EDH7WFmKcVCCo--BBbCvJV_RyeQoi5GfBoJBUwKKI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyId\": 4,\r\n    \"email\": \"slavikyarkin@list.ru\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://apievent.azurewebsites.net/api/company/sendInviteEmail",
+							"protocol": "https",
+							"host": [
+								"apievent",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"company",
+								"sendInviteEmail"
 							]
 						}
 					},
@@ -51,11 +138,21 @@
 				{
 					"name": "POST  /company",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiVXNlciIsIm5iZiI6MTYzMTc4NTAwMSwiZXhwIjoxNjMxODcxNDAxLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.1C7gyuD49mIpDzKkmso89V6OKb7q1_PmFGORcRhEPKs",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"name\": \"Kirill\"}",
+							"raw": "{\r\n    \"name\": \"new company with subbb91sssd\",\r\n    \"UserId\": 1,\r\n    \"description\": \"test\",\r\n    \"type\": 2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -63,13 +160,248 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/api/company",
+							"raw": "http://localhost:61320/api/company",
+							"protocol": "http",
 							"host": [
-								"{{host}}"
+								"localhost"
 							],
+							"port": "61320",
 							"path": [
 								"api",
 								"company"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get  GetAllCompaniesByUser",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYmYiOjE2MzA5MjQ4MzUsImV4cCI6MTYzMTAxMTIzNSwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.HnAG4_ru35OHWRhTWIzOOR2eR5rxOic1OGB-bzc04uo",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/company/getAllCompaniesByUser?userId=9&page=1&pagesize=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"company",
+								"getAllCompaniesByUser"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "9"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pagesize",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST acceptInvitation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IklhcmtpbiIsIm5iZiI6MTYyODI0NjkyNywiZXhwIjoxNjI4MzMzMzI3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.7zACSZjF2XsOXo6LQKjZfBWQICfh3170_B-FaBq4zKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"CompanyId\": 3,\r\n    \"email\": \"slavikyarkin@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/company/acceptInvitation",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"company",
+								"acceptInvitation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Company update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IklhcmtpbiIsIm5iZiI6MTYyODI0NjkyNywiZXhwIjoxNjI4MzMzMzI3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.7zACSZjF2XsOXo6LQKjZfBWQICfh3170_B-FaBq4zKQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"Second company2\",\r\n    \"type\": 1,\r\n    \"description\": \"Ola ola\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/company/update?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"company",
+								"update"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "joinCompanyViaLink",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYyOTcyMzgwNCwiZXhwIjoxNjI5ODEwMjA0LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.UgKwbUsZ7bnIqzln-cbN7RbJ0TJjGHV76-Wx_Fel_lI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:61320/api/company/GetLinkToJoinCompany?id=1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"company",
+								"GetLinkToJoinCompany"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invite many Users",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyId\": 3,\r\n    \"email\": [\r\n        \"shyi2517@gmail.com\",\r\n        \"slavik@gmail.com\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": null
+					},
+					"response": []
+				},
+				{
+					"name": "CSV file",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYyOTgwMzQ0MCwiZXhwIjoxNjI5ODg5ODQwLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.u-Ec2LUaucXxFKVhyBJmLL-Ti6hWLyJJixIsxC_AK7Q",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/company/AddUsersCSV",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"company",
+								"AddUsersCSV"
 							]
 						}
 					},
@@ -86,10 +418,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/api/event/2",
+							"raw": "http://localhost:61320/api/event/2",
+							"protocol": "http",
 							"host": [
-								"{{host}}"
+								"localhost"
 							],
+							"port": "61320",
 							"path": [
 								"api",
 								"event",
@@ -105,10 +439,12 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/api/event/all",
+							"raw": "http://localhost:61320/api/event/all",
+							"protocol": "http",
 							"host": [
-								"{{host}}"
+								"localhost"
 							],
+							"port": "61320",
 							"path": [
 								"api",
 								"event",
@@ -121,11 +457,21 @@
 				{
 					"name": "POST  /event",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYmYiOjE2MzA0OTc4MTIsImV4cCI6MTYzMDU4NDIxMiwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.Ymn-OrTDoJEM25szNB2oxce8wdKibjOANEPgKjd4Zbg",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\r\n    \"createDate\": \"2021-08-09T08:46:54.103Z\",\r\n    \"description\": \"Go11\",\r\n    \"email\": \"shyi2517@gmail.com\",\r\n    \"holdingDate\": \"2021-08-20T00:00:00.000Z\",\r\n    \"name\": \"Garden1111\",\r\n    \"type\": 1,\r\n    \"CompanyId\": 2\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -133,15 +479,26 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/api/event",
+							"raw": "http://localhost:61320/api/event",
+							"protocol": "http",
 							"host": [
-								"{{host}}"
+								"localhost"
 							],
+							"port": "61320",
 							"path": [
 								"api",
 								"event"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "MakeEventDel",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": null
 					},
 					"response": []
 				}
@@ -154,26 +511,22 @@
 					"name": "GET /user/:id",
 					"request": {
 						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6InRlc3QiLCJuYmYiOjE2MjI2NDg1MDAsImV4cCI6MTYyMjY0ODU2MCwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.nxeQvfeQkI9yHrtO4tWKT3h6cJvZkReVe0pZJ-Gssh0",
-									"type": "string"
-								}
-							]
+							"type": "noauth"
 						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/api/user/15",
+							"raw": "http://localhost:61320/api/user/delete/42",
+							"protocol": "http",
 							"host": [
-								"{{host}}"
+								"localhost"
 							],
+							"port": "61320",
 							"path": [
 								"api",
 								"user",
-								"15"
+								"delete",
+								"42"
 							]
 						}
 					},
@@ -187,7 +540,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6InRlc3QiLCJuYmYiOjE2MjI2NDk1MDgsImV4cCI6MTYyMjY0OTU2OCwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.sfc2T2iA8uBG6EqWCS4eptHDCO0EvW39pd8E20chjqw",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IklhcmtpbiIsIm5iZiI6MTYyNzU1NzU2MywiZXhwIjoxNjI3NjQzOTYzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.HlEZFTJgMNDaGtSg9GHoJlyg9JG8H-tHc8fddUBorq4",
 									"type": "string"
 								}
 							]
@@ -195,10 +548,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/api/user/all",
+							"raw": "https://192.168.0.14:5000/api/user/all",
+							"protocol": "https",
 							"host": [
-								"{{host}}"
+								"192",
+								"168",
+								"0",
+								"14"
 							],
+							"port": "5000",
 							"path": [
 								"api",
 								"user",
@@ -210,12 +568,33 @@
 				},
 				{
 					"name": "POST  /user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYzMDQwNzA5MSwiZXhwIjoxNjMwNDkzNDkxLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.pfr1DPtVBGWk9YvH2K8z32q5vPsvnhPLdfXqHBc1FB0",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"FirstName\" : \"test\",\r\n    \"LastName\" : \"test\",\r\n    \"Email\" : \"test@gmail.com\",\r\n    \"Password\" : \"test\"\r\n}",
+							"raw": "{\r\n  \"firstName\": \"Kirill\",\r\n  \"lastName\": \"Kuz\",\r\n  \"middleName\": \"Olegovich\",\r\n  \"birthDate\": \"2021-08-24T00:00:00.000Z\",\r\n  \"email\": \"k.kuznetsov.anthill1@gmail.com\",\r\n  \"password\" : \"Shyi2517aasddasd\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -223,10 +602,12 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/api/user",
+							"raw": "http://localhost:61320/api/user",
+							"protocol": "http",
 							"host": [
-								"{{host}}"
+								"localhost"
 							],
+							"port": "61320",
 							"path": [
 								"api",
 								"user"
@@ -242,7 +623,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\" : \"test\",\r\n    \"password\" : \"test\"\r\n}",
+							"raw": "{\r\n    \"email\" : \"shyi2517@gmail.com\",\r\n    \"password\" : \"1\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -250,14 +631,306 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/api/user/authenticate",
+							"raw": "http://localhost:61320/api/authenticate/auth",
+							"protocol": "http",
 							"host": [
-								"{{host}}"
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"authenticate",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST /authenticate host",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"slavikyarkin@gmail.com\",\r\n    \"password\" : \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://apievent.azurewebsites.net/api/authenticate/auth",
+							"protocol": "https",
+							"host": [
+								"apievent",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"authenticate",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST google-login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"IdToken\" : \"eyJhbGciOiJSUzI1NiIsImtpZCI6IjgxOWQxZTYxNDI5ZGQzZDNjYWVmMTI5YzBhYzJiYWU4YzZkNDZmYmMiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXpwIjoiNzUyMjUzODczMjQ2LWNnOXFybGhwMHRtdG43Y2Q4dnBnNHFyZmswM2JyNTVjLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiNzUyMjUzODczMjQ2LWNnOXFybGhwMHRtdG43Y2Q4dnBnNHFyZmswM2JyNTVjLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTA2MDI0NzUyODE0NDA4MTIxMTg2IiwiZW1haWwiOiJzbGF2YS55YXJraW4uYW50aGlsbEBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiYXRfaGFzaCI6IlBZWWM4RFIxbU91Y08xZFRVLW0tTmciLCJuYW1lIjoiU2xhdmEgWWFya2luIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FBVFhBSndxcmJmMHhFOS03Rnc0ODM4RTlyUUVrZWMzalR0RWw3MTQxVy1uPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6IlNsYXZhIiwiZmFtaWx5X25hbWUiOiJZYXJraW4iLCJsb2NhbGUiOiJydSIsImlhdCI6MTYyOTg3ODA5NywiZXhwIjoxNjI5ODgxNjk3LCJqdGkiOiI4NTI5YTAxODY3MTEwOTRkMGNmMzBkNTJhNmQ1ODE3YjdlMWYxMTczIn0.Bd9rVEl_6vlnlQX1FiniseazcP0BsG8O-9YzHHq1zXLlE_fSTwXKk0oU_HbVaPZsGCVVWbrdZ84I4hjHPExjGinAOsVhopOArL92Fh5Iyn_0Np5l9AkE1SVr5EcDdCJW19-8Wudx8NB7PWyOOtGmZtxQ46109KFNd_Su0c7hMXJ0q3ymo5CZAGL_3c19kKuOyG4vQWL2f5X7m-fshZjNsAC6lzVsc529DL5Z7B55u9j883dM8U6y7MXKz1MkLjiHzgZmnh-n_jdYUDpj6b_EcjJeZvGFli2N24oZqyh6elrz5ZqzJUpzu5mCoYIf5-1OHBFd8USrd_FtvvhoR0iAEg\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/authenticate/google-login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"authenticate",
+								"google-login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST google-login host",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://apievent.azurewebsites.net/api/user/google-login",
+							"protocol": "https",
+							"host": [
+								"apievent",
+								"azurewebsites",
+								"net"
 							],
 							"path": [
 								"api",
 								"user",
-								"authenticate"
+								"google-login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST facebook-login host",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://apievent.azurewebsites.net/api/user/facebook-login",
+							"protocol": "https",
+							"host": [
+								"apievent",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"user",
+								"facebook-login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST facebook-login",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://apievent.azurewebsites.net/api/user/facebook-login",
+							"protocol": "https",
+							"host": [
+								"apievent",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"user",
+								"facebook-login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "storageBlob",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IklhcmtpbiIsIm5iZiI6MTYyOTM2ODMyMiwiZXhwIjoxNjI5NDU0NzIyLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.qIXMUb2jzsz2qDutpKQDxjKoH89N8o9QVZO05d_7FvA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/kkuzn/Downloads/1123213.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/user/upload",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"user",
+								"upload"
+							],
+							"query": [
+								{
+									"key": "file",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "storageBlob company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IklhcmtpbiIsIm5iZiI6MTYyOTM2ODMyMiwiZXhwIjoxNjI5NDU0NzIyLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.qIXMUb2jzsz2qDutpKQDxjKoH89N8o9QVZO05d_7FvA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/kkuzn/Downloads/1123213.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/company/upload",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"company",
+								"upload"
+							],
+							"query": [
+								{
+									"key": "file",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteFoto",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"slavikyarkin@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://apievent.azurewebsites.net/api/user/deleteFoto",
+							"protocol": "https",
+							"host": [
+								"apievent",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"user",
+								"deleteFoto"
 							]
 						}
 					},

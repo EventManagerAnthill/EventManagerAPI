@@ -8,6 +8,7 @@ using Study.EventManager.Services.Dto;
 using Study.EventManager.Services.Models.ServiceModel;
 using Study.EventManager.Services.Wrappers.Contracts;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Study.EventManager.Services.Wrappers
@@ -15,7 +16,8 @@ namespace Study.EventManager.Services.Wrappers
     internal class EmailWrapper : IEmailWrapper
     {
         private readonly EmailSettings _mailSettings;
-        
+
+
         public EmailWrapper(Settings settings)
         {
             _mailSettings = settings.MailSettings;

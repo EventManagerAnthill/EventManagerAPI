@@ -20,7 +20,6 @@ namespace API.Controllers
         public UserController(IUserService service)
         {
             _serviceUser = service;
-
         }                      
 
         [HttpGet]

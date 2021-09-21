@@ -7,8 +7,10 @@ namespace Study.EventManager.Data.Contract
 {
     public interface ICompanySubRepo : IRepository<CompanySubscription>
     {
-        public CompanySubscription GetCompanySubscription(int companyId);
+        CompanySubscription GetCompanySubscription(int companyId);
 
-        public bool GetStatusOfSubscription(int companyId);
+        bool GetStatusOfSubscription(int companyId);
+
+        List<CompanySubscription> GetListOfExpiringSubs();
     }
 }

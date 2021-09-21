@@ -18,6 +18,8 @@ namespace Study.EventManager.Data.Contract
 
         List<EventUserLink> GetCompanyUserLinkListForUser(int userId, List<int> eventIdList);
 
-        public List<User> GetListUsers(int eventId);
+        List<User> GetListUsers(int eventId);
+
+        int GetUserRole(int userId, int eventId);
     }
 }

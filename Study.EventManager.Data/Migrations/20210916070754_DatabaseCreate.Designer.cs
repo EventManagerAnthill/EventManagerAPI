@@ -10,8 +10,8 @@ using Study.EventManager.Data;
 namespace Study.EventManager.Data.Migrations
 {
     [DbContext(typeof(EventManagerDbContext))]
-    [Migration("20210827062000_third")]
-    partial class third
+    [Migration("20210916070754_DatabaseCreate")]
+    partial class DatabaseCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -60,6 +60,39 @@ namespace Study.EventManager.Data.Migrations
                     b.ToTable("Company");
                 });
 
+            modelBuilder.Entity("Study.EventManager.Model.CompanySubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SubEndDt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UseTrialVersion")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("SubscriptionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CompanySubscription");
+                });
+
             modelBuilder.Entity("Study.EventManager.Model.CompanyUserLink", b =>
                 {
                     b.Property<int>("Id")
@@ -70,10 +103,10 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserCompanyRole")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserRole")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -137,6 +170,34 @@ namespace Study.EventManager.Data.Migrations
                     b.ToTable("Event");
                 });
 
+            modelBuilder.Entity("Study.EventManager.Model.EventReview", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StarReview")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TextReview")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventReview");
+                });
+
             modelBuilder.Entity("Study.EventManager.Model.EventUserLink", b =>
                 {
                     b.Property<int>("Id")
@@ -147,10 +208,10 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserEventRole")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserRole")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -160,6 +221,47 @@ namespace Study.EventManager.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("EventUserLink");
+                });
+
+            modelBuilder.Entity("Study.EventManager.Model.SubscriptionRates", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("Del")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ServerFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ValidityDays")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isFree")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubscriptionRates");
                 });
 
             modelBuilder.Entity("Study.EventManager.Model.User", b =>
@@ -202,6 +304,9 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
                     b.Property<string>("ServerFileName")
                         .HasColumnType("nvarchar(max)");
 
@@ -226,6 +331,33 @@ namespace Study.EventManager.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Study.EventManager.Model.CompanySubscription", b =>
+                {
+                    b.HasOne("Study.EventManager.Model.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Study.EventManager.Model.SubscriptionRates", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Study.EventManager.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Subscription");
 
                     b.Navigation("User");
                 });
@@ -264,6 +396,25 @@ namespace Study.EventManager.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Study.EventManager.Model.EventReview", b =>
+                {
+                    b.HasOne("Study.EventManager.Model.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Study.EventManager.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Event");
 
                     b.Navigation("User");
                 });
