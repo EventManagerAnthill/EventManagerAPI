@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace API.Tasks
 {
-    public class SomeTask : IScheduledTask
+    public class SubscriptionEmailTask : IScheduledTask
     {
-        public string Schedule => "0 12 * * *";
+        public string Schedule => "00 12 * * *";
 
         IServiceScopeFactory _scopeFactory;
-        public SomeTask(IServiceScopeFactory scopeFactory)
+        public SubscriptionEmailTask(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
         }
@@ -26,7 +26,7 @@ namespace API.Tasks
         {
             using (var _schedulerService = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ISchedulerService>())
             {
-                await _schedulerService.CheckFinishedEvents();
+                await _schedulerService.SubscriptionEmail();
             }
         }
     }

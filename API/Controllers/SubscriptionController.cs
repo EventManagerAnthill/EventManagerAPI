@@ -79,7 +79,6 @@ namespace API.Controllers
             }
         }
 
-
         [HttpPut]
         [Route("deleteFoto")]
         public async Task<IActionResult> DeleteSubFoto(int subId)

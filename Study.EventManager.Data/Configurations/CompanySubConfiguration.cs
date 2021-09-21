@@ -6,15 +6,14 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Study.EventManager.Data.Configurations
-{
-     
+{     
     public class CompanySubConfiguration : IEntityTypeConfiguration<CompanySubscription>
     {
         public void Configure(EntityTypeBuilder<CompanySubscription> builder)
         {
             builder.ToTable("CompanySubscription");
             builder.HasKey(o => o.Id);
-            builder.Property(t => t.SubscriptionId).IsRequired();
+            builder.Property(t => t.SubscriptionId);
             builder.Property(t => t.UserId).IsRequired();
             builder.Property(t => t.CompanyId).IsRequired();
             builder.Property(t => t.SubEndDt).IsRequired();

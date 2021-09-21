@@ -1,0 +1,409 @@
+{
+	"info": {
+		"_postman_id": "aa9c1f81-1c78-4048-8a7b-54d03ce0a89d",
+		"name": "EventManager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "authenticate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"slavikyarkin@gmail.com\",\r\n    \"password\" : \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://apieventmanagerdev.azurewebsites.net/api/authenticate/auth",
+							"protocol": "https",
+							"host": [
+								"apieventmanagerdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"authenticate",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "storageBlob",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYyOTk3NTgyNywiZXhwIjoxNjMwMDYyMjI3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.8JH-brwEzSgB6TjOGS4N5Xz1adLj8Z9Jq-4KvPuVvpc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/kkuzn/Downloads/1123213.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://apieventmanagerdev.azurewebsites.net/api/user/upload?email=shyi2517@gmail.com",
+							"protocol": "https",
+							"host": [
+								"apieventmanagerdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"user",
+								"upload"
+							],
+							"query": [
+								{
+									"key": "file",
+									"value": null,
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "shyi2517@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteFoto",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYyOTg5MTc2NSwiZXhwIjoxNjI5OTc4MTY1LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.SuEsxinCkl9ix0B5hwcFwQ4EClhQ9kmDPiPeXjKtQ8E",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\" : \"shyi2517@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://apieventmanagerdev.azurewebsites.net/api/user/deleteFoto",
+							"protocol": "https",
+							"host": [
+								"apieventmanagerdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"user",
+								"deleteFoto"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Event",
+			"item": [
+				{
+					"name": "acceptInvitation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYyOTkwMTYyNywiZXhwIjoxNjI5OTg4MDI3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.F1g1sDGb7REGJy06AZHF4lmjt3HQ4bw-bH69qvvIsEE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:61320/api/event/acceptInvitation?email=shyi2517@gmail.com&EventId=5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"event",
+								"acceptInvitation"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "shyi2517@gmail.com"
+								},
+								{
+									"key": "EventId",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "acceptInvitation Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYyOTk2MjM0MywiZXhwIjoxNjMwMDQ4NzQzLCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.J8TpXgTm2Wx2N7hsy2fKuBN2GEg3GhXe_5B1SLKbEzE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:61320/api/event/acceptInvitation?email=k.kuznetsov.anthill%40gmail.com&EventId=3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"event",
+								"acceptInvitation"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "k.kuznetsov.anthill%40gmail.com"
+								},
+								{
+									"key": "EventId",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Company",
+			"item": [
+				{
+					"name": "CSV file",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYmYiOjE2MzExNjYwOTIsImV4cCI6MTYzMTI1MjQ5MiwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.X5h_RRDnqEzVQ_G2I3CzC1Xccx-WqANgLIs8CDx_ypY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/kkuzn/Downloads/emails.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/company/AddUsersCSV?51",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"company",
+								"AddUsersCSV"
+							],
+							"query": [
+								{
+									"key": "51",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invite many Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYyOTkwMTYyNywiZXhwIjoxNjI5OTg4MDI3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.F1g1sDGb7REGJy06AZHF4lmjt3HQ4bw-bH69qvvIsEE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"companyId\": 1,\r\n    \"email\": [\r\n        \"shyi2517@gmail.com\",\r\n        \"slavik@gmail.com\"\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:61320/api/company/InviteUsers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "61320",
+							"path": [
+								"api",
+								"company",
+								"InviteUsers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "joinCompanyViaLink",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ikt1em5ldHNvdiIsIm5iZiI6MTYyOTkwMTYyNywiZXhwIjoxNjI5OTg4MDI3LCJpc3MiOiJNeUF1dGhTZXJ2ZXIiLCJhdWQiOiJNeUF1dGhDbGllbnQifQ.F1g1sDGb7REGJy06AZHF4lmjt3HQ4bw-bH69qvvIsEE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://apieventmanagerdev.azurewebsites.net/api/company/GetLinkToJoinCompany?id=1",
+							"protocol": "https",
+							"host": [
+								"apieventmanagerdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"company",
+								"GetLinkToJoinCompany"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQWRtaW4iLCJuYmYiOjE2MzEwOTUwNTgsImV4cCI6MTYzMTE4MTQ1OCwiaXNzIjoiTXlBdXRoU2VydmVyIiwiYXVkIjoiTXlBdXRoQ2xpZW50In0.dLWPe17Vxl30qKGkCzYLDfkdsp_rwSzzUMlMJa7etdk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:61320/api/company/getCompanyUsers?CompanyId=3&page=1&pageSize=10&firstName=V&lastName=I",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "61320",
+					"path": [
+						"api",
+						"company",
+						"getCompanyUsers"
+					],
+					"query": [
+						{
+							"key": "CompanyId",
+							"value": "3"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						},
+						{
+							"key": "firstName",
+							"value": "V"
+						},
+						{
+							"key": "lastName",
+							"value": "I"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

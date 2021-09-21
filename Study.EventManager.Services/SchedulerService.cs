@@ -19,13 +19,15 @@ namespace Study.EventManager.Services
         private IContextManager _contextManager;
         private IEmailWrapper _emailWrapper;
         private IGenerateEmailWrapper _generateEmailWrapper;
+        private readonly string _urlAdress;
 
-        public SchedulerService(IMapper mapper, IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IEmailWrapper emailWrapper)
+        public SchedulerService(IMapper mapper, IContextManager contextManager, IGenerateEmailWrapper generateEmailWrapper, IEmailWrapper emailWrapper, Settings settings)
         {
             _mapper = mapper;
             _contextManager = contextManager;
             _emailWrapper = emailWrapper;
             _generateEmailWrapper = generateEmailWrapper;
+            _urlAdress = settings.FrontUrl;
         }
 
         public void Dispose()
@@ -34,9 +36,24 @@ namespace Study.EventManager.Services
             // Need for Create this Scoped Service via IServiceScopeFactory from Singleton (IScheduledTask)!
         }
 
-        public async Task ToDoSomething()
+        public async Task SubscriptionEmail()
         {
-            
+            var repo = _contextManager.CreateRepositiry<ICompanySubRepo>();
+            var listCompanySub = repo.GetListOfExpiringSubs();
+
+            foreach (var oneCompSub in listCompanySub)
+            {                
+                var generateEmail = new GenerateEmailDto
+                {
+                    UrlAdress = _urlAdress + "/company/" + oneCompSub.CompanyId,
+                    EmailMainText = "Your subscription to " + oneCompSub.Company.Name + " will expire in 5 days",
+                    ObjectId = 0,
+                    Subject = "Sudscription"
+                };
+
+                var emailModel = _generateEmailWrapper.GenerateEmail(generateEmail, oneCompSub.User);
+                _emailWrapper.SendEmail(emailModel);
+            }
         }
 
         public async Task CheckFinishedEvents()

@@ -15,7 +15,7 @@ namespace Study.EventManager.Model
         internal User()
         { }
 
-        public User(string userName, string passWord, string firstName, string lastName, string email, bool isVerified) 
+        public User(string userName, string passWord, string firstName, string lastName, string email, bool isVerified, DateTime birthDate) 
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName) || string.IsNullOrEmpty(passWord))
                 throw new ArgumentNullException("userName");
@@ -24,6 +24,7 @@ namespace Study.EventManager.Model
             Password = passWord;
             FirstName = firstName;
             LastName = lastName;
+            BirthDate = birthDate;
             Email = email;
             IsVerified = isVerified;
             isSocialNetworks = false;

@@ -10,8 +10,8 @@ using Study.EventManager.Data;
 namespace Study.EventManager.Data.Migrations
 {
     [DbContext(typeof(EventManagerDbContext))]
-    [Migration("20210914101924_sixth")]
-    partial class sixth
+    [Migration("20210916104256_EventFieldDt")]
+    partial class EventFieldDt
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -73,6 +73,9 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<DateTime>("SubEndDt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("SubscriptionId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UseTrialVersion")
                         .HasColumnType("int");
 
@@ -82,6 +85,8 @@ namespace Study.EventManager.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("SubscriptionId");
 
                     b.HasIndex("UserId");
 
@@ -119,6 +124,9 @@ namespace Study.EventManager.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
+
+                    b.Property<DateTime>("BeginHoldingDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
@@ -218,6 +226,47 @@ namespace Study.EventManager.Data.Migrations
                     b.ToTable("EventUserLink");
                 });
 
+            modelBuilder.Entity("Study.EventManager.Model.SubscriptionRates", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<int>("Del")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FotoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ServerFileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ValidityDays")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("isFree")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubscriptionRates");
+                });
+
             modelBuilder.Entity("Study.EventManager.Model.User", b =>
                 {
                     b.Property<int>("Id")
@@ -297,6 +346,11 @@ namespace Study.EventManager.Data.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Study.EventManager.Model.SubscriptionRates", "Subscription")
+                        .WithMany()
+                        .HasForeignKey("SubscriptionId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("Study.EventManager.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -304,6 +358,8 @@ namespace Study.EventManager.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
+
+                    b.Navigation("Subscription");
 
                     b.Navigation("User");
                 });

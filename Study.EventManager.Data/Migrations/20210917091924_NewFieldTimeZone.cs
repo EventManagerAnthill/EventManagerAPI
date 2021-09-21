@@ -2,22 +2,21 @@
 
 namespace Study.EventManager.Data.Migrations
 {
-    public partial class second : Migration
+    public partial class NewFieldTimeZone : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Status",
+            migrationBuilder.AddColumn<string>(
+                name: "EventTimeZone",
                 table: "Event",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+                type: "nvarchar(max)",
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Status",
+                name: "EventTimeZone",
                 table: "Event");
         }
     }

@@ -13,7 +13,10 @@ namespace Study.EventManager.Services.Dto
 
         public DateTime CreateDate { get; set; }
 
+        public DateTime BeginHoldingDate { get; set; }
         public DateTime HoldingDate { get; set; }
+
+        public string EventTimeZone { get; set; }
 
         public EventTypes Type { get; set; }
 

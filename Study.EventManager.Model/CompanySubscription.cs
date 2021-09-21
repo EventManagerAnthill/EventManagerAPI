@@ -13,8 +13,7 @@ namespace Study.EventManager.Model
 
         public int Id { get; set; }
 
-        [Required]
-        public int SubscriptionId { get; set; }
+        public int? SubscriptionId { get; set; }
         public virtual SubscriptionRates Subscription { get; set; }
 
         [Required]
@@ -32,3 +31,4 @@ namespace Study.EventManager.Model
         public int UseTrialVersion { get; set; } = (int)CompanyTrialVersionEnum.AlreadyUsedTrial;
     }
 }
+  

@@ -109,7 +109,9 @@ namespace API.Controllers
                     Type = model.Type,
                     Description = model.Description,
                     CreateDate = model.CreateDate,
+                    BeginHoldingDate = model.BeginHoldingDate,
                     HoldingDate = model.HoldingDate,
+                    EventTimeZone = model.EventTimeZone,
                     CompanyId = model.CompanyId
                     
                 };

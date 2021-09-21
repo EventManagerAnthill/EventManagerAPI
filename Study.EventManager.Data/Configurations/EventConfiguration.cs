@@ -15,7 +15,9 @@ namespace Study.EventManager.Data.Configurations
             builder.HasKey(o => o.Id);
             builder.Property(t => t.Name);
             builder.Property(t => t.CreateDate);
+            builder.Property(t => t.BeginHoldingDate);
             builder.Property(t => t.HoldingDate);
+            builder.Property(t => t.EventTimeZone);
             builder.Property(t => t.Type);
             builder.Property(t => t.UserId);
             builder.Property(t => t.CompanyId);

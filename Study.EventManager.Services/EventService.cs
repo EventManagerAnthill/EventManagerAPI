@@ -96,11 +96,6 @@ namespace Study.EventManager.Services
 
         public EventDto GetEvent(int eventId, int userId)
         {
-/*            var repo = _contextManager.CreateRepositiry<IEventRepo>();
-            var data = repo.GetById(id);
-            var result = _mapper.Map<EventDto>(data);
-            return result;*/
-
             try
             {
                 var repo = _contextManager.CreateRepositiry<IEventRepo>();
@@ -169,6 +164,8 @@ namespace Study.EventManager.Services
             data.Name = dto.Name;
             data.Type = dto.Type;
             data.CreateDate = dto.CreateDate;
+            data.BeginHoldingDate = dto.BeginHoldingDate;
+            data.EventTimeZone = dto.EventTimeZone;
             data.HoldingDate = dto.HoldingDate;
             data.Description = dto.Description;
 

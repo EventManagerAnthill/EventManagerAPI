@@ -26,9 +26,13 @@ namespace Study.EventManager.Model
 
         public string Name { get; set; } 
 
-        public DateTime CreateDate { get; set; } 
+        public DateTime CreateDate { get; set; }
+
+        public DateTime BeginHoldingDate { get; set; } = DateTime.UtcNow.Date;
 
         public DateTime HoldingDate { get; set; } = DateTime.UtcNow.Date;
+
+        public string EventTimeZone { get; set; }
 
         public EventTypes Type { get; set; } 
 

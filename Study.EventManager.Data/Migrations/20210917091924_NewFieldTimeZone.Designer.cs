@@ -10,8 +10,8 @@ using Study.EventManager.Data;
 namespace Study.EventManager.Data.Migrations
 {
     [DbContext(typeof(EventManagerDbContext))]
-    [Migration("20210915130801_CompanySubscriptionFunctional")]
-    partial class CompanySubscriptionFunctional
+    [Migration("20210917091924_NewFieldTimeZone")]
+    partial class NewFieldTimeZone
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -73,7 +73,7 @@ namespace Study.EventManager.Data.Migrations
                     b.Property<DateTime>("SubEndDt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SubscriptionId")
+                    b.Property<int?>("SubscriptionId")
                         .HasColumnType("int");
 
                     b.Property<int>("UseTrialVersion")
@@ -125,6 +125,9 @@ namespace Study.EventManager.Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
+                    b.Property<DateTime>("BeginHoldingDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
@@ -135,6 +138,9 @@ namespace Study.EventManager.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EventTimeZone")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FotoUrl")
@@ -346,8 +352,7 @@ namespace Study.EventManager.Data.Migrations
                     b.HasOne("Study.EventManager.Model.SubscriptionRates", "Subscription")
                         .WithMany()
                         .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Study.EventManager.Model.User", "User")
                         .WithMany()

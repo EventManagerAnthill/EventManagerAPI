@@ -22,7 +22,10 @@ namespace API.Models
 
         public DateTime CreateDate { get; set; }
 
+        public DateTime BeginHoldingDate { get; set; } = DateTime.UtcNow.Date;
         public DateTime HoldingDate { get; set; } = DateTime.UtcNow.Date;
+
+        public string EventTimeZone { get; set; }
 
         [Required]
         public int CompanyId { get; set; }
